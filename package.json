@@ -1,0 +1,54 @@
+{
+  "name": "lumines-wissil",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WISSIL System - Workspace, Identity, Spark, Slate, Ignis, Landing - LumenForge.io Ecosystem",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "storybook": "npm run storybook:sync-wissil && storybook dev -p 6006",
+    "build-storybook": "npm run storybook:sync-wissil && storybook build",
+    "storybook:sync-wissil": "tsx scripts/generate-wissil-stories.ts",
+    "test-storybook": "test-storybook",
+    "chromatic": "chromatic --exit-zero-on-changes"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.344.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^7.6.0",
+    "@storybook/addon-actions": "^7.6.0",
+    "@storybook/addon-controls": "^7.6.0",
+    "@storybook/addon-docs": "^7.6.0",
+    "@storybook/addon-essentials": "^7.6.0",
+    "@storybook/addon-interactions": "^7.6.0",
+    "@storybook/addon-links": "^7.6.0",
+    "@storybook/addon-viewport": "^7.6.0",
+    "@storybook/blocks": "^7.6.0",
+    "@storybook/nextjs": "^7.6.0",
+    "@storybook/react": "^7.6.0",
+    "@storybook/test": "^7.6.0",
+    "@storybook/test-runner": "^0.16.0",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.0",
+    "chromatic": "^11.0.0",
+    "postcss": "^8.4.0",
+    "storybook": "^7.6.0",
+    "tailwindcss": "^3.4.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

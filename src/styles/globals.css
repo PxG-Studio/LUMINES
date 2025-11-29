@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Base Styles */
+@layer base {
+  body {
+    @apply bg-background-primary text-text-primary;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variant-ligatures: common-ligatures;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl lg:text-7xl;
+  }
+
+  h2 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h3 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  p {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+
+  code {
+    @apply font-mono text-sm;
+  }
+}
+
+/* Custom Component Styles */
+@layer components {
+  /* Glassmorphic Container */
+  .glass-container {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+
+  /* Glow Button */
+  .glow-button {
+    @apply relative overflow-hidden rounded-lg px-8 py-4 font-semibold transition-all duration-300;
+    @apply hover:scale-105 active:scale-95;
+  }
+
+  /* Animated Border */
+  .animated-border {
+    @apply relative;
+  }
+
+  .animated-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-lg;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Card Hover Effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl;
+  }
+}
+
+/* Custom Utilities */
+@layer utilities {
+  /* Text Gradient Utilities */
+  .text-gradient-landing {
+    @apply gradient-text from-landing-primary via-landing-secondary to-landing-accent;
+  }
+
+  .text-gradient-waypoint {
+    @apply gradient-text from-waypoint-primary via-waypoint-secondary to-waypoint-accent;
+  }
+
+  .text-gradient-spark {
+    @apply gradient-text from-spark-primary via-spark-secondary to-spark-accent;
+  }
+
+  .text-gradient-slate {
+    @apply gradient-text from-slate-primary via-slate-secondary to-slate-accent;
+  }
+
+  .text-gradient-ignis {
+    @apply gradient-text from-ignis-primary via-ignis-secondary to-ignis-accent;
+  }
+
+  .text-gradient-ignition {
+    @apply gradient-text from-ignition-primary via-ignition-secondary to-ignition-accent;
+  }
+
+  /* Background Gradient Utilities */
+  .bg-gradient-landing {
+    @apply bg-gradient-to-br from-landing-primary via-landing-secondary to-landing-accent;
+  }
+
+  .bg-gradient-waypoint {
+    @apply bg-gradient-to-br from-waypoint-primary via-waypoint-secondary to-waypoint-accent;
+  }
+
+  .bg-gradient-spark {
+    @apply bg-gradient-to-br from-spark-primary via-spark-secondary to-spark-accent;
+  }
+
+  .bg-gradient-slate {
+    @apply bg-gradient-to-br from-slate-primary via-slate-secondary to-slate-accent;
+  }
+
+  .bg-gradient-ignis {
+    @apply bg-gradient-to-br from-ignis-primary via-ignis-secondary to-ignis-accent;
+  }
+
+  .bg-gradient-ignition {
+    @apply bg-gradient-to-br from-ignition-primary via-ignition-secondary to-ignition-accent;
+  }
+
+  /* Animation Utilities */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s linear infinite;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 20px currentColor;
+  }
+  100% {
+    box-shadow: 0 0 40px currentColor, 0 0 60px currentColor;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background-secondary;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border-primary rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-border-secondary;
+}
+
+/* Selection Styling */
+::selection {
+  @apply bg-spark-primary/30 text-white;
+}
+
+::-moz-selection {
+  @apply bg-spark-primary/30 text-white;
+}

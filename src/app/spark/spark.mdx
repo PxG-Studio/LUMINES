@@ -1,0 +1,362 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="WISSIL/Spark/Documentation" />
+
+# SPARK - AI Component Generator
+
+**SPARK** uses Mixture of Experts (MoE) and Model Context Protocol (MCP) to generate production-ready components with intelligent context awareness.
+
+## Purpose
+
+SPARK revolutionizes component development by:
+- **AI Generation**: Natural language to production code
+- **Context Awareness**: Understands your project structure
+- **WISSIL Standards**: Follows design patterns automatically
+- **Multi-Expert System**: Specialized AI models collaborate
+- **Instant Iteration**: Rapid prototyping and refinement
+
+## Architecture
+
+### Mixture of Experts (MoE)
+
+SPARK employs three specialized experts:
+
+#### Design Expert
+**Specialty**: Visual Design & Styling
+
+Responsibilities:
+- SLATE token usage
+- Responsive design patterns
+- Accessibility (WCAG AA+)
+- Visual hierarchy
+- Animation and transitions
+- Glassmorphism and effects
+
+**Example Output:**
+```tsx
+// Design Expert ensures SLATE tokens and responsive design
+<div className="glass-container p-6 rounded-2xl">
+  <h2 className="text-3xl font-bold text-gradient-spark mb-4">
+    Generated Component
+  </h2>
+  <p className="text-neutral-300 text-lg leading-relaxed">
+    Content with proper spacing and typography
+  </p>
+</div>
+```
+
+#### Logic Expert
+**Specialty**: Business Logic & State Management
+
+Responsibilities:
+- React hooks (useState, useEffect, etc.)
+- State management patterns
+- Data flow architecture
+- Event handling
+- API integration
+- Form validation
+
+**Example Output:**
+```tsx
+// Logic Expert handles state and interactions
+const [data, setData] = useState<Item[]>([]);
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  async function fetchData() {
+    setLoading(true);
+    const result = await api.getItems();
+    setData(result);
+    setLoading(false);
+  }
+  fetchData();
+}, []);
+```
+
+#### Performance Expert
+**Specialty**: Optimization & Best Practices
+
+Responsibilities:
+- React.memo, useMemo, useCallback
+- Lazy loading and code splitting
+- Bundle size optimization
+- Render performance
+- Image optimization
+- Accessibility best practices
+
+**Example Output:**
+```tsx
+// Performance Expert adds optimizations
+const MemoizedComponent = React.memo(({ items }) => {
+  const sortedItems = useMemo(
+    () => items.sort((a, b) => a.name.localeCompare(b.name)),
+    [items]
+  );
+
+  return <List items={sortedItems} />;
+});
+```
+
+### Intelligent Routing
+
+SPARK analyzes your prompt and routes to relevant experts:
+
+```typescript
+interface PromptAnalysis {
+  intent: 'create' | 'modify' | 'debug';
+  complexity: 'low' | 'medium' | 'high';
+  domains: ('design' | 'logic' | 'performance')[];
+  confidence: number;
+}
+
+function routePrompt(prompt: string): Expert[] {
+  const analysis = analyzePrompt(prompt);
+
+  // Route to appropriate experts
+  const experts: Expert[] = [];
+  if (analysis.domains.includes('design')) experts.push(designExpert);
+  if (analysis.domains.includes('logic')) experts.push(logicExpert);
+  if (analysis.domains.includes('performance')) experts.push(performanceExpert);
+
+  return experts;
+}
+```
+
+## Features
+
+### Natural Language Input
+
+Simply describe what you need:
+
+**Examples:**
+
+1. **Simple Component:**
+   ```
+   "Create a button with loading state"
+   ```
+
+   Output: Button component with spinner, disabled state, and proper aria-labels.
+
+2. **Complex Component:**
+   ```
+   "Build a data table with sorting, filtering, pagination, and row selection"
+   ```
+
+   Output: Full-featured table with all requested functionality, TypeScript types, and tests.
+
+3. **Layout Component:**
+   ```
+   "Design a dashboard layout with sidebar navigation and responsive grid"
+   ```
+
+   Output: Complete layout with mobile hamburger menu, responsive breakpoints, and smooth transitions.
+
+### Context-Aware Generation
+
+SPARK understands your project:
+
+- **Existing Components**: Reuses patterns from your codebase
+- **Design System**: Applies your SLATE tokens
+- **TypeScript Types**: Infers and generates proper types
+- **File Structure**: Matches your project organization
+- **Dependencies**: Uses packages already in your project
+
+### Quick Examples
+
+Pre-built prompts for common needs:
+
+| Example | Complexity | Time |
+|---------|-----------|------|
+| Navigation Bar | Medium | ~10s |
+| Data Table | High | ~20s |
+| Card Component | Low | ~5s |
+| Form with Validation | High | ~25s |
+| Modal Dialog | Medium | ~12s |
+| Search Input | Low | ~8s |
+
+## MCP Integration
+
+### Model Context Protocol
+
+SPARK uses MCP to maintain context across interactions:
+
+```typescript
+interface MCPContext {
+  projectStructure: FileTree;
+  existingComponents: Component[];
+  designTokens: SlateTokens;
+  dependencies: Package[];
+  userPreferences: Preferences;
+  conversationHistory: Message[];
+}
+```
+
+### MCP Tools
+
+Available tools for component management:
+
+#### mcp_luminera_read_component
+Read existing component definitions:
+
+```typescript
+const component = await mcp.readComponent('Button');
+// Returns: component code, props, dependencies
+```
+
+#### mcp_luminera_write_component
+Save generated components:
+
+```typescript
+await mcp.writeComponent('NewCard', {
+  code: generatedCode,
+  path: 'src/components/NewCard.tsx',
+  tests: generatedTests,
+});
+```
+
+#### mcp_vfs_read / mcp_vfs_write
+File system operations:
+
+```typescript
+const packageJson = await mcp.vfs.read('package.json');
+await mcp.vfs.write('src/utils/helper.ts', helperCode);
+```
+
+## Generation Workflow
+
+### 1. Prompt Analysis
+
+```typescript
+const analysis = {
+  intent: 'create',
+  componentType: 'molecule', // Atomic design level
+  requiredExperts: ['design', 'logic'],
+  estimatedComplexity: 'medium',
+  suggestedFiles: ['Component.tsx', 'Component.test.tsx', 'Component.stories.tsx'],
+};
+```
+
+### 2. Expert Collaboration
+
+```typescript
+// Design Expert generates structure and styles
+const designOutput = await designExpert.generate(prompt, context);
+
+// Logic Expert adds functionality
+const logicOutput = await logicExpert.generate(prompt, {
+  ...context,
+  designOutput,
+});
+
+// Performance Expert optimizes
+const finalOutput = await performanceExpert.optimize({
+  ...designOutput,
+  ...logicOutput,
+});
+```
+
+### 3. Validation
+
+```typescript
+// Validate generated code
+const validation = {
+  syntax: checkSyntax(finalOutput.code),
+  types: checkTypes(finalOutput.code),
+  linting: runESLint(finalOutput.code),
+  accessibility: checkA11y(finalOutput.code),
+};
+```
+
+### 4. Output
+
+Generated files:
+
+```
+src/components/GeneratedComponent/
+├── GeneratedComponent.tsx        # Component code
+├── GeneratedComponent.test.tsx   # Unit tests
+├── GeneratedComponent.stories.tsx # Storybook story
+└── index.ts                      # Export
+```
+
+## Best Practices
+
+### Prompt Engineering
+
+**Good Prompts:**
+- ✅ "Create a responsive card with image, title, description, and CTA button"
+- ✅ "Build a form with email validation and loading state"
+- ✅ "Design a modal dialog with smooth animations"
+
+**Bad Prompts:**
+- ❌ "Make a component"
+- ❌ "Button thing"
+- ❌ "Something for users"
+
+### Iterative Refinement
+
+1. **Start General**: "Create a data table"
+2. **Add Details**: "Add sorting and filtering"
+3. **Refine**: "Make it responsive with mobile view"
+4. **Polish**: "Add loading states and error handling"
+
+### Review Generated Code
+
+Always review before committing:
+- ✅ Check for unused imports
+- ✅ Verify TypeScript types
+- ✅ Test accessibility
+- ✅ Confirm responsive behavior
+- ✅ Review performance implications
+
+## Performance
+
+- **Simple Components**: 5-10 seconds
+- **Medium Components**: 10-20 seconds
+- **Complex Components**: 20-40 seconds
+- **Token Usage**: Optimized for cost efficiency
+- **Cache Hit Rate**: 60%+ for common patterns
+
+## Network Topology
+
+- **Location**: Helios Compute (192.168.86.115)
+- **Port**: 3003
+- **Protocol**: HTTPS + WebSocket
+- **Auth**: nocturnaID with Agent role
+- **AI Backend**: Distributed MoE cluster
+
+## Integration Points
+
+### SLATE
+- Automatic token usage
+- System color application
+- Typography scale adherence
+
+### IGNIS
+- Hot-reload generated components
+- Live preview in browser
+- Instant feedback loop
+
+### WAYPOINT
+- Version generated components
+- Track component evolution
+- Deploy to registry
+
+## Accessibility
+
+Generated components are WCAG AA+ compliant:
+- ✅ Semantic HTML
+- ✅ ARIA labels and roles
+- ✅ Keyboard navigation
+- ✅ Focus management
+- ✅ Color contrast
+- ✅ Screen reader tested
+
+## Future Enhancements
+
+- [ ] Visual component builder (drag-and-drop)
+- [ ] Component variants generation
+- [ ] Automatic test generation
+- [ ] Design to code (Figma plugin)
+- [ ] Real-time collaboration
+- [ ] Component marketplace
