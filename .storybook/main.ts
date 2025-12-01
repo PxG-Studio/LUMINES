@@ -1,5 +1,10 @@
-import type { StorybookConfig } from '@storybook/nextjs';
-import path from 'path';
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { fileURLToPath } from "node:url";
+import type { StorybookConfig } from '@storybook/nextjs-vite';
+import path, { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config: StorybookConfig = {
   stories: [
@@ -25,26 +30,21 @@ const config: StorybookConfig = {
     // Fallback: Any other stories (app stories excluded - duplicates exist in canonical locations)
     // Note: Not using '../src/**/*.stories.*' to avoid picking up src/app duplicates
   ],
+
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
-    '@storybook/addon-viewport',
-    '@storybook/addon-controls',
-    '@storybook/addon-actions',
-    '@storybook/addon-docs',
-    // Temporarily disabled until import issues are resolved
-    // './unity-addon/register.tsx',
+    getAbsolutePath("@storybook/addon-links"),
+    getAbsolutePath("@storybook/addon-a11y"),
+    getAbsolutePath("@storybook/addon-docs"),
+    getAbsolutePath("@storybook/addon-mcp")
   ],
+
   framework: {
-    name: '@storybook/nextjs',
+    name: getAbsolutePath("@storybook/nextjs-vite"),
     options: {},
   },
-  docs: {
-    autodocs: 'tag',
-  },
+
   staticDirs: ['../public'],
+
   features: {
     // Modern Storybook features for performance
     storyStoreV7: true,
@@ -53,6 +53,7 @@ const config: StorybookConfig = {
     // experimentalViteLazyCompilation: true,
     argTypeTargetsV7: true,
   },
+
   webpackFinal: async (config) => {
     if (config.resolve) {
       config.resolve.alias = {
@@ -142,6 +143,7 @@ const config: StorybookConfig = {
     
     return config;
   },
+
   typescript: {
     check: false,
     reactDocgen: 'react-docgen-typescript',
@@ -155,10 +157,11 @@ const config: StorybookConfig = {
       },
     },
   },
+
   // Suppress package.json warnings for dev dependencies
   // These are expected warnings - packages are installed but Storybook
   // can't find their package.json during dependency analysis
-  logLevel: 'warn',
+  logLevel: 'warn'
 };
 
 // Suppress specific warnings about missing package.json files
@@ -174,3 +177,7 @@ console.warn = (...args: any[]) => {
 };
 
 export default config;
+
+function getAbsolutePath(value: string): any {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}

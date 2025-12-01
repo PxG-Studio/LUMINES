@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { IgnitionRuntimeBar } from "./IgnitionRuntimeBar";
 import { IgnitionErrorOverlay } from "./IgnitionErrorOverlay";
 import { IgnitionMessageStream } from "./IgnitionMessageStream";

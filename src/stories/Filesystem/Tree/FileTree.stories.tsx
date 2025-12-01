@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { FileTree } from '@/editor/filesystem/FileTree';
 
 const meta = {

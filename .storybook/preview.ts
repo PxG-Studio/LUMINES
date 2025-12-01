@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/nextjs';
 import '../src/styles/globals.css';
 
 // Import LumenForge Landing App styles (now local in LUMINES)
@@ -36,24 +36,25 @@ const preview: Preview = {
     },
     layout: 'fullscreen',
     backgrounds: {
-      default: 'dark',
-      values: [
-        {
+      options: {
+        dark: {
           name: 'dark',
           value: '#0A0E27',
         },
-        {
+
+        midnight: {
           name: 'midnight',
           value: '#1A1F3A',
         },
-        {
+
+        light: {
           name: 'light',
           value: '#F9FAFB',
-        },
-      ],
+        }
+      }
     },
     viewport: {
-      viewports: {
+      options: {
         mobile1: {
           name: 'Mobile (iPhone)',
           styles: {
@@ -82,8 +83,7 @@ const preview: Preview = {
             height: '1440px',
           },
         },
-      },
-      defaultViewport: 'desktop',
+      }
     },
     // Chromatic visual regression testing configuration
     chromatic: {
@@ -399,7 +399,9 @@ const preview: Preview = {
       },
     },
   },
+
   tags: ['autodocs'],
+
   globalTypes: {
     theme: {
       description: 'Global theme for components',
@@ -412,6 +414,17 @@ const preview: Preview = {
       },
     },
   },
+
+  initialGlobals: {
+    viewport: {
+      value: 'desktop',
+      isRotated: false
+    },
+
+    backgrounds: {
+      value: 'dark'
+    }
+  }
 };
 
 export default preview;

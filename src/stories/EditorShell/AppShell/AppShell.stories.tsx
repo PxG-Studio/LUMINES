@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { AppShell } from '@/editor/shell/AppShell';
 import { Sidebar } from '@/editor/shell/Sidebar';
 import { TopBar } from '@/editor/shell/TopBar';

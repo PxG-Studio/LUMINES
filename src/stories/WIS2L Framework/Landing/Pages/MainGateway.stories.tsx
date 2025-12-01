@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, waitFor } from '@storybook/test';
-import { fn } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/nextjs';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
+import { fn } from 'storybook/test';
 import LandingPage from '@/app/landing/page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 import { LandingLayout } from '@/wissil/Landing/LandingLayout';
@@ -581,11 +581,6 @@ export const WithLayout: Story = {
  */
 export const Mobile: Story = {
   render: () => <LandingPage />,
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-  },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -640,6 +635,12 @@ export const Mobile: Story = {
       }, { timeout: 2000 });
     });
   },
+  globals: {
+    viewport: {
+      value: 'mobile1',
+      isRotated: false
+    }
+  },
 };
 
 /**
@@ -647,11 +648,6 @@ export const Mobile: Story = {
  */
 export const Tablet: Story = {
   render: () => <LandingPage />,
-  parameters: {
-    viewport: {
-      defaultViewport: 'tablet',
-    },
-  },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -705,6 +701,12 @@ export const Tablet: Story = {
       }
     });
   },
+  globals: {
+    viewport: {
+      value: 'tablet',
+      isRotated: false
+    }
+  },
 };
 
 /**
@@ -712,11 +714,6 @@ export const Tablet: Story = {
  */
 export const WideScreen: Story = {
   render: () => <LandingPage />,
-  parameters: {
-    viewport: {
-      defaultViewport: 'wideScreen',
-    },
-  },
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -812,6 +809,12 @@ export const WideScreen: Story = {
         expect(heading).toBeInTheDocument();
       }, { timeout: 2000 });
     });
+  },
+  globals: {
+    viewport: {
+      value: 'wideScreen',
+      isRotated: false
+    }
   },
 };
 

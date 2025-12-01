@@ -5,7 +5,7 @@
 
 import React from "react";
 import { UnityPreviewDecorator } from "storybook-decorator";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 
 const meta: Meta = {
   title: "Lumenforge.io Design System/WIS2L Framework/Unity Bridge/MinimalUnity",

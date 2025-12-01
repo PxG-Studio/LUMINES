@@ -4,7 +4,7 @@
  * Visual regression testing configuration for game development IDE
  */
 
-import type { ChromaticParameters } from '@storybook/react';
+import type { ChromaticParameters } from '@storybook/nextjs';
 
 export const chromatic: ChromaticParameters = {
   // Visual regression settings

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { expect, within, userEvent, waitFor } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/nextjs';
+import { action } from 'storybook/actions';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import React from 'react';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import { SimpleNav } from '@/wissil/Landing/SimpleNav';
@@ -178,12 +178,17 @@ This story demonstrates the core landing page sections with full Actions panel i
  */
 export const Mobile: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
+    ...Default.parameters
   },
+
+  globals: {
+    viewport: {
+      value: 'mobile1',
+      isRotated: false
+    }
+  }
 };
 
 /**
@@ -191,12 +196,17 @@ export const Mobile: Story = {
  */
 export const Tablet: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'tablet',
-    },
+    ...Default.parameters
   },
+
+  globals: {
+    viewport: {
+      value: 'tablet',
+      isRotated: false
+    }
+  }
 };
 
 /**
@@ -204,12 +214,17 @@ export const Tablet: Story = {
  */
 export const Desktop: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'desktop',
-    },
+    ...Default.parameters
   },
+
+  globals: {
+    viewport: {
+      value: 'desktop',
+      isRotated: false
+    }
+  }
 };
 
 /**

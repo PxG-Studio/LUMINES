@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
 const AIExplainerPanel = ({ 
   explanation = "This node adds two numbers together. It takes two float inputs (A and B) and outputs their sum (Result). Use this node for basic arithmetic operations in your blueprint."

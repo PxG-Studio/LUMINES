@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 /**
  * WISSIL Hub Storybook Configuration
  * 
@@ -14,16 +16,10 @@ const config: StorybookConfig = {
     "../src/**/*.mdx",
   ],
   
-  addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
-    '@storybook/addon-viewport',
-  ],
+  addons: [getAbsolutePath("@storybook/addon-links"), getAbsolutePath("@storybook/addon-a11y"), getAbsolutePath("@storybook/addon-docs")],
   
   framework: {
-    name: '@storybook/react-vite',
+    name: getAbsolutePath("@storybook/react-vite"),
     options: {},
   },
   
@@ -77,4 +73,8 @@ const config: StorybookConfig = {
 };
 
 export default config;
+
+function getAbsolutePath(value: string): any {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}
 

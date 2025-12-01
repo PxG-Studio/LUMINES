@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { Button } from '@/design-system/primitives/Button';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 
