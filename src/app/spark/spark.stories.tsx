@@ -3,7 +3,7 @@ import SparkPage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Spark/AI Component Generator',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Spark/Pages/IDE Experience',
   component: SparkPage,
   parameters: {
     layout: 'fullscreen',
@@ -80,7 +80,25 @@ export const Mobile: Story = {
   render: () => <SparkPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Tablet: Story = {
+  render: () => <SparkPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
+  },
+};
+
+export const WideScreen: Story = {
+  render: () => <SparkPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
     },
   },
 };

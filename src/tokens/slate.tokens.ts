@@ -19,16 +19,40 @@ export const slateTokens = {
       gradient: 'linear-gradient(135deg, #F5B914 0%, #47E0FF 50%, #A64DFF 100%)',
     },
     waypoint: {
-      primary: '#A64DFF', // Purple (Unity Visual Scripting)
-      secondary: '#47E0FF', // Cyan
-      accent: '#F5B914', // Amber
-      gradient: 'linear-gradient(135deg, #A64DFF 0%, #47E0FF 100%)',
+      primary: '#4C4BFF', // Indigo (Unity Runtime - maps to NEC)
+      secondary: '#A64DFF', // Purple
+      accent: '#A64DFF',
+      gradient: 'linear-gradient(135deg, #4C4BFF 0%, #A64DFF 100%)',
     },
     spark: {
-      primary: '#47E0FF', // Cyan (IDE Experience)
-      secondary: '#F5B914', // Amber
-      accent: '#A64DFF', // Purple
-      gradient: 'linear-gradient(135deg, #47E0FF 0%, #F5B914 100%)',
+      primary: '#F5B914', // Gold (AI-Powered IDE)
+      secondary: '#FFD659', // Light Gold
+      accent: '#FFD659',
+      gradient: 'linear-gradient(135deg, #F5B914 0%, #FFD659 100%)',
+    },
+    luna: {
+      primary: '#47E0FF', // Cyan (AI Creative Core)
+      secondary: '#4C4BFF', // Indigo
+      accent: '#4C4BFF',
+      gradient: 'linear-gradient(135deg, #47E0FF 0%, #4C4BFF 100%)',
+    },
+    nec: {
+      primary: '#4C4BFF', // Indigo (Unity Runtime)
+      secondary: '#A64DFF', // Purple
+      accent: '#A64DFF',
+      gradient: 'linear-gradient(135deg, #4C4BFF 0%, #A64DFF 100%)',
+    },
+    nerva: {
+      primary: '#10B981', // Green (Event Bus)
+      secondary: '#47E0FF', // Cyan
+      accent: '#47E0FF',
+      gradient: 'linear-gradient(135deg, #10B981 0%, #47E0FF 100%)',
+    },
+    fluxrunner: {
+      primary: '#F5B914', // Gold (CI/CD Pipeline)
+      secondary: '#FFD659', // Light Gold
+      accent: '#FFD659',
+      gradient: 'linear-gradient(135deg, #F5B914 0%, #FFD659 100%)',
     },
     slate: {
       primary: '#A64DFF', // Purple (Workspace & Identity)
@@ -37,16 +61,16 @@ export const slateTokens = {
       gradient: 'linear-gradient(135deg, #A64DFF 0%, #47E0FF 100%)',
     },
     ignis: {
-      primary: '#FF6B35', // Orange (API Backend)
-      secondary: '#F5B914', // Amber
-      accent: '#47E0FF', // Cyan
+      primary: '#FF6B35', // Orange (Runtime Engine)
+      secondary: '#F5B914', // Gold
+      accent: '#F5B914',
       gradient: 'linear-gradient(135deg, #FF6B35 0%, #F5B914 100%)',
     },
     ignition: {
-      primary: '#F5B914', // Amber (Project Bootstrap)
-      secondary: '#FF6B35', // Orange
-      accent: '#A64DFF', // Purple
-      gradient: 'linear-gradient(135deg, #F5B914 0%, #FF6B35 100%)',
+      primary: '#F5B914', // Gold (CI/CD Pipeline - maps to FLUXRUNNER)
+      secondary: '#FFD659', // Light Gold
+      accent: '#FFD659',
+      gradient: 'linear-gradient(135deg, #F5B914 0%, #FFD659 100%)',
     },
     // Base Colors
     background: {

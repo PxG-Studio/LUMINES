@@ -3,7 +3,7 @@ import WaypointPage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Waypoint/Deployment',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Waypoint/Pages/Unity Visual Scripting',
   component: WaypointPage,
   parameters: {
     layout: 'fullscreen',
@@ -83,7 +83,25 @@ export const Mobile: Story = {
   render: () => <WaypointPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Tablet: Story = {
+  render: () => <WaypointPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
+  },
+};
+
+export const WideScreen: Story = {
+  render: () => <WaypointPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
     },
   },
 };

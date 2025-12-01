@@ -1,0 +1,69 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^(default)"]
+    },
+    "storybook": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/**/*.stories.*",
+        ".storybook/**/*"
+      ],
+      "outputs": [
+        "{projectRoot}/storybook-static",
+        ".cache/storybook-vite",
+        ".cache/storybook"
+      ]
+    },
+    "build-storybook": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{projectRoot}/.storybook/**/*",
+        "{projectRoot}/**/*.stories.*",
+        ".storybook/**/*"
+      ],
+      "outputs": [
+        "{projectRoot}/storybook-static",
+        ".cache/storybook-vite",
+        ".cache/storybook"
+      ]
+    },
+    "chromatic": {
+      "dependsOn": ["storybook", "build-storybook"],
+      "inputs": [
+        "{projectRoot}/storybook-static/**"
+      ]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["default", "^default"]
+    }
+  },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.spec.ts",
+      "!{projectRoot}/**/*.test.ts",
+      "!{projectRoot}/**/*.stories.*",
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
+    ],
+    "sharedGlobals": [
+      ".storybook/**/*",
+      "package.json",
+      "tsconfig.json"
+    ]
+  }
+}
+

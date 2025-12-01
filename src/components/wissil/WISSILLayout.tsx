@@ -95,7 +95,9 @@ export const WISSILLayout: React.FC<WISSILLayoutProps> = ({
           className="fixed bottom-4 right-4 px-4 py-2 rounded-lg text-xs font-mono font-semibold shadow-lg z-50"
           style={{
             backgroundColor: isPrimary ? systemColors.primary : '#6366F1',
-            color: '#fff',
+            // Use a dark text color for better contrast against bright system colors
+            // This ensures we meet WCAG 2.1 AA contrast requirements even at small sizes
+            color: '#0A0E27',
           }}
         >
           {system.toUpperCase()}

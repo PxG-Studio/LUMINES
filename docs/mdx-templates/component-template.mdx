@@ -1,0 +1,63 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+import { ComponentName } from '../src/path/to/ComponentName';
+
+<Meta title="Subsystem/ComponentName" component={ComponentName} />
+
+# ComponentName
+
+## Overview
+
+Brief description of what this component does and its role in the subsystem.
+
+## Usage
+
+<Canvas>
+  <Story name="Default">
+    <ComponentName 
+      prop1="value1"
+      prop2="value2"
+    />
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={ComponentName} />
+
+## Design Guidelines
+
+- Design principle 1
+- Design principle 2
+- Design principle 3
+
+## Examples
+
+### Example 1: Basic Usage
+
+<Canvas>
+  <Story name="Basic">
+    <ComponentName prop1="value" />
+  </Story>
+</Canvas>
+
+### Example 2: Advanced Usage
+
+<Canvas>
+  <Story name="Advanced">
+    <ComponentName 
+      prop1="value1"
+      prop2="value2"
+      prop3={true}
+    />
+  </Story>
+</Canvas>
+
+## Related Components
+
+- [RelatedComponent1](./related-component1.mdx)
+- [RelatedComponent2](./related-component2.mdx)
+
+## API Reference
+
+See the [TypeScript definitions](../../src/path/to/ComponentName.tsx) for complete API documentation.
+

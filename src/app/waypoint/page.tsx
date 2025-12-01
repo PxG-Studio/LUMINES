@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Gamepad2, Network, Settings, Layers, Code2 } from 'lucide-react';
+import Link from 'next/link';
+import { Gamepad2, Network, Settings, Layers, Code2, Play, Download, Share2, Zap, CheckCircle2 } from 'lucide-react';
+import { Navigation } from '@/components/wissil/Navigation';
 
 /**
  * WAYPOINT - Unity Visual Scripting
@@ -16,39 +18,52 @@ import { Gamepad2, Network, Settings, Layers, Code2 } from 'lucide-react';
  */
 export default function WaypointPage() {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [graphStats, setGraphStats] = useState({ nodes: 12, connections: 18, complexity: 'Medium' });
 
   const nodeCategories = [
     {
       name: 'Events',
-      nodes: ['OnStart', 'OnUpdate', 'OnClick', 'OnCollision'],
+      nodes: ['OnStart', 'OnUpdate', 'OnClick', 'OnCollision', 'OnTrigger', 'OnDestroy'],
       icon: Code2,
+      color: 'waypoint-primary',
     },
     {
       name: 'Variables',
-      nodes: ['GetVariable', 'SetVariable', 'LocalVariable'],
+      nodes: ['GetVariable', 'SetVariable', 'LocalVariable', 'GlobalVariable', 'ArrayVariable'],
       icon: Layers,
+      color: 'waypoint-secondary',
     },
     {
       name: 'Logic',
-      nodes: ['If', 'Switch', 'ForLoop', 'WhileLoop'],
+      nodes: ['If', 'Switch', 'ForLoop', 'WhileLoop', 'Break', 'Continue'],
       icon: Network,
+      color: 'waypoint-accent',
     },
     {
       name: 'Unity',
-      nodes: ['Transform', 'Rigidbody', 'Collider', 'Renderer'],
+      nodes: ['Transform', 'Rigidbody', 'Collider', 'Renderer', 'AudioSource', 'Animator'],
       icon: Gamepad2,
+      color: 'waypoint-primary',
     },
+  ];
+
+  const recentGraphs = [
+    { name: 'Player Movement', nodes: 8, lastModified: '2 hours ago' },
+    { name: 'Enemy AI', nodes: 15, lastModified: '1 day ago' },
+    { name: 'UI System', nodes: 6, lastModified: '3 days ago' },
   ];
 
   return (
     <div className="min-h-screen bg-background-primary relative overflow-hidden">
+      <Navigation />
       {/* Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-waypoint-primary rounded-full blur-3xl opacity-20 animate-float" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-waypoint-accent rounded-full blur-3xl opacity-15 animate-float" style={{ animationDelay: '3s' }} />
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 pt-16">
         {/* Hero */}
         <section className="container mx-auto px-4 py-20 sm:py-32">
           <div className="max-w-4xl mx-auto text-center">
@@ -66,17 +81,75 @@ export default function WaypointPage() {
             </p>
 
             <p className="text-lg text-text-tertiary mb-12 max-w-2xl mx-auto">
-              Create Unity WebGL applications using a visual graph editor. No coding required.
+              Create game logic visually with a powerful node-based editor. Connect nodes, define behaviors, and see your game come to life.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="group px-8 py-4 rounded-lg bg-gradient-waypoint font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl flex items-center gap-2 mx-auto">
-                <Code2 className="w-5 h-5" />
-                Open Graph Editor
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="group px-8 py-4 rounded-lg bg-gradient-waypoint font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl flex items-center gap-2 mx-auto"
+              >
+                {isPlaying ? (
+                  <>
+                    <Settings className="w-5 h-5" />
+                    Stop Execution
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5" />
+                    Run Graph
+                  </>
+                )}
               </button>
-              <button className="px-8 py-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 font-semibold text-text-primary transition-all duration-300 hover:bg-white/10">
-                View Examples
+              <button 
+                onClick={() => {
+                  // Export functionality
+                  console.log('Exporting graph...');
+                }}
+                className="px-8 py-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 font-semibold text-text-primary transition-all duration-300 hover:bg-white/10 flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Export
               </button>
+              <button 
+                onClick={() => {
+                  // Share functionality
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'WAYPOINT Graph',
+                      text: 'Check out my Unity visual script!',
+                      url: window.location.href,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+                className="px-8 py-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 font-semibold text-text-primary transition-all duration-300 hover:bg-white/10 flex items-center gap-2"
+              >
+                <Share2 className="w-4 h-4" />
+                Share
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Graph Stats */}
+        <section className="container mx-auto px-4 py-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="glass-container p-4">
+                <div className="text-sm text-text-secondary mb-1">Nodes</div>
+                <div className="text-2xl font-bold text-waypoint-primary">{graphStats.nodes}</div>
+              </div>
+              <div className="glass-container p-4">
+                <div className="text-sm text-text-secondary mb-1">Connections</div>
+                <div className="text-2xl font-bold text-waypoint-secondary">{graphStats.connections}</div>
+              </div>
+              <div className="glass-container p-4">
+                <div className="text-sm text-text-secondary mb-1">Complexity</div>
+                <div className="text-2xl font-bold text-waypoint-accent">{graphStats.complexity}</div>
+              </div>
             </div>
           </div>
         </section>
@@ -84,18 +157,40 @@ export default function WaypointPage() {
         {/* Features */}
         <section className="container mx-auto px-4 py-12">
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-3 mb-8">
-              <Network className="w-6 h-6 text-waypoint-primary" />
-              <h2 className="text-3xl font-bold text-text-primary">Graph Editor</h2>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <Network className="w-6 h-6 text-waypoint-primary" />
+                <h2 className="text-3xl font-bold text-text-primary">Graph Editor</h2>
+              </div>
+              {isPlaying && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-sm text-green-400 font-medium">Running</span>
+                </div>
+              )}
             </div>
 
-            <div className="glass-container p-8 min-h-[400px]">
-              <div className="text-center py-20">
-                <Gamepad2 className="w-16 h-16 text-waypoint-primary mx-auto mb-4 opacity-50" />
-                <p className="text-text-secondary mb-2">Graph Editor Canvas</p>
-                <p className="text-sm text-text-tertiary">
-                  Visual scripting interface will be rendered here
+            <div className="glass-container p-8 min-h-[500px] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-waypoint-primary/5 to-transparent" />
+              <div className="relative text-center py-20">
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-waypoint-primary/10 border border-waypoint-primary/20 mb-6">
+                  <Gamepad2 className="w-12 h-12 text-waypoint-primary opacity-50" />
+                </div>
+                <p className="text-text-secondary mb-2 text-lg font-semibold">Graph Editor Canvas</p>
+                <p className="text-sm text-text-tertiary mb-6 max-w-md mx-auto">
+                  Visual scripting interface with node-based programming. Connect nodes to create Unity behaviors.
                 </p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {['Drag & Drop Nodes', 'Real-time Preview', 'Unity Integration', 'Export to Unity'].map((feature) => (
+                    <span
+                      key={feature}
+                      className="px-3 py-1 rounded-full text-xs font-medium bg-waypoint-primary/10 border border-waypoint-primary/20 text-waypoint-primary"
+                    >
+                      <CheckCircle2 className="w-3 h-3 inline mr-1" />
+                      {feature}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -111,12 +206,15 @@ export default function WaypointPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {nodeCategories.map((category) => (
-                <div key={category.name} className="glass-container p-6">
+                <div key={category.name} className="glass-container p-6 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 rounded-lg bg-waypoint-primary/10 border border-waypoint-primary/20">
                       <category.icon className="w-5 h-5 text-waypoint-primary" />
                     </div>
                     <h3 className="text-lg font-bold text-text-primary">{category.name}</h3>
+                    <span className="ml-auto px-2 py-0.5 rounded text-xs font-medium bg-white/5 text-text-tertiary">
+                      {category.nodes.length}
+                    </span>
                   </div>
 
                   <div className="space-y-2">
@@ -124,15 +222,57 @@ export default function WaypointPage() {
                       <button
                         key={node}
                         onClick={() => setSelectedNode(node)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center justify-between ${
                           selectedNode === node
                             ? 'bg-waypoint-primary/20 border border-waypoint-primary/30 text-waypoint-primary'
                             : 'bg-white/5 border border-white/5 text-text-secondary hover:bg-white/10'
                         }`}
                       >
-                        {node}
+                        <span>{node}</span>
+                        {selectedNode === node && (
+                          <CheckCircle2 className="w-4 h-4 text-waypoint-primary" />
+                        )}
                       </button>
                     ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Recent Graphs */}
+        <section className="container mx-auto px-4 py-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-3 mb-8">
+              <Layers className="w-6 h-6 text-waypoint-primary" />
+              <h2 className="text-3xl font-bold text-text-primary">Recent Graphs</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recentGraphs.map((graph, idx) => (
+                <div key={idx} className="glass-container p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-text-primary mb-1">{graph.name}</h3>
+                      <p className="text-sm text-text-tertiary">{graph.nodes} nodes</p>
+                    </div>
+                    <Zap className="w-5 h-5 text-waypoint-primary" />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-text-secondary">
+                    <span>{graph.lastModified}</span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Opening graph:', graph.name);
+                        setSelectedNode(null);
+                        setIsPlaying(false);
+                        alert(`Opening ${graph.name}...`);
+                      }}
+                      className="px-3 py-1 rounded bg-waypoint-primary/10 border border-waypoint-primary/20 text-waypoint-primary hover:bg-waypoint-primary/20 transition-colors"
+                    >
+                      Open
+                    </button>
                   </div>
                 </div>
               ))}

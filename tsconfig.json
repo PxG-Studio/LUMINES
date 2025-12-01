@@ -22,7 +22,20 @@
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
       "@/tokens/*": ["./src/tokens/*"],
-      "@/styles/*": ["./src/styles/*"]
+      "@/styles/*": ["./src/styles/*"],
+      "@/wissil/*": ["./src/wissil/*"],
+      "@/story-components/*": ["./src/story-components/*"],
+      "@/design-system/*": ["./src/design-system/*"],
+      "@/theme/*": ["./src/theme/*"],
+      "@/editor/*": ["./src/editor/*"],
+      "@/ignis/*": ["./src/ignis/*"],
+      "@/ignition/*": ["./src/ignition/*"],
+      "@/spark/*": ["./src/spark/*"],
+      "@/waypoint/*": ["./src/waypoint/*"],
+      "@/slate/*": ["./src/slate/*"],
+      "@/state/*": ["./src/state/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/utils/*": ["./src/utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".storybook/**/*.ts"],

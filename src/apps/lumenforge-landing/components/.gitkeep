@@ -1,0 +1,12 @@
+# Components folder
+# Build these tomorrow at the primary lab!
+
+Components to create:
+- Navigation.tsx
+- Hero.tsx
+- Features.tsx
+- Comparison.tsx
+- Testimonials.tsx
+- ProductDemo.tsx
+- CTA.tsx
+- Footer.tsx

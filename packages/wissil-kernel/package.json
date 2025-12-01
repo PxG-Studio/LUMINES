@@ -1,0 +1,26 @@
+{
+  "name": "@wissil/kernel",
+  "version": "1.0.0",
+  "description": "WISSIL Kernel - Shared types, schemas, and contracts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./dist/types/index.js",
+    "./schemas": "./dist/schemas/index.js",
+    "./events": "./dist/events/index.js",
+    "./contracts": "./dist/contracts/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}
+

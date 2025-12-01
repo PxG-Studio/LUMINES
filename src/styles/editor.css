@@ -1,0 +1,30 @@
+/**
+ * Editor Styles
+ * 
+ * Additional styles for Monaco Editor and editor components
+ */
+
+/* Search match highlighting */
+.monaco-editor .search-match {
+  background-color: rgba(166, 77, 255, 0.3) !important;
+  border: 1px solid rgba(166, 77, 255, 0.5) !important;
+}
+
+.monaco-editor .current-search-match {
+  background-color: rgba(166, 77, 255, 0.5) !important;
+  border: 1px solid rgba(166, 77, 255, 0.8) !important;
+}
+
+/* IntelliSense hover */
+.monaco-editor .monaco-hover {
+  background: var(--slate-panel, #16181d) !important;
+  border: 1px solid var(--slate-border, #26292f) !important;
+  color: var(--slate-text, #e4e7eb) !important;
+}
+
+/* Code actions */
+.monaco-editor .monaco-editor-overlaymessage {
+  background: var(--slate-panel, #16181d) !important;
+  border: 1px solid var(--slate-border, #26292f) !important;
+}
+

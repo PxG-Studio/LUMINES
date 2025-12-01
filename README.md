@@ -271,8 +271,18 @@ npm test -- --coverage
 npm run test-storybook
 
 # Visual regression tests
-npm run chromatic
+npm run chromatic          # Chromatic (primary)
+npm run percy:storybook   # Percy (cross-browser)
 ```
+
+### Visual Regression Strategy
+
+WISSIL uses **dual visual regression testing**:
+
+- **Chromatic**: Primary tool with tight Storybook integration, TurboSnap optimization, fast CI
+- **Percy**: Cross-browser testing (Chromium, Firefox, WebKit), responsive snapshots
+
+Both tools run in parallel on PRs for comprehensive coverage. See [Chromatic Guide](./docs/CHROMATIC_COMPLETE.md) and [Percy Guide](./docs/PERCY_SETUP.md).
 
 ---
 
@@ -347,11 +357,15 @@ Cloudflare CDN → Cloudflare Zero Trust
 
 Comprehensive documentation available in:
 
+- **Documentation Index:** `docs/README.md` - Complete documentation index
+- **Repository Architecture:** `REPOSITORY_ARCHITECTURE.md` - System architecture overview
+- **Repository Overview:** `REPOSITORY_COMPLETE_OVERVIEW.md` - Complete system overview
 - **Handoff:** `infrastructure/k8s/production/docs/LUMINES_AGENT_HANDOFF.md`
 - **Visual Diagrams:** `infrastructure/k8s/production/docs/LUMINES_VISUAL_DIAGRAMS.md`
 - **Quick Reference:** `infrastructure/k8s/production/docs/LUMINES_QUICK_REFERENCE.md`
 - **Component Docs:** MDX files in each `src/app/*/` folder
 - **Storybook:** Auto-generated component documentation
+- **Historical Archive:** `archive/` - Archived phase status files and historical documentation
 
 ---
 
