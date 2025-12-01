@@ -5,8 +5,8 @@ const theme = create({
   base: 'dark',
 
   // Brand
-  brandTitle: 'WISSIL Design System',
-  brandUrl: 'https://nocturna.network',
+  brandTitle: 'Lumenforge.io',
+  brandUrl: 'https://lumenforge.io',
   brandImage: undefined,
   brandTarget: '_self',
 

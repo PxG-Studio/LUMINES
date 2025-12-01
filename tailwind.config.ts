@@ -18,14 +18,29 @@ const config: Config = {
           accent: '#A64DFF', // Purple
         },
         waypoint: {
-          primary: '#A64DFF', // Purple (Unity Visual Scripting)
-          secondary: '#47E0FF', // Cyan
-          accent: '#F5B914', // Amber
+          primary: '#4C4BFF', // Indigo (Unity Runtime - NEC)
+          secondary: '#A64DFF', // Purple
+          accent: '#A64DFF',
         },
         spark: {
-          primary: '#47E0FF', // Cyan (IDE Experience)
-          secondary: '#F5B914', // Amber
-          accent: '#A64DFF', // Purple
+          primary: '#F5B914', // Gold (AI-Powered IDE)
+          secondary: '#FFD659', // Light Gold
+          accent: '#FFD659',
+        },
+        luna: {
+          primary: '#47E0FF', // Cyan (AI Creative Core)
+          secondary: '#4C4BFF', // Indigo
+          accent: '#4C4BFF',
+        },
+        nec: {
+          primary: '#4C4BFF', // Indigo (Unity Runtime)
+          secondary: '#A64DFF', // Purple
+          accent: '#A64DFF',
+        },
+        nerva: {
+          primary: '#10B981', // Green (Event Bus)
+          secondary: '#47E0FF', // Cyan
+          accent: '#47E0FF',
         },
         slate: {
           primary: '#A64DFF', // Purple (Workspace & Identity)
@@ -33,14 +48,19 @@ const config: Config = {
           accent: '#F5B914', // Amber
         },
         ignis: {
-          primary: '#FF6B35', // Orange (API Backend)
-          secondary: '#F5B914', // Amber
-          accent: '#47E0FF', // Cyan
+          primary: '#FF6B35', // Orange (Runtime Engine)
+          secondary: '#F5B914', // Gold
+          accent: '#F5B914',
         },
         ignition: {
-          primary: '#F5B914', // Amber (Project Bootstrap)
-          secondary: '#FF6B35', // Orange
-          accent: '#A64DFF', // Purple
+          primary: '#F5B914', // Gold (CI/CD Pipeline - FLUXRUNNER)
+          secondary: '#FFD659', // Light Gold
+          accent: '#FFD659',
+        },
+        fluxrunner: {
+          primary: '#F5B914', // Gold (CI/CD Pipeline)
+          secondary: '#FFD659', // Light Gold
+          accent: '#FFD659',
         },
         // Base Colors
         background: {

@@ -1,0 +1,258 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta
+  title="Lumenforge.io Design System/WIS2L Framework/Slate/Documentation/Slate"
+  id="wis2l-slate-docs-stories"
+  name="Slate WIS2L Docs"
+/>
+
+# SLATE - Subsystem Layout & Theming Engine
+
+**SLATE** is the centralized design system and token management layer for all WISSIL subsystems.
+
+## Purpose
+
+SLATE serves as the single source of truth for:
+- **Design Tokens**: Colors, typography, spacing, shadows
+- **Theme Configuration**: Light/dark modes, system themes
+- **Visual Consistency**: Standardized design language
+- **Component Styling**: Base styles and utilities
+
+## Architecture
+
+### Token Structure
+
+```typescript
+slateTokens
+├── colors
+│   ├── landing (primary, secondary, accent, gradient)
+│   ├── slate (primary, secondary, accent, gradient)
+│   ├── ignition (primary, secondary, accent, gradient)
+│   ├── spark (primary, secondary, accent, gradient)
+│   ├── ignis (primary, secondary, accent, gradient)
+│   ├── waypoint (primary, secondary, accent, gradient)
+│   ├── nocturna (dark, midnight, twilight, dusk, dawn)
+│   └── neutral (50-900)
+├── typography
+│   ├── fontFamily (sans, mono, display)
+│   ├── fontSize (xs - 9xl)
+│   ├── fontWeight (thin - black)
+│   ├── lineHeight (none - loose)
+│   └── letterSpacing (tighter - widest)
+├── spacing (px, 0 - 96)
+├── borderRadius (none - full)
+├── shadows (sm - 2xl, glow)
+├── animation (duration, easing)
+├── breakpoints (sm - 2xl)
+└── zIndex (hide - tooltip)
+```
+
+### Network Topology
+
+- **Location**: Helios Compute (192.168.86.115)
+- **Port**: 3001
+- **Protocol**: HTTPS
+- **Auth**: nocturnaID with Designer role
+- **Access**: Authenticated users only
+
+## Design System
+
+### Color Systems
+
+Each WISSIL subsystem has a dedicated color palette:
+
+#### Landing (Gold)
+- Primary: `#FFD700` - Main actions, hero elements
+- Secondary: `#1E3A8A` - Supporting elements
+- Accent: `#F59E0B` - Highlights and CTAs
+
+#### Slate (Indigo)
+- Primary: `#6366F1` - Design system elements
+- Secondary: `#8B5CF6` - Secondary actions
+- Accent: `#A78BFA` - Hover states
+
+#### Ignition (Red)
+- Primary: `#EF4444` - Project initialization
+- Secondary: `#F97316` - Templates
+- Accent: `#FB923C` - Configuration
+
+#### Spark (Yellow)
+- Primary: `#FBBF24` - AI generation
+- Secondary: `#F59E0B` - Expert routing
+- Accent: `#FCD34D` - Generated code
+
+#### Ignis (Coral)
+- Primary: `#FF6B35` - Build status
+- Secondary: `#F7931E` - Performance metrics
+- Accent: `#FFC857` - Optimizations
+
+#### Waypoint (Green)
+- Primary: `#10B981` - Deployments
+- Secondary: `#059669` - Version history
+- Accent: `#34D399` - Environment status
+
+### Typography Scale
+
+SLATE provides a harmonious type scale:
+
+| Size | Value | Usage |
+|------|-------|-------|
+| xs | 0.75rem | Small labels, captions |
+| sm | 0.875rem | Secondary text |
+| base | 1rem | Body text |
+| lg | 1.125rem | Emphasized text |
+| xl | 1.25rem | Small headings |
+| 2xl | 1.5rem | Card headings |
+| 3xl | 1.875rem | Section headings |
+| 4xl | 2.25rem | Page headings |
+| 5xl | 3rem | Hero headings (mobile) |
+| 6xl | 3.75rem | Hero headings (tablet) |
+| 7xl | 4.5rem | Hero headings (desktop) |
+
+### Spacing System
+
+Consistent spacing based on 4px base unit:
+
+- **Micro**: 1-3 (4px - 12px) - Component internal spacing
+- **Small**: 4-6 (16px - 24px) - Component margins
+- **Medium**: 8-12 (32px - 48px) - Section spacing
+- **Large**: 16-24 (64px - 96px) - Major section gaps
+- **XLarge**: 32-96 (128px - 384px) - Layout sections
+
+## Features
+
+### Token Explorer
+
+Interactive browser for all design tokens:
+- **Color Viewer**: Visual swatches with hex values
+- **Copy to Clipboard**: One-click token copying
+- **Live Preview**: Real-time token updates
+- **Search**: Filter tokens by name or value
+
+### Typography Showcase
+
+Visual reference for all font sizes:
+- Side-by-side comparison
+- Actual rendered sizes
+- Font family and weight info
+- Usage guidelines
+
+### Spacing Visualizer
+
+Interactive spacing grid:
+- Visual representation of all sizes
+- Size labels and rem values
+- Responsive behavior preview
+
+## Usage
+
+### Importing Tokens
+
+```typescript
+import { slateTokens, getSystemColors } from '@/tokens/slate.tokens';
+
+// Get all tokens
+const colors = slateTokens.colors;
+const spacing = slateTokens.spacing;
+
+// Get system-specific colors
+const landingColors = getSystemColors('landing');
+```
+
+### Tailwind Integration
+
+All SLATE tokens are automatically available in Tailwind:
+
+```tsx
+// Color classes
+<div className="bg-slate-primary text-white" />
+<div className="text-gradient-landing" />
+
+// Spacing
+<div className="px-4 py-8 gap-6" />
+
+// Typography
+<h1 className="text-7xl font-bold" />
+```
+
+### CSS Variables
+
+SLATE tokens can be exported as CSS custom properties:
+
+```css
+:root {
+  --color-landing-primary: #FFD700;
+  --spacing-4: 1rem;
+  --font-size-7xl: 4.5rem;
+}
+```
+
+## Token Management
+
+### Adding New Tokens
+
+1. Update `src/tokens/slate.tokens.ts`
+2. Add to appropriate category
+3. Update Tailwind config if needed
+4. Document in SLATE page
+5. Run validation tests
+
+### Naming Convention
+
+Follow this pattern for consistency:
+- **Colors**: `system-category` (e.g., `landing-primary`)
+- **Spacing**: Numeric scale (e.g., `4`, `8`, `12`)
+- **Typography**: T-shirt sizing (e.g., `xs`, `sm`, `lg`)
+- **Effects**: Descriptive (e.g., `glow`, `shimmer`)
+
+### Token Validation
+
+```typescript
+// Validate color contrast
+checkContrast(foreground, background) >= 4.5
+
+// Validate spacing scale
+isMultipleOf(spacing, 4) === true
+
+// Validate font scale
+fontScale.follows(perfectFourth) === true
+```
+
+## Integration Points
+
+### Component Libraries
+
+SLATE integrates with:
+- **React Components**: Via props and className
+- **Storybook**: Theme provider and decorators
+- **Tailwind CSS**: Extended configuration
+- **CSS-in-JS**: Token exports for styled-components
+
+### MCP Tools
+
+- `mcp_luminera_read_component`: Read token definitions
+- `mcp_luminera_write_component`: Update tokens
+- `mcp_vfs_read`: Access token files
+
+## Best Practices
+
+1. **Always use tokens**: Never hardcode colors or spacing
+2. **System colors**: Use appropriate system colors for context
+3. **Responsive scales**: Utilize breakpoint tokens
+4. **Accessibility**: Maintain WCAG AA+ contrast ratios
+5. **Consistency**: Stick to the defined scale
+
+## Performance
+
+- **Token file size**: < 5 KB (minified)
+- **Tree-shakeable**: Unused tokens removed in production
+- **CSS generation**: Tailwind JIT for minimal output
+- **Cache-friendly**: Tokens rarely change
+
+## Future Enhancements
+
+- [ ] Theme builder UI
+- [ ] Custom token generation
+- [ ] Token analytics and usage tracking
+- [ ] A/B testing for token variations
+- [ ] Export to Figma/Sketch

@@ -3,7 +3,7 @@ import IgnitionPage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Ignition/Project Scaffolding',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Ignition/Pages/Project Bootstrap',
   component: IgnitionPage,
   parameters: {
     layout: 'fullscreen',
@@ -75,7 +75,25 @@ export const Mobile: Story = {
   render: () => <IgnitionPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Tablet: Story = {
+  render: () => <IgnitionPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
+  },
+};
+
+export const WideScreen: Story = {
+  render: () => <IgnitionPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
     },
   },
 };
