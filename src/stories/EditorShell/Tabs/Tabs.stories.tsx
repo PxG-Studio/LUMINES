@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { Tabs } from '@/editor/shell/Tabs';
 
 const meta = {

@@ -3,7 +3,7 @@
  */
 
 import React, { useRef } from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { SearchReplace } from '@/editor/monaco/SearchReplace';
 import Editor from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';

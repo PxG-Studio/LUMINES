@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { InspectorPanel } from "./InspectorPanel";
 import { FileTree } from "./FileTree";
 import { SplitView } from "@/design-system/primitives/SplitView";

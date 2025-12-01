@@ -5,7 +5,7 @@
  * Includes Chromatic settings, viewports, themes, and accessibility
  */
 
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/nextjs';
 import React from 'react';
 import { ThemeProvider } from '../src/design-system/themes/ThemeProvider';
 import '../src/styles/globals.css';

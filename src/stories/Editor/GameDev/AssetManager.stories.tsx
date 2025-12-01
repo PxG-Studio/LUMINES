@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { AssetManager, GameAsset } from '@/editor/gamedev/AssetManager';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 

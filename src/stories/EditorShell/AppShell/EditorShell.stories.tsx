@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
 // Mock components for now - will be replaced with actual components
 const EditorShell = ({ 

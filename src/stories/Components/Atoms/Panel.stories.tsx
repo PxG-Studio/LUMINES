@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 import { Panel } from '@/design-system/primitives/Panel';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { IgnisContainer } from "./IgnisContainer";
 import { ThemeProvider } from "@/design-system/themes/ThemeProvider";
 

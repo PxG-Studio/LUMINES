@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within, userEvent, waitFor, fn } from "@storybook/test";
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import { expect, within, userEvent, waitFor, fn } from "storybook/test";
 import { LandingLayout } from "@/wissil/Landing/LandingLayout";
 import { ThemeProvider } from "@/design-system/themes/ThemeProvider";
 
@@ -257,12 +257,11 @@ export const Default: Story = {
  */
 export const Mobile: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
+    ...Default.parameters
   },
+
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);
 
@@ -279,6 +278,13 @@ export const Mobile: Story = {
       await userEvent.click(startCodingButton);
     });
   },
+
+  globals: {
+    viewport: {
+      value: 'mobile1',
+      isRotated: false
+    }
+  }
 };
 
 /**
@@ -286,12 +292,17 @@ export const Mobile: Story = {
  */
 export const Tablet: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'tablet',
-    },
+    ...Default.parameters
   },
+
+  globals: {
+    viewport: {
+      value: 'tablet',
+      isRotated: false
+    }
+  }
 };
 
 /**
@@ -299,10 +310,15 @@ export const Tablet: Story = {
  */
 export const WideScreen: Story = {
   ...Default,
+
   parameters: {
-    ...Default.parameters,
-    viewport: {
-      defaultViewport: 'wideScreen',
-    },
+    ...Default.parameters
   },
+
+  globals: {
+    viewport: {
+      value: 'wideScreen',
+      isRotated: false
+    }
+  }
 };
