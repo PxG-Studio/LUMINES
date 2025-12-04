@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChevronRight } from "@/design-system/icons/ChevronRight";
 import { FolderIcon } from "@/design-system/icons/Folder";
 import { FileIcon } from "@/design-system/icons/File";
@@ -58,34 +58,79 @@ export function FileTreeNode({
     alert(`Context menu placeholder for: ${fullPath}`);
   };
 
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleClick(e as any);
+    } else if (e.key === "ArrowRight" && isFolder && !open) {
+      e.preventDefault();
+      setOpen(true);
+    } else if (e.key === "ArrowLeft" && isFolder && open) {
+      e.preventDefault();
+      setOpen(false);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      // Focus next sibling
+      const nextSibling = nodeRef.current?.parentElement?.nextElementSibling?.querySelector('[role="treeitem"]') as HTMLElement;
+      nextSibling?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      // Focus previous sibling
+      const prevSibling = nodeRef.current?.parentElement?.previousElementSibling?.querySelector('[role="treeitem"]') as HTMLElement;
+      prevSibling?.focus();
+    }
+  };
+
   return (
     <div>
       {/* NODE HEADER */}
       <div
+        ref={nodeRef}
+        role="treeitem"
+        aria-expanded={isFolder ? open : undefined}
+        aria-selected={isSelected}
+        aria-label={isFolder ? `Folder ${name}` : `File ${name}`}
+        tabIndex={isSelected ? 0 : -1}
         style={{
           display: "flex",
           alignItems: "center",
           paddingLeft: level * 12,
+          paddingRight: theme.spacing.xs,
           cursor: "pointer",
           userSelect: "none",
-          height: 24,
+          minHeight: 28,
+          paddingTop: 4,
+          paddingBottom: 4,
           background: isSelected
-            ? `${theme.colors.accent}25`
+            ? `${theme.colors.accent}20`
+            : isFocused && !isSelected
+            ? theme.colors.bg2
             : "transparent",
           borderRadius: theme.radii.sm,
-          color: theme.colors.text1,
+          color: isSelected ? theme.colors.text0 : theme.colors.text1,
           fontSize: theme.typography.size.sm,
-          transition: "background 0.1s ease"
+          transition: "all 0.15s ease",
+          outline: "none",
+          border: isFocused ? `1px solid ${theme.colors.accent}40` : "1px solid transparent"
         }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
+        onKeyDown={handleKeyDown}
+        onFocus={(e) => {
+          setIsFocused(true);
+          e.currentTarget.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }}
+        onBlur={() => setIsFocused(false)}
         onMouseEnter={(e) => {
-          if (!isSelected) {
+          if (!isSelected && !isFocused) {
             e.currentTarget.style.background = theme.colors.bg2;
           }
         }}
         onMouseLeave={(e) => {
-          if (!isSelected) {
+          if (!isSelected && !isFocused) {
             e.currentTarget.style.background = "transparent";
           }
         }}
@@ -115,7 +160,7 @@ export function FileTreeNode({
 
       {/* CHILDREN */}
       {isFolder && open && (
-        <div>
+        <div role="group">
           {Object.entries(value).map(([child, val]) => (
             <FileTreeNode
               key={child}

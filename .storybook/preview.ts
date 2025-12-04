@@ -18,6 +18,35 @@ if (typeof window !== 'undefined') {
   (window as any).LunaGeneratedExample = LunaGeneratedExample;
 }
 
+// Suppress React content-visibility warnings (harmless React 18 dev warnings)
+// These come from React Aria components and are not actual errors
+if (typeof window !== 'undefined') {
+  const suppressContentVisibilityWarning = (message: string): boolean => {
+    return message.includes('Rendering was performed in a subtree hidden by content-visibility') ||
+           message.includes('content-visibility');
+  };
+
+  // Suppress from console.error
+  const originalError = console.error;
+  console.error = (...args: any[]) => {
+    const message = args[0]?.toString() || '';
+    if (suppressContentVisibilityWarning(message)) {
+      return;
+    }
+    originalError.apply(console, args);
+  };
+
+  // Suppress from console.warn
+  const originalWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    const message = args[0]?.toString() || '';
+    if (suppressContentVisibilityWarning(message)) {
+      return;
+    }
+    originalWarn.apply(console, args);
+  };
+}
+
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },

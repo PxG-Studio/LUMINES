@@ -227,7 +227,7 @@ export function BuildPanel({ className, style }: BuildPanelProps) {
                 : theme.colors.error
             }}
           >
-            {buildResult.success ? "✓ Build Complete" : "✕ Build Failed"}
+            {buildResult.success ? "✓ Build Complete" : "Build Failed"}
           </div>
           <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.text1 }}>
             <div>Type: {buildResult.type}</div>

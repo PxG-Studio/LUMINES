@@ -53,7 +53,7 @@ export function SlateLayout({
       <Sidebar />
 
       {/* MAIN EDITOR REGION */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div role="main" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <EditorToolbar
           onRun={onRun}
           onRestart={onRestart}
@@ -67,6 +67,9 @@ export function SlateLayout({
             <SplitView direction="horizontal" initial={220} min={150} max={400}>
               <InspectorPanel />
               <div
+                role="region"
+                aria-label="File explorer"
+                tabIndex={0}
                 style={{
                   overflowY: "auto",
                   height: "100%",
@@ -94,6 +97,14 @@ export function SlateLayout({
           </SplitView>
         </div>
       </div>
+      {/* Screen reader announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id="sr-announcements"
+      />
     </div>
     </IgnitionProvider>
   );

@@ -301,8 +301,9 @@ export function SequenceEditor({
                         padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
                         fontSize: theme.typography.size.xs
                       }}
+                      aria-label={`Remove clip ${clipName}`}
                     >
-                      ✕
+                      <span aria-hidden="true">✕</span>
                     </Button>
                   </div>
                 </div>

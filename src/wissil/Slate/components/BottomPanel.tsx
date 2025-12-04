@@ -52,6 +52,8 @@ export function BottomPanel({
     >
       {/* TAB BAR */}
       <div
+        role="tablist"
+        aria-label="Output panel tabs"
         style={{
           height: 34,
           display: "flex",
@@ -62,12 +64,29 @@ export function BottomPanel({
           background: theme.colors.bg2
         }}
       >
-        {tabs.map((t) => {
+        {tabs.map((t, index) => {
           const isActive = tab === t;
           return (
-            <div
+            <button
               key={t}
+              type="button"
+              role="tab"
+              id={`${t}-tab`}
+              aria-selected={isActive}
+              aria-controls={`${t}-panel`}
+              tabIndex={isActive ? 0 : -1}
               onClick={() => handleTabChange(t)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowLeft") {
+                  e.preventDefault();
+                  const prevIndex = index > 0 ? index - 1 : tabs.length - 1;
+                  handleTabChange(tabs[prevIndex]);
+                } else if (e.key === "ArrowRight") {
+                  e.preventDefault();
+                  const nextIndex = index < tabs.length - 1 ? index + 1 : 0;
+                  handleTabChange(tabs[nextIndex]);
+                }
+              }}
               style={{
                 padding: "6px 8px",
                 cursor: "pointer",
@@ -76,7 +95,13 @@ export function BottomPanel({
                 borderBottom: isActive ? `2px solid ${theme.colors.accent}` : "none",
                 transition: "color 0.15s ease",
                 textTransform: "uppercase",
-                fontWeight: isActive ? theme.typography.weight.medium : theme.typography.weight.regular
+                fontWeight: isActive ? theme.typography.weight.medium : theme.typography.weight.regular,
+                background: "transparent",
+                borderTop: "none",
+                borderLeft: "none",
+                borderRight: "none",
+                outline: "none",
+                fontFamily: theme.typography.font
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
@@ -88,43 +113,118 @@ export function BottomPanel({
                   e.currentTarget.style.color = theme.colors.text2;
                 }
               }}
+              onFocus={(e) => {
+                e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                e.currentTarget.style.outlineOffset = "2px";
+              }}
+              onBlur={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.outline = "none";
+                }
+              }}
             >
               {t}
-            </div>
+            </button>
           );
         })}
       </div>
 
       {/* CONTENT */}
       <div style={{ flex: 1, overflow: "hidden" }}>
-        {tab === "console" && <ConsolePanel />}
+        {tab === "console" && (
+          <div role="tabpanel" id="console-panel" aria-labelledby="console-tab">
+            <ConsolePanel />
+          </div>
+        )}
         {tab === "logs" && (
           <div
+            role="tabpanel"
+            id="logs-panel"
+            aria-labelledby="logs-tab"
             style={{
-              padding: theme.spacing.md,
-              color: theme.colors.text2,
-              fontSize: theme.typography.size.sm,
+              padding: theme.spacing.xl,
               height: "100%",
-              overflowY: "auto"
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center"
             }}
           >
-            <div style={{ opacity: 0.4 }}>
-              Logs will appear here
+            <div
+              style={{
+                fontSize: 32,
+                marginBottom: theme.spacing.md,
+                opacity: 0.3,
+                color: theme.colors.text2
+              }}
+            >
+              📋
+            </div>
+            <div
+              style={{
+                fontSize: theme.typography.size.md,
+                color: theme.colors.text1,
+                fontWeight: theme.typography.weight.medium,
+                marginBottom: theme.spacing.xs
+              }}
+            >
+              No logs yet
+            </div>
+            <div
+              style={{
+                fontSize: theme.typography.size.sm,
+                color: theme.colors.text2,
+                opacity: 0.8
+              }}
+            >
+              Runtime logs will appear here when you run a program
             </div>
           </div>
         )}
         {tab === "errors" && (
           <div
+            role="tabpanel"
+            id="errors-panel"
+            aria-labelledby="errors-tab"
             style={{
-              padding: theme.spacing.md,
-              color: theme.colors.error,
-              fontSize: theme.typography.size.sm,
+              padding: theme.spacing.xl,
               height: "100%",
-              overflowY: "auto"
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center"
             }}
           >
-            <div style={{ opacity: 0.4 }}>
-              Build/runtime errors will appear here
+            <div
+              style={{
+                fontSize: 32,
+                marginBottom: theme.spacing.md,
+                opacity: 0.3,
+                color: theme.colors.error
+              }}
+            >
+              ⚠️
+            </div>
+            <div
+              style={{
+                fontSize: theme.typography.size.md,
+                color: theme.colors.error,
+                fontWeight: theme.typography.weight.medium,
+                marginBottom: theme.spacing.xs
+              }}
+            >
+              No errors
+            </div>
+            <div
+              style={{
+                fontSize: theme.typography.size.sm,
+                color: theme.colors.text2,
+                opacity: 0.8
+              }}
+            >
+              Build and runtime errors will appear here
             </div>
           </div>
         )}

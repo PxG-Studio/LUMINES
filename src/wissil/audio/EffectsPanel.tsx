@@ -198,8 +198,9 @@ export function EffectsPanel({ className, style }: EffectsPanelProps) {
                         padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
                         fontSize: theme.typography.size.xs
                       }}
+                      aria-label={`Remove ${effect.type} effect`}
                     >
-                      ✕
+                      <span aria-hidden="true">✕</span>
                     </Button>
                   </div>
                 </div>

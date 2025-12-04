@@ -42,8 +42,8 @@ export function IgnitionMessageStream({ className, style }: IgnitionMessageStrea
       {msgs.length === 0 && (
         <div
           style={{
-            opacity: 0.4,
-            color: theme.colors.text2,
+            opacity: 0.7,
+            color: theme.colors.text1,
             fontSize: theme.typography.size.sm
           }}
         >

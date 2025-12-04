@@ -20,7 +20,8 @@ export function Sidebar() {
   ];
 
   return (
-    <div
+    <nav
+      aria-label="Primary navigation"
       style={{
         width: 52,
         background: theme.colors.bg1,
@@ -29,37 +30,57 @@ export function Sidebar() {
         flexDirection: "column",
         alignItems: "center",
         paddingTop: 16,
-        gap: 20
+        gap: 12
       }}
     >
-      {items.map((item) => (
-        <div
-          key={item.id}
-          onClick={() => setActiveId(item.id)}
-          title={item.title}
-          style={{
-            padding: 10,
-            cursor: "pointer",
-            color: activeId === item.id ? theme.colors.accent : theme.colors.text1,
-            background: activeId === item.id ? `${theme.colors.accent}20` : "transparent",
-            borderRadius: theme.radii.sm,
-            transition: "all 0.15s ease"
-          }}
-          onMouseEnter={(e) => {
-            if (activeId !== item.id) {
-              e.currentTarget.style.color = theme.colors.text0;
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (activeId !== item.id) {
-              e.currentTarget.style.color = theme.colors.text1;
-            }
-          }}
-        >
-          {item.icon}
-        </div>
-      ))}
-    </div>
+      {items.map((item) => {
+        const isActive = activeId === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setActiveId(item.id)}
+            aria-label={item.title}
+            aria-pressed={isActive}
+            title={item.title}
+            style={{
+              padding: 10,
+              cursor: "pointer",
+              color: isActive ? theme.colors.accent : theme.colors.text1,
+              background: isActive ? `${theme.colors.accent}20` : "transparent",
+              borderRadius: theme.radii.sm,
+              transition: "all 0.15s ease",
+              border: "none",
+              outline: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.color = theme.colors.text0;
+                e.currentTarget.style.background = theme.colors.bg2;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.color = theme.colors.text1;
+                e.currentTarget.style.background = "transparent";
+              }
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+              e.currentTarget.style.outlineOffset = "2px";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = "none";
+            }}
+          >
+            {item.icon}
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 

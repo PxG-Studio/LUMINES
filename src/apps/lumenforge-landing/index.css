@@ -1,9 +1,10 @@
+/* Browser Compatibility Styles - EC-076, EC-077, EC-078, EC-085, EC-086, EC-087, EC-116 */
+/* @import must come before @tailwind */
+@import './styles/browser-compat.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Browser Compatibility Styles - EC-076, EC-077, EC-078, EC-085, EC-086, EC-087, EC-116 */
-@import './styles/browser-compat.css';
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

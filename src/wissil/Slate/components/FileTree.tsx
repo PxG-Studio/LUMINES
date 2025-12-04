@@ -11,6 +11,8 @@ import { useFileTreeState, regenerateTree } from "./FileTreeState";
 import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
 import { ScrollArea } from "@/design-system/layouts/ScrollArea";
 import { useTheme } from "@/design-system/themes/ThemeProvider";
+import { FolderIcon } from "@/design-system/icons/Folder";
+import { useEditorState } from "@/state/editorState";
 
 export interface FileTreeProps {
   onFileSelect?: (path: string) => void;
@@ -38,6 +40,21 @@ function treeToNestedObject(nodes: any[]): any {
 export function FileTree({ onFileSelect }: FileTreeProps) {
   const theme = useTheme();
   const fs = useWissilFS();
+  const selectedFile = useEditorState((s) => s.selectedFile);
+  
+  // Announce file selection changes
+  useEffect(() => {
+    if (selectedFile) {
+      const announcement = document.getElementById("sr-announcements");
+      if (announcement) {
+        const fileName = selectedFile.split("/").pop() || selectedFile;
+        announcement.textContent = `Opened file ${fileName}`;
+        setTimeout(() => {
+          announcement.textContent = "";
+        }, 1000);
+      }
+    }
+  }, [selectedFile]);
   
   /**
    * Build nested object from filesystem for FileTreeNode compatibility
@@ -76,19 +93,49 @@ export function FileTree({ onFileSelect }: FileTreeProps) {
       <ScrollArea
         style={{
           height: "100%",
-          padding: theme.spacing.sm
+          padding: theme.spacing.md
         }}
       >
         <div
+          role="status"
+          aria-live="polite"
           style={{
-            fontSize: theme.typography.size.sm,
-            color: theme.colors.text2,
-            opacity: 0.6,
-            padding: theme.spacing.md,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "200px",
+            padding: theme.spacing.xl,
             textAlign: "center"
           }}
         >
-          No files. Select a template to begin.
+          <FolderIcon 
+            size={48} 
+            style={{ 
+              color: theme.colors.text2, 
+              opacity: 0.4,
+              marginBottom: theme.spacing.md
+            }} 
+          />
+          <div
+            style={{
+              fontSize: theme.typography.size.md,
+              color: theme.colors.text1,
+              fontWeight: theme.typography.weight.medium,
+              marginBottom: theme.spacing.xs
+            }}
+          >
+            No files yet
+          </div>
+          <div
+            style={{
+              fontSize: theme.typography.size.sm,
+              color: theme.colors.text1,
+              maxWidth: "300px"
+            }}
+          >
+            Select a template or create a new file to begin
+          </div>
         </div>
       </ScrollArea>
     );
@@ -101,7 +148,11 @@ export function FileTree({ onFileSelect }: FileTreeProps) {
         padding: theme.spacing.sm
       }}
     >
-      <div style={{ fontSize: theme.typography.size.sm, color: theme.colors.text1 }}>
+      <div 
+        role="tree" 
+        aria-label="File Explorer"
+        style={{ fontSize: theme.typography.size.sm, color: theme.colors.text1 }}
+      >
         <FileTreeNode name="root" value={nestedFs} level={0} onFileClick={onFileSelect} />
       </div>
     </ScrollArea>
