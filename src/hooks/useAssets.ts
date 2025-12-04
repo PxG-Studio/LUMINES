@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   SlateAsset,
   SlateAssetInsert,
@@ -9,127 +9,133 @@ import * as assetOps from '../lib/database/operations/assets';
 import type { AssetWithComponents } from '../lib/database/operations/assets';
 
 export function useAssets(projectId: string | null) {
-  const [assets, setAssets] = useState<SlateAsset[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  const loadAssets = useCallback(async () => {
-    if (!projectId) {
-      setAssets([]);
-      return;
-    }
+  const { data: assets = [], isLoading: loading, error } = useQuery({
+    queryKey: ['assets', projectId],
+    queryFn: () => assetOps.listAssets(projectId!),
+    enabled: !!projectId,
+  });
 
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await assetOps.listAssets(projectId);
-      setAssets(data);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
+  const createAssetMutation = useMutation({
+    mutationFn: (asset: SlateAssetInsert) => assetOps.createAsset(asset),
+    onMutate: async (newAsset) => {
+      await queryClient.cancelQueries({ queryKey: ['assets', projectId] });
+      const previousAssets = queryClient.getQueryData<SlateAsset[]>(['assets', projectId]);
 
-  useEffect(() => {
-    loadAssets();
-  }, [loadAssets]);
+      queryClient.setQueryData<SlateAsset[]>(['assets', projectId], (old = []) => [
+        { ...newAsset, id: 'temp-' + Date.now(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as SlateAsset,
+        ...old,
+      ]);
 
-  const createAsset = useCallback(
-    async (asset: SlateAssetInsert): Promise<SlateAsset> => {
-      const newAsset = await assetOps.createAsset(asset);
-      setAssets((prev) => [newAsset, ...prev]);
-      return newAsset;
+      return { previousAssets };
     },
-    []
-  );
+    onError: (err, newAsset, context) => {
+      if (context?.previousAssets) {
+        queryClient.setQueryData(['assets', projectId], context.previousAssets);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets', projectId] });
+    },
+  });
 
-  const updateAsset = useCallback(
-    async (assetId: string, updates: SlateAssetUpdate): Promise<SlateAsset> => {
-      const updated = await assetOps.updateAsset(assetId, updates);
-      setAssets((prev) =>
-        prev.map((a) => (a.id === assetId ? updated : a))
+  const updateAssetMutation = useMutation({
+    mutationFn: ({ assetId, updates }: { assetId: string; updates: SlateAssetUpdate }) =>
+      assetOps.updateAsset(assetId, updates),
+    onMutate: async ({ assetId, updates }) => {
+      await queryClient.cancelQueries({ queryKey: ['assets', projectId] });
+      const previousAssets = queryClient.getQueryData<SlateAsset[]>(['assets', projectId]);
+
+      queryClient.setQueryData<SlateAsset[]>(['assets', projectId], (old = []) =>
+        old.map((a) => (a.id === assetId ? { ...a, ...updates, updated_at: new Date().toISOString() } : a))
       );
-      return updated;
-    },
-    []
-  );
 
-  const deleteAsset = useCallback(async (assetId: string): Promise<void> => {
-    await assetOps.deleteAsset(assetId);
-    setAssets((prev) => prev.filter((a) => a.id !== assetId));
-  }, []);
+      return { previousAssets };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousAssets) {
+        queryClient.setQueryData(['assets', projectId], context.previousAssets);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets', projectId] });
+    },
+  });
+
+  const deleteAssetMutation = useMutation({
+    mutationFn: (assetId: string) => assetOps.deleteAsset(assetId),
+    onMutate: async (assetId) => {
+      await queryClient.cancelQueries({ queryKey: ['assets', projectId] });
+      const previousAssets = queryClient.getQueryData<SlateAsset[]>(['assets', projectId]);
+
+      queryClient.setQueryData<SlateAsset[]>(['assets', projectId], (old = []) =>
+        old.filter((a) => a.id !== assetId)
+      );
+
+      return { previousAssets };
+    },
+    onError: (err, assetId, context) => {
+      if (context?.previousAssets) {
+        queryClient.setQueryData(['assets', projectId], context.previousAssets);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets', projectId] });
+    },
+  });
 
   return {
     assets,
     loading,
-    error,
-    createAsset,
-    updateAsset,
-    deleteAsset,
-    refresh: loadAssets,
+    error: error as Error | null,
+    createAsset: createAssetMutation.mutateAsync,
+    updateAsset: (assetId: string, updates: SlateAssetUpdate) =>
+      updateAssetMutation.mutateAsync({ assetId, updates }),
+    deleteAsset: deleteAssetMutation.mutateAsync,
+    refresh: () => queryClient.invalidateQueries({ queryKey: ['assets', projectId] }),
   };
 }
 
 export function useAsset(assetId: string | null) {
-  const [asset, setAsset] = useState<AssetWithComponents | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  const loadAsset = useCallback(async () => {
-    if (!assetId) {
-      setAsset(null);
-      return;
-    }
+  const { data: asset = null, isLoading: loading, error } = useQuery({
+    queryKey: ['asset', assetId],
+    queryFn: () => assetOps.getAssetWithComponents(assetId!),
+    enabled: !!assetId,
+  });
 
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await assetOps.getAssetWithComponents(assetId);
-      setAsset(data);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [assetId]);
-
-  useEffect(() => {
-    loadAsset();
-  }, [loadAsset]);
-
-  const createComponent = useCallback(
-    async (component: SlateAssetComponentInsert) => {
-      if (!assetId) return;
-      await assetOps.createAssetComponent(component);
-      await loadAsset();
+  const createComponentMutation = useMutation({
+    mutationFn: (component: SlateAssetComponentInsert) => assetOps.createAssetComponent(component),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asset', assetId] });
     },
-    [assetId, loadAsset]
-  );
+  });
 
-  const updateComponent = useCallback(
-    async (componentId: string, properties: any) => {
-      await assetOps.updateAssetComponent(componentId, properties);
-      await loadAsset();
+  const updateComponentMutation = useMutation({
+    mutationFn: ({ componentId, properties }: { componentId: string; properties: any }) =>
+      assetOps.updateAssetComponent(componentId, properties),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asset', assetId] });
     },
-    [loadAsset]
-  );
+  });
 
-  const deleteComponent = useCallback(
-    async (componentId: string) => {
-      await assetOps.deleteAssetComponent(componentId);
-      await loadAsset();
+  const deleteComponentMutation = useMutation({
+    mutationFn: (componentId: string) => assetOps.deleteAssetComponent(componentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['asset', assetId] });
     },
-    [loadAsset]
-  );
+  });
 
   return {
     asset,
     loading,
-    error,
-    createComponent,
-    updateComponent,
-    deleteComponent,
-    refresh: loadAsset,
+    error: error as Error | null,
+    createComponent: createComponentMutation.mutateAsync,
+    updateComponent: (componentId: string, properties: any) =>
+      updateComponentMutation.mutateAsync({ componentId, properties }),
+    deleteComponent: deleteComponentMutation.mutateAsync,
+    refresh: () => queryClient.invalidateQueries({ queryKey: ['asset', assetId] }),
   };
 }
