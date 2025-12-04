@@ -129,6 +129,7 @@ export function LiveAssetPanel({ className, style }: LiveAssetPanelProps) {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.xs }}>
                   <span
+                    aria-hidden="true"
                     style={{
                       fontSize: "10px",
                       color: isError ? theme.colors.error : theme.colors.accent,

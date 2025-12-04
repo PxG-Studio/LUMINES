@@ -116,10 +116,10 @@ export const SuccessState: React.FC<SuccessStateProps> = ({
         <button
           type="button"
           onClick={handleDismiss}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-foreground/80 hover:text-foreground"
           aria-label="Dismiss success message"
         >
-          ✕
+          <span aria-hidden="true">✕</span>
         </button>
       )}
     </div>

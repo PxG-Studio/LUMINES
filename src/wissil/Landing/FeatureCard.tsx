@@ -57,7 +57,6 @@ export function FeatureCard({ icon, title, text }: FeatureCardProps) {
           color: "#ffffff",
           backgroundColor: cardBackgroundColor,
           padding: 0,
-          margin: 0,
           display: "block",
           width: "100%",
           boxSizing: "border-box",

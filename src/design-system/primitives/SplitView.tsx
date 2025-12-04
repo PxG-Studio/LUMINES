@@ -78,19 +78,55 @@ export function SplitView({
       </div>
 
       <div
+        role="separator"
+        aria-orientation={direction}
+        aria-label={`Resize ${direction === "vertical" ? "panels horizontally" : "panels vertically"}`}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={size}
+        tabIndex={0}
         onMouseDown={onMouseDown}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft" && direction === "vertical") {
+            e.preventDefault();
+            setSize(Math.max(min, size - 10));
+          } else if (e.key === "ArrowRight" && direction === "vertical") {
+            e.preventDefault();
+            setSize(Math.min(max, size + 10));
+          } else if (e.key === "ArrowUp" && direction === "horizontal") {
+            e.preventDefault();
+            setSize(Math.max(min, size - 10));
+          } else if (e.key === "ArrowDown" && direction === "horizontal") {
+            e.preventDefault();
+            setSize(Math.min(max, size + 10));
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            setSize(min);
+          } else if (e.key === "End") {
+            e.preventDefault();
+            setSize(max);
+          }
+        }}
         style={{
           background: theme.colors.border,
           cursor: direction === "vertical" ? "col-resize" : "row-resize",
           width: direction === "vertical" ? "4px" : "100%",
           height: direction === "vertical" ? "100%" : "4px",
-          transition: "background 0.15s ease"
+          transition: "background 0.15s ease",
+          outline: "none"
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.background = theme.colors.accent;
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = theme.colors.border;
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+          e.currentTarget.style.outlineOffset = "2px";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.outline = "none";
         }}
       />
 

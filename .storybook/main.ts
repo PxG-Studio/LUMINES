@@ -2,6 +2,7 @@
 import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from '@storybook/nextjs-vite';
 import path, { dirname } from 'path';
+import { mergeConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,7 +36,8 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-links"),
     getAbsolutePath("@storybook/addon-a11y"),
     getAbsolutePath("@storybook/addon-docs"),
-    getAbsolutePath("@storybook/addon-mcp")
+    getAbsolutePath("@storybook/addon-mcp"),
+    getAbsolutePath("@storybook/addon-vitest")
   ],
 
   framework: {
@@ -45,103 +47,110 @@ const config: StorybookConfig = {
 
   staticDirs: ['../public'],
 
-  features: {
-    // Modern Storybook features for performance
-    storyStoreV7: true,
-    buildStoriesJson: true,
-    // Enable lazy compilation (if using Vite builder)
-    // experimentalViteLazyCompilation: true,
-    argTypeTargetsV7: true,
-  },
+  // features: {
+  //   // Modern Storybook features for performance
+  //   buildStoriesJson: true,
+  //   argTypeTargetsV7: true,
+  // },
 
-  webpackFinal: async (config) => {
-    if (config.resolve) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@': path.resolve(__dirname, '../src'),
-        '@/components': path.resolve(__dirname, '../src/components'),
-        '@/tokens': path.resolve(__dirname, '../src/tokens'),
-        '@/styles': path.resolve(__dirname, '../src/styles'),
-        '@/wissil': path.resolve(__dirname, '../src/wissil'),
-        '@/story-components': path.resolve(__dirname, '../src/story-components'),
-        '@/design-system': path.resolve(__dirname, '../src/design-system'),
-        '@/theme': path.resolve(__dirname, '../src/theme'),
-        '@/editor': path.resolve(__dirname, '../src/editor'),
-        '@/ignis': path.resolve(__dirname, '../src/ignis'),
-        '@/ignition': path.resolve(__dirname, '../src/ignition'),
-        '@/spark': path.resolve(__dirname, '../src/spark'),
-        '@/waypoint': path.resolve(__dirname, '../src/waypoint'),
-        '@/slate': path.resolve(__dirname, '../src/slate'),
-        '@/state': path.resolve(__dirname, '../src/state'),
-        '@/hooks': path.resolve(__dirname, '../src/hooks'),
-        '@/utils': path.resolve(__dirname, '../src/utils'),
-        '@/apps': path.resolve(__dirname, '../src/apps'),
-        // LumenForge Landing App (now local in LUMINES)
-        '@lumenforge/landing': path.resolve(__dirname, '../src/apps/lumenforge-landing'),
-        // Workspace packages
-        '@wissil/plugin-sdk': path.resolve(__dirname, '../packages/wissil-plugin-sdk/src'),
-        // Mock Node.js modules that can't run in browser
-        'simple-git': path.resolve(__dirname, './simple-git-mock.js'),
-        // Mock Next.js components for Storybook
-        'next/link': path.resolve(__dirname, './next-link.js'),
-        'next/image': path.resolve(__dirname, './next-image.js'),
-        // Storybook decorators (simple alias without @/ to avoid conflicts)
-        'storybook-decorator': path.resolve(__dirname, './UnityPreviewDecorator'),
-      };
-      // CRITICAL: Ensure node_modules resolution works - prioritize root node_modules
-      const rootNodeModules = path.resolve(__dirname, '../node_modules');
-      config.resolve.modules = [
-        rootNodeModules,
-        'node_modules',
-        ...(config.resolve.modules || []),
-      ];
-      
-      // Ensure symlinks are resolved
-      config.resolve.symlinks = true;
-      
-      // Ensure extensions are resolved
-      config.resolve.extensions = [
-        '.tsx',
-        '.ts',
-        '.jsx',
-        '.js',
-        '.json',
-        ...(config.resolve.extensions || []),
-      ];
-      
-      // CRITICAL: Fallback for Node.js built-in modules (can't run in browser)
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        "child_process": false,
-        "fs": false,
-        "net": false,
-        "tls": false,
-        "crypto": false,
-        "stream": false,
-        "url": false,
-        "zlib": false,
-        "http": false,
-        "https": false,
-        "assert": false,
-        "os": false,
-        "path": false,
-        "buffer": false,
-        "util": false,
-        "events": false,
-      };
-    }
-    
-    // Ensure webpack can find all node_modules for loaders
-    if (!config.resolveLoader) {
-      config.resolveLoader = {};
-    }
-    config.resolveLoader.modules = [
-      path.resolve(__dirname, '../node_modules'),
-      'node_modules',
-      ...(config.resolveLoader.modules || []),
-    ];
-    
-    return config;
+  viteFinal: async (config) => {
+    return mergeConfig(config, {
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, '../src'),
+          '@/components': path.resolve(__dirname, '../src/components'),
+          '@/tokens': path.resolve(__dirname, '../src/tokens'),
+          '@/styles': path.resolve(__dirname, '../src/styles'),
+          '@/wissil': path.resolve(__dirname, '../src/wissil'),
+          '@/story-components': path.resolve(__dirname, '../src/story-components'),
+          '@/design-system': path.resolve(__dirname, '../src/design-system'),
+          '@/theme': path.resolve(__dirname, '../src/theme'),
+          '@/editor': path.resolve(__dirname, '../src/editor'),
+          '@/ignis': path.resolve(__dirname, '../src/ignis'),
+          '@/ignition': path.resolve(__dirname, '../src/ignition'),
+          '@/spark': path.resolve(__dirname, '../src/spark'),
+          '@/waypoint': path.resolve(__dirname, '../src/waypoint'),
+          '@/slate': path.resolve(__dirname, '../src/slate'),
+          '@/state': path.resolve(__dirname, '../src/state'),
+          '@/hooks': path.resolve(__dirname, '../src/hooks'),
+          '@/utils': path.resolve(__dirname, '../src/utils'),
+          '@/apps': path.resolve(__dirname, '../src/apps'),
+          '@lumenforge/landing': path.resolve(__dirname, '../src/apps/lumenforge-landing'),
+          '@wissil/plugin-sdk': path.resolve(__dirname, '../packages/wissil-plugin-sdk/src'),
+          'simple-git': path.resolve(__dirname, './simple-git-mock.js'),
+          'next/link': path.resolve(__dirname, './next-link.js'),
+          'next/image': path.resolve(__dirname, './next-image.js'),
+          'storybook-decorator': path.resolve(__dirname, './UnityPreviewDecorator'),
+          // Fix for @storybook/addon-docs MDX shim resolution
+          '@storybook/addon-docs/dist/mdx-react-shim.js': path.resolve(__dirname, '../node_modules/@storybook/addon-docs/dist/mdx-react-shim.js'),
+        },
+        // Fix file:// URL resolution for MDX files
+        dedupe: ['react', 'react-dom'],
+      },
+      optimizeDeps: {
+        // Note: Cannot use path aliases (@/) in optimizeDeps.include
+        // Vite will automatically optimize these through normal resolution
+        include: [
+          // Use actual relative paths from node_modules or explicit file paths
+          // Path aliases are handled by resolve.alias, so optimization happens automatically
+        ],
+        esbuildOptions: {
+          // Handle file:// protocol in imports
+          loader: {
+            '.js': 'jsx',
+          },
+        },
+      },
+      server: {
+        hmr: {
+          overlay: false, // Disable error overlay to prevent HMR issues
+          clientPort: 6006,
+        },
+        watch: {
+          usePolling: false,
+          interval: 100,
+        },
+      },
+      plugins: [
+        // Plugin to handle file:// URL resolution and MDX shim imports
+        {
+          name: 'fix-file-url-imports',
+          enforce: 'pre',
+          resolveId(id: string) {
+            // Convert file:// URLs to regular paths
+            if (id.startsWith('file:///')) {
+              const filePath = id.replace(/^file:\/\/\//, '');
+              return filePath;
+            }
+            // Resolve @storybook/addon-docs/dist/mdx-react-shim.js
+            if (id === '@storybook/addon-docs/dist/mdx-react-shim.js' || id.includes('@storybook/addon-docs/dist/mdx-react-shim')) {
+              const mdxShimPath = path.resolve(__dirname, '../node_modules/@storybook/addon-docs/dist/mdx-react-shim.js');
+              return mdxShimPath;
+            }
+            return null;
+          },
+        },
+        // Plugin to handle URL-encoded paths with spaces
+        {
+          name: 'fix-url-encoded-paths',
+          configureServer(server: any) {
+            server.middlewares.use((req: any, res: any, next: any) => {
+              // Decode URL-encoded paths (e.g., %20 -> space)
+              if (req.url && req.url.includes('%20')) {
+                req.url = decodeURIComponent(req.url);
+              }
+              next();
+            });
+          },
+        },
+      ],
+      server: {
+        fs: {
+          // Allow serving files from the project root
+          allow: ['..'],
+        },
+      },
+    });
   },
 
   typescript: {

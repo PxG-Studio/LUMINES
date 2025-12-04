@@ -102,17 +102,48 @@ export function MonacoEditor() {
   if (!activeFile) {
     return (
       <div
+        role="status"
+        aria-live="polite"
         style={{
           height: "100%",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          opacity: 0.4,
-          fontSize: 14,
-          color: theme.colors.text2
+          padding: theme.spacing.xl,
+          background: theme.colors.bg0
         }}
       >
-        Select a file to start editing.
+        <div
+          style={{
+            fontSize: 48,
+            marginBottom: theme.spacing.md,
+            opacity: 0.3,
+            color: theme.colors.text2
+          }}
+        >
+          📝
+        </div>
+        <div
+          style={{
+            fontSize: theme.typography.size.lg,
+            color: theme.colors.text1,
+            fontWeight: theme.typography.weight.medium,
+            marginBottom: theme.spacing.xs
+          }}
+        >
+          No file open
+        </div>
+        <div
+          style={{
+            fontSize: theme.typography.size.sm,
+            color: theme.colors.text1,
+            textAlign: "center",
+            maxWidth: "400px"
+          }}
+        >
+          Select a file from the explorer to start editing
+        </div>
       </div>
     );
   }

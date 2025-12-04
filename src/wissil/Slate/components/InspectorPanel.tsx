@@ -20,6 +20,9 @@ export function InspectorPanel({ className, style }: InspectorPanelProps) {
 
   return (
     <div
+      role="region"
+      aria-label="Inspector panel"
+      tabIndex={0}
       className={className}
       style={{
         height: "100%",
@@ -46,8 +49,47 @@ export function InspectorPanel({ className, style }: InspectorPanelProps) {
       </h3>
 
       {!selectedFile && (
-        <div style={{ opacity: 0.4, color: theme.colors.text2, marginTop: theme.spacing.lg }}>
-          Select a file to inspect
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "200px",
+            padding: theme.spacing.xl,
+            textAlign: "center"
+          }}
+        >
+          <div
+            style={{
+              fontSize: 32,
+              marginBottom: theme.spacing.md,
+              opacity: 0.3,
+              color: theme.colors.text2
+            }}
+          >
+            🔍
+          </div>
+          <div
+            style={{
+              fontSize: theme.typography.size.md,
+              color: theme.colors.text1,
+              fontWeight: theme.typography.weight.medium,
+              marginBottom: theme.spacing.xs
+            }}
+          >
+            No file selected
+          </div>
+          <div
+            style={{
+              fontSize: theme.typography.size.sm,
+              color: theme.colors.text1
+            }}
+          >
+            Select a file to view its details
+          </div>
         </div>
       )}
 
