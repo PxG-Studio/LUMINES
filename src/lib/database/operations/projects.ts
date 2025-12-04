@@ -1,4 +1,6 @@
 import { query, queryReplica } from '../client';
+import { getCached, setCached, invalidateProjectCache } from '../../cache/strategies';
+import { CacheKeys, CacheTTL } from '../../cache/keys';
 import type { SlateProject, SlateProjectInsert, SlateProjectUpdate } from '../types';
 
 export async function createProject(project: SlateProjectInsert): Promise<SlateProject> {
@@ -14,27 +16,42 @@ export async function createProject(project: SlateProjectInsert): Promise<SlateP
     ]
   );
 
-  return result.rows[0];
+  const newProject = result.rows[0];
+
+  await setCached(CacheKeys.project(newProject.id), newProject, CacheTTL.project);
+  await setCached(CacheKeys.projectList(project.user_id), null, 0);
+
+  return newProject;
 }
 
 export async function getProject(projectId: string): Promise<SlateProject | null> {
-  const result = await query<SlateProject>(
-    `SELECT * FROM slate_projects WHERE id = $1 AND deleted_at IS NULL`,
-    [projectId]
+  return getCached(
+    CacheKeys.project(projectId),
+    async () => {
+      const result = await query<SlateProject>(
+        `SELECT * FROM slate_projects WHERE id = $1 AND deleted_at IS NULL`,
+        [projectId]
+      );
+      return result.rows[0] || null;
+    },
+    CacheTTL.project
   );
-
-  return result.rows[0] || null;
 }
 
 export async function listProjects(userId: string): Promise<SlateProject[]> {
-  const result = await queryReplica<SlateProject>(
-    `SELECT * FROM slate_projects
-     WHERE user_id = $1 AND deleted_at IS NULL
-     ORDER BY updated_at DESC`,
-    [userId]
+  return getCached(
+    CacheKeys.projectList(userId),
+    async () => {
+      const result = await queryReplica<SlateProject>(
+        `SELECT * FROM slate_projects
+         WHERE user_id = $1 AND deleted_at IS NULL
+         ORDER BY updated_at DESC`,
+        [userId]
+      );
+      return result.rows;
+    },
+    CacheTTL.projectList
   );
-
-  return result.rows;
 }
 
 export async function updateProject(
@@ -77,7 +94,12 @@ export async function updateProject(
     throw new Error('Project not found');
   }
 
-  return result.rows[0];
+  const updated = result.rows[0];
+
+  await invalidateProjectCache(projectId);
+  await setCached(CacheKeys.project(projectId), updated, CacheTTL.project);
+
+  return updated;
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
@@ -85,4 +107,6 @@ export async function deleteProject(projectId: string): Promise<void> {
     `UPDATE slate_projects SET deleted_at = NOW() WHERE id = $1`,
     [projectId]
   );
+
+  await invalidateProjectCache(projectId);
 }
