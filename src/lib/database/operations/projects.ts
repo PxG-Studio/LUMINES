@@ -1,6 +1,7 @@
 import { query, queryReplica } from '../client';
 import { getCached, setCached, invalidateProjectCache } from '../../cache/strategies';
 import { CacheKeys, CacheTTL } from '../../cache/keys';
+import { publishProjectEvent } from '../../messaging/events';
 import type { SlateProject, SlateProjectInsert, SlateProjectUpdate } from '../types';
 
 export async function createProject(project: SlateProjectInsert): Promise<SlateProject> {
@@ -20,6 +21,14 @@ export async function createProject(project: SlateProjectInsert): Promise<SlateP
 
   await setCached(CacheKeys.project(newProject.id), newProject, CacheTTL.project);
   await setCached(CacheKeys.projectList(project.user_id), null, 0);
+
+  await publishProjectEvent({
+    type: 'created',
+    projectId: newProject.id,
+    userId: project.user_id,
+    timestamp: Date.now(),
+    data: newProject,
+  }).catch((err) => console.error('Failed to publish project created event:', err));
 
   return newProject;
 }
@@ -99,14 +108,33 @@ export async function updateProject(
   await invalidateProjectCache(projectId);
   await setCached(CacheKeys.project(projectId), updated, CacheTTL.project);
 
+  await publishProjectEvent({
+    type: 'updated',
+    projectId: updated.id,
+    userId: updated.user_id,
+    timestamp: Date.now(),
+    data: updated,
+  }).catch((err) => console.error('Failed to publish project updated event:', err));
+
   return updated;
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
+  const project = await getProject(projectId);
+
   await query(
     `UPDATE slate_projects SET deleted_at = NOW() WHERE id = $1`,
     [projectId]
   );
 
   await invalidateProjectCache(projectId);
+
+  if (project) {
+    await publishProjectEvent({
+      type: 'deleted',
+      projectId,
+      userId: project.user_id,
+      timestamp: Date.now(),
+    }).catch((err) => console.error('Failed to publish project deleted event:', err));
+  }
 }
