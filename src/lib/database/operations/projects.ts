@@ -1,59 +1,88 @@
-import { supabase } from '../client';
+import { query, queryReplica } from '../client';
 import type { SlateProject, SlateProjectInsert, SlateProjectUpdate } from '../types';
 
 export async function createProject(project: SlateProjectInsert): Promise<SlateProject> {
-  const { data, error } = await supabase
-    .from('slate_projects')
-    .insert(project)
-    .select()
-    .single();
+  const result = await query<SlateProject>(
+    `INSERT INTO slate_projects (user_id, name, description, metadata)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+    [
+      project.user_id,
+      project.name,
+      project.description || null,
+      JSON.stringify(project.metadata || {}),
+    ]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0];
 }
 
 export async function getProject(projectId: string): Promise<SlateProject | null> {
-  const { data, error } = await supabase
-    .from('slate_projects')
-    .select('*')
-    .eq('id', projectId)
-    .maybeSingle();
+  const result = await query<SlateProject>(
+    `SELECT * FROM slate_projects WHERE id = $1 AND deleted_at IS NULL`,
+    [projectId]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0] || null;
 }
 
 export async function listProjects(userId: string): Promise<SlateProject[]> {
-  const { data, error } = await supabase
-    .from('slate_projects')
-    .select('*')
-    .eq('user_id', userId)
-    .order('updated_at', { ascending: false });
+  const result = await queryReplica<SlateProject>(
+    `SELECT * FROM slate_projects
+     WHERE user_id = $1 AND deleted_at IS NULL
+     ORDER BY updated_at DESC`,
+    [userId]
+  );
 
-  if (error) throw error;
-  return data || [];
+  return result.rows;
 }
 
 export async function updateProject(
   projectId: string,
   updates: SlateProjectUpdate
 ): Promise<SlateProject> {
-  const { data, error } = await supabase
-    .from('slate_projects')
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq('id', projectId)
-    .select()
-    .single();
+  const updateFields: string[] = [];
+  const values: any[] = [];
+  let paramIndex = 1;
 
-  if (error) throw error;
-  return data;
+  if (updates.name !== undefined) {
+    updateFields.push(`name = $${paramIndex++}`);
+    values.push(updates.name);
+  }
+  if (updates.description !== undefined) {
+    updateFields.push(`description = $${paramIndex++}`);
+    values.push(updates.description);
+  }
+  if (updates.metadata !== undefined) {
+    updateFields.push(`metadata = $${paramIndex++}`);
+    values.push(JSON.stringify(updates.metadata));
+  }
+
+  if (updateFields.length === 0) {
+    const project = await getProject(projectId);
+    if (!project) throw new Error('Project not found');
+    return project;
+  }
+
+  values.push(projectId);
+  const result = await query<SlateProject>(
+    `UPDATE slate_projects
+     SET ${updateFields.join(', ')}
+     WHERE id = $${paramIndex} AND deleted_at IS NULL
+     RETURNING *`,
+    values
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Project not found');
+  }
+
+  return result.rows[0];
 }
 
 export async function deleteProject(projectId: string): Promise<void> {
-  const { error } = await supabase
-    .from('slate_projects')
-    .delete()
-    .eq('id', projectId);
-
-  if (error) throw error;
+  await query(
+    `UPDATE slate_projects SET deleted_at = NOW() WHERE id = $1`,
+    [projectId]
+  );
 }

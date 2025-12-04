@@ -1,4 +1,4 @@
-import { supabase } from '../client';
+import { query, queryReplica } from '../client';
 import type {
   SlateAsset,
   SlateAssetInsert,
@@ -10,144 +10,199 @@ import type {
 } from '../types';
 
 export async function createAsset(asset: SlateAssetInsert): Promise<SlateAsset> {
-  const { data, error } = await supabase
-    .from('slate_assets')
-    .insert(asset)
-    .select()
-    .single();
+  const result = await query<SlateAsset>(
+    `INSERT INTO slate_assets (project_id, name, type, metadata, file_path, registry_path, guid, file_id, size, mime_type)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+     RETURNING *`,
+    [
+      asset.project_id,
+      asset.name,
+      asset.type,
+      JSON.stringify(asset.metadata || {}),
+      asset.file_path || null,
+      asset.registry_path || null,
+      asset.guid || null,
+      asset.file_id || null,
+      asset.size || 0,
+      asset.mime_type || null,
+    ]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0];
 }
 
 export async function getAsset(assetId: string): Promise<SlateAsset | null> {
-  const { data, error } = await supabase
-    .from('slate_assets')
-    .select('*')
-    .eq('id', assetId)
-    .maybeSingle();
+  const result = await query<SlateAsset>(
+    `SELECT * FROM slate_assets WHERE id = $1 AND deleted_at IS NULL`,
+    [assetId]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0] || null;
 }
 
 export async function listAssets(projectId: string): Promise<SlateAsset[]> {
-  const { data, error } = await supabase
-    .from('slate_assets')
-    .select('*')
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: false });
+  const result = await queryReplica<SlateAsset>(
+    `SELECT * FROM slate_assets
+     WHERE project_id = $1 AND deleted_at IS NULL
+     ORDER BY created_at DESC`,
+    [projectId]
+  );
 
-  if (error) throw error;
-  return data || [];
+  return result.rows;
 }
 
 export async function updateAsset(
   assetId: string,
   updates: SlateAssetUpdate
 ): Promise<SlateAsset> {
-  const { data, error } = await supabase
-    .from('slate_assets')
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq('id', assetId)
-    .select()
-    .single();
+  const updateFields: string[] = [];
+  const values: any[] = [];
+  let paramIndex = 1;
 
-  if (error) throw error;
-  return data;
+  if (updates.name !== undefined) {
+    updateFields.push(`name = $${paramIndex++}`);
+    values.push(updates.name);
+  }
+  if (updates.type !== undefined) {
+    updateFields.push(`type = $${paramIndex++}`);
+    values.push(updates.type);
+  }
+  if (updates.metadata !== undefined) {
+    updateFields.push(`metadata = $${paramIndex++}`);
+    values.push(JSON.stringify(updates.metadata));
+  }
+  if (updates.file_path !== undefined) {
+    updateFields.push(`file_path = $${paramIndex++}`);
+    values.push(updates.file_path);
+  }
+  if (updates.registry_path !== undefined) {
+    updateFields.push(`registry_path = $${paramIndex++}`);
+    values.push(updates.registry_path);
+  }
+
+  if (updateFields.length === 0) {
+    const asset = await getAsset(assetId);
+    if (!asset) throw new Error('Asset not found');
+    return asset;
+  }
+
+  values.push(assetId);
+  const result = await query<SlateAsset>(
+    `UPDATE slate_assets
+     SET ${updateFields.join(', ')}
+     WHERE id = $${paramIndex} AND deleted_at IS NULL
+     RETURNING *`,
+    values
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Asset not found');
+  }
+
+  return result.rows[0];
 }
 
 export async function deleteAsset(assetId: string): Promise<void> {
-  const { error } = await supabase
-    .from('slate_assets')
-    .delete()
-    .eq('id', assetId);
-
-  if (error) throw error;
+  await query(
+    `UPDATE slate_assets SET deleted_at = NOW() WHERE id = $1`,
+    [assetId]
+  );
 }
 
 export async function createAssetComponent(
   component: SlateAssetComponentInsert
 ): Promise<SlateAssetComponent> {
-  const { data, error } = await supabase
-    .from('slate_asset_components')
-    .insert(component)
-    .select()
-    .single();
+  const result = await query<SlateAssetComponent>(
+    `INSERT INTO slate_asset_components (asset_id, component_type, component_name, properties, editable, order_index)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [
+      component.asset_id,
+      component.component_type,
+      component.component_name || null,
+      JSON.stringify(component.properties || {}),
+      component.editable ?? true,
+      component.order_index || 0,
+    ]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0];
 }
 
 export async function listAssetComponents(
   assetId: string
 ): Promise<SlateAssetComponent[]> {
-  const { data, error } = await supabase
-    .from('slate_asset_components')
-    .select('*')
-    .eq('asset_id', assetId)
-    .order('sort_order', { ascending: true });
+  const result = await queryReplica<SlateAssetComponent>(
+    `SELECT * FROM slate_asset_components
+     WHERE asset_id = $1
+     ORDER BY order_index ASC`,
+    [assetId]
+  );
 
-  if (error) throw error;
-  return data || [];
+  return result.rows;
 }
 
 export async function updateAssetComponent(
   componentId: string,
   properties: any
 ): Promise<SlateAssetComponent> {
-  const { data, error } = await supabase
-    .from('slate_asset_components')
-    .update({ properties })
-    .eq('id', componentId)
-    .select()
-    .single();
+  const result = await query<SlateAssetComponent>(
+    `UPDATE slate_asset_components
+     SET properties = $1
+     WHERE id = $2
+     RETURNING *`,
+    [JSON.stringify(properties), componentId]
+  );
 
-  if (error) throw error;
-  return data;
+  if (result.rows.length === 0) {
+    throw new Error('Component not found');
+  }
+
+  return result.rows[0];
 }
 
 export async function deleteAssetComponent(componentId: string): Promise<void> {
-  const { error } = await supabase
-    .from('slate_asset_components')
-    .delete()
-    .eq('id', componentId);
-
-  if (error) throw error;
+  await query(
+    `DELETE FROM slate_asset_components WHERE id = $1`,
+    [componentId]
+  );
 }
 
 export async function createAssetDependency(
   dependency: SlateAssetDependencyInsert
 ): Promise<SlateAssetDependency> {
-  const { data, error } = await supabase
-    .from('slate_asset_dependencies')
-    .insert(dependency)
-    .select()
-    .single();
+  const result = await query<SlateAssetDependency>(
+    `INSERT INTO slate_asset_dependencies (asset_id, dependency_asset_id, dependency_type, dependency_path, is_resolved)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING *`,
+    [
+      dependency.asset_id,
+      dependency.dependency_asset_id || null,
+      dependency.dependency_type || null,
+      dependency.dependency_path || null,
+      dependency.is_resolved ?? false,
+    ]
+  );
 
-  if (error) throw error;
-  return data;
+  return result.rows[0];
 }
 
 export async function listAssetDependencies(
   assetId: string
 ): Promise<SlateAssetDependency[]> {
-  const { data, error } = await supabase
-    .from('slate_asset_dependencies')
-    .select('*')
-    .eq('asset_id', assetId);
+  const result = await queryReplica<SlateAssetDependency>(
+    `SELECT * FROM slate_asset_dependencies WHERE asset_id = $1`,
+    [assetId]
+  );
 
-  if (error) throw error;
-  return data || [];
+  return result.rows;
 }
 
 export async function deleteAssetDependency(dependencyId: string): Promise<void> {
-  const { error } = await supabase
-    .from('slate_asset_dependencies')
-    .delete()
-    .eq('id', dependencyId);
-
-  if (error) throw error;
+  await query(
+    `DELETE FROM slate_asset_dependencies WHERE id = $1`,
+    [dependencyId]
+  );
 }
 
 export interface AssetWithComponents extends SlateAsset {

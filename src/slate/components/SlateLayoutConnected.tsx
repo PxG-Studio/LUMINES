@@ -8,7 +8,6 @@ import { UnityAssetManagerConnected } from '../modules/assets/UnityAssetManagerC
 import { lumenForgeColors, transitions } from '../../design-system/tokens';
 import { useProjectContext } from '../context/ProjectContext';
 import { useProjects } from '../../hooks/useProjects';
-import { useSupabaseRealtimeSync } from '../../lib/cache/realtimeSync';
 
 interface SlateLayoutConnectedProps {
   status?: string;
@@ -35,8 +34,6 @@ export const SlateLayoutConnected: React.FC<SlateLayoutConnectedProps> = ({
 }) => {
   const { projectId, setProjectId, userId } = useProjectContext();
   const { projects, createProject, loading: loadingProjects } = useProjects(userId);
-
-  useSupabaseRealtimeSync(userId, projectId);
 
   const [currentView, setCurrentView] = useState<View>('ide');
   const [selectedFile, setSelectedFile] = useState<string | undefined>();

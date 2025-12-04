@@ -1,101 +1,86 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 import type { SlateProject, SlateProjectInsert, SlateProjectUpdate } from '../lib/database/types';
 import * as projectOps from '../lib/database/operations/projects';
 
 export function useProjects(userId: string) {
-  const queryClient = useQueryClient();
+  const [projects, setProjects] = useState<SlateProject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const { data: projects = [], isLoading: loading, error } = useQuery({
-    queryKey: ['projects', userId],
-    queryFn: () => projectOps.listProjects(userId),
-  });
+  const fetchProjects = useCallback(async () => {
+    if (!userId) return;
 
-  const createProjectMutation = useMutation({
-    mutationFn: (project: SlateProjectInsert) => projectOps.createProject(project),
-    onMutate: async (newProject) => {
-      await queryClient.cancelQueries({ queryKey: ['projects', userId] });
-      const previousProjects = queryClient.getQueryData<SlateProject[]>(['projects', userId]);
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await projectOps.listProjects(userId);
+      setProjects(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
 
-      queryClient.setQueryData<SlateProject[]>(['projects', userId], (old = []) => [
-        { ...newProject, id: 'temp-' + Date.now(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as SlateProject,
-        ...old,
-      ]);
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
-      return { previousProjects };
-    },
-    onError: (err, newProject, context) => {
-      if (context?.previousProjects) {
-        queryClient.setQueryData(['projects', userId], context.previousProjects);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects', userId] });
-    },
-  });
+  const createProject = async (project: SlateProjectInsert): Promise<SlateProject> => {
+    const newProject = await projectOps.createProject(project);
+    setProjects((prev) => [newProject, ...prev]);
+    return newProject;
+  };
 
-  const updateProjectMutation = useMutation({
-    mutationFn: ({ projectId, updates }: { projectId: string; updates: SlateProjectUpdate }) =>
-      projectOps.updateProject(projectId, updates),
-    onMutate: async ({ projectId, updates }) => {
-      await queryClient.cancelQueries({ queryKey: ['projects', userId] });
-      const previousProjects = queryClient.getQueryData<SlateProject[]>(['projects', userId]);
+  const updateProject = async (projectId: string, updates: SlateProjectUpdate): Promise<SlateProject> => {
+    const updatedProject = await projectOps.updateProject(projectId, updates);
+    setProjects((prev) => prev.map((p) => (p.id === projectId ? updatedProject : p)));
+    return updatedProject;
+  };
 
-      queryClient.setQueryData<SlateProject[]>(['projects', userId], (old = []) =>
-        old.map((p) => (p.id === projectId ? { ...p, ...updates, updated_at: new Date().toISOString() } : p))
-      );
-
-      return { previousProjects };
-    },
-    onError: (err, variables, context) => {
-      if (context?.previousProjects) {
-        queryClient.setQueryData(['projects', userId], context.previousProjects);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects', userId] });
-    },
-  });
-
-  const deleteProjectMutation = useMutation({
-    mutationFn: (projectId: string) => projectOps.deleteProject(projectId),
-    onMutate: async (projectId) => {
-      await queryClient.cancelQueries({ queryKey: ['projects', userId] });
-      const previousProjects = queryClient.getQueryData<SlateProject[]>(['projects', userId]);
-
-      queryClient.setQueryData<SlateProject[]>(['projects', userId], (old = []) =>
-        old.filter((p) => p.id !== projectId)
-      );
-
-      return { previousProjects };
-    },
-    onError: (err, projectId, context) => {
-      if (context?.previousProjects) {
-        queryClient.setQueryData(['projects', userId], context.previousProjects);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects', userId] });
-    },
-  });
+  const deleteProject = async (projectId: string): Promise<void> => {
+    await projectOps.deleteProject(projectId);
+    setProjects((prev) => prev.filter((p) => p.id !== projectId));
+  };
 
   return {
     projects,
     loading,
-    error: error as Error | null,
-    createProject: createProjectMutation.mutateAsync,
-    updateProject: (projectId: string, updates: SlateProjectUpdate) =>
-      updateProjectMutation.mutateAsync({ projectId, updates }),
-    deleteProject: deleteProjectMutation.mutateAsync,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['projects', userId] }),
+    error,
+    createProject,
+    updateProject,
+    deleteProject,
+    refresh: fetchProjects,
   };
 }
 
 export function useProject(projectId: string | null) {
-  const { data: project = null, isLoading: loading, error } = useQuery({
-    queryKey: ['project', projectId],
-    queryFn: () => projectOps.getProject(projectId!),
-    enabled: !!projectId,
-  });
+  const [project, setProject] = useState<SlateProject | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  return { project, loading, error: error as Error | null };
+  useEffect(() => {
+    if (!projectId) {
+      setProject(null);
+      setLoading(false);
+      return;
+    }
+
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await projectOps.getProject(projectId);
+        setProject(data);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [projectId]);
+
+  return { project, loading, error };
 }

@@ -1,88 +1,54 @@
-import { useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { SlateFile, SlateFileInsert, SlateFileUpdate } from '../lib/database/types';
 import * as fileOps from '../lib/database/operations/files';
 import type { FileTreeNode } from '../lib/database/operations/files';
 
 export function useFiles(projectId: string | null) {
-  const queryClient = useQueryClient();
+  const [files, setFiles] = useState<SlateFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const { data: files = [], isLoading: loading, error } = useQuery({
-    queryKey: ['files', projectId],
-    queryFn: () => fileOps.listFiles(projectId!),
-    enabled: !!projectId,
-  });
+  const fetchFiles = useCallback(async () => {
+    if (!projectId) {
+      setFiles([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fileOps.listFiles(projectId);
+      setFiles(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
 
   const fileTree = useMemo(() => fileOps.buildFileTree(files), [files]);
 
-  const createFileMutation = useMutation({
-    mutationFn: (file: SlateFileInsert) => fileOps.createFile(file),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files', projectId] });
-    },
-  });
+  const createFile = async (file: SlateFileInsert): Promise<SlateFile> => {
+    const newFile = await fileOps.createFile(file);
+    setFiles((prev) => [...prev, newFile]);
+    return newFile;
+  };
 
-  const updateFileMutation = useMutation({
-    mutationFn: ({ fileId, updates }: { fileId: string; updates: SlateFileUpdate }) =>
-      fileOps.updateFile(fileId, updates),
-    onMutate: async ({ fileId, updates }) => {
-      await queryClient.cancelQueries({ queryKey: ['files', projectId] });
-      await queryClient.cancelQueries({ queryKey: ['file', fileId] });
+  const updateFile = async (fileId: string, updates: SlateFileUpdate): Promise<SlateFile> => {
+    const updatedFile = await fileOps.updateFile(fileId, updates);
+    setFiles((prev) => prev.map((f) => (f.id === fileId ? updatedFile : f)));
+    return updatedFile;
+  };
 
-      const previousFiles = queryClient.getQueryData<SlateFile[]>(['files', projectId]);
-      const previousFile = queryClient.getQueryData<SlateFile>(['file', fileId]);
-
-      if (previousFiles) {
-        queryClient.setQueryData<SlateFile[]>(['files', projectId], (old = []) =>
-          old.map((f) => (f.id === fileId ? { ...f, ...updates, updated_at: new Date().toISOString() } : f))
-        );
-      }
-
-      if (previousFile) {
-        queryClient.setQueryData<SlateFile>(['file', fileId], {
-          ...previousFile,
-          ...updates,
-          updated_at: new Date().toISOString(),
-        });
-      }
-
-      return { previousFiles, previousFile };
-    },
-    onError: (err, { fileId }, context) => {
-      if (context?.previousFiles) {
-        queryClient.setQueryData(['files', projectId], context.previousFiles);
-      }
-      if (context?.previousFile) {
-        queryClient.setQueryData(['file', fileId], context.previousFile);
-      }
-    },
-    onSettled: (data, error, { fileId }) => {
-      queryClient.invalidateQueries({ queryKey: ['files', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['file', fileId] });
-    },
-  });
-
-  const deleteFileMutation = useMutation({
-    mutationFn: (fileId: string) => fileOps.deleteFile(fileId),
-    onMutate: async (fileId) => {
-      await queryClient.cancelQueries({ queryKey: ['files', projectId] });
-      const previousFiles = queryClient.getQueryData<SlateFile[]>(['files', projectId]);
-
-      queryClient.setQueryData<SlateFile[]>(['files', projectId], (old = []) =>
-        old.filter((f) => f.id !== fileId)
-      );
-
-      return { previousFiles };
-    },
-    onError: (err, fileId, context) => {
-      if (context?.previousFiles) {
-        queryClient.setQueryData(['files', projectId], context.previousFiles);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['files', projectId] });
-    },
-  });
+  const deleteFile = async (fileId: string): Promise<void> => {
+    await fileOps.deleteFile(fileId);
+    setFiles((prev) => prev.filter((f) => f.id !== fileId));
+  };
 
   const searchFiles = async (query: string): Promise<SlateFile[]> => {
     if (!projectId) return [];
@@ -93,58 +59,55 @@ export function useFiles(projectId: string | null) {
     files,
     fileTree,
     loading,
-    error: error as Error | null,
-    createFile: createFileMutation.mutateAsync,
-    updateFile: (fileId: string, updates: SlateFileUpdate) =>
-      updateFileMutation.mutateAsync({ fileId, updates }),
-    deleteFile: deleteFileMutation.mutateAsync,
+    error,
+    createFile,
+    updateFile,
+    deleteFile,
     searchFiles,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['files', projectId] }),
+    refresh: fetchFiles,
   };
 }
 
 export function useFile(fileId: string | null) {
-  const queryClient = useQueryClient();
+  const [file, setFile] = useState<SlateFile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const { data: file = null, isLoading: loading, error } = useQuery({
-    queryKey: ['file', fileId],
-    queryFn: () => fileOps.getFile(fileId!),
-    enabled: !!fileId,
-  });
+  const fetchFile = useCallback(async () => {
+    if (!fileId) {
+      setFile(null);
+      setLoading(false);
+      return;
+    }
 
-  const updateFileMutation = useMutation({
-    mutationFn: (updates: SlateFileUpdate) => fileOps.updateFile(fileId!, updates),
-    onMutate: async (updates) => {
-      await queryClient.cancelQueries({ queryKey: ['file', fileId] });
-      const previousFile = queryClient.getQueryData<SlateFile>(['file', fileId]);
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await fileOps.getFile(fileId);
+      setFile(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [fileId]);
 
-      if (previousFile) {
-        queryClient.setQueryData<SlateFile>(['file', fileId], {
-          ...previousFile,
-          ...updates,
-          version: previousFile.version + 1,
-          updated_at: new Date().toISOString(),
-        });
-      }
+  useEffect(() => {
+    fetchFile();
+  }, [fetchFile]);
 
-      return { previousFile };
-    },
-    onError: (err, updates, context) => {
-      if (context?.previousFile) {
-        queryClient.setQueryData(['file', fileId], context.previousFile);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['file', fileId] });
-      queryClient.invalidateQueries({ queryKey: ['files'] });
-    },
-  });
+  const updateFile = async (updates: SlateFileUpdate): Promise<SlateFile> => {
+    if (!fileId) throw new Error('File ID is required');
+    const updatedFile = await fileOps.updateFile(fileId, updates);
+    setFile(updatedFile);
+    return updatedFile;
+  };
 
   return {
     file,
     loading,
-    error: error as Error | null,
-    updateFile: updateFileMutation.mutateAsync,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['file', fileId] }),
+    error,
+    updateFile,
+    refresh: fetchFile,
   };
 }
