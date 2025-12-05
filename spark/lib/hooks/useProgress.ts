@@ -18,6 +18,7 @@ interface UseProgressReturn {
   updateMetadata: (metadata: Partial<GenerationMetadata>) => void;
   reset: () => void;
   getProgressPercentage: () => number;
+  getTotalDuration: () => number;
 }
 
 const DEFAULT_TOKEN_LIMIT = 100000000;
@@ -33,6 +34,7 @@ export function useProgress(): UseProgressReturn {
   });
   const [metadata, setMetadata] = useState<GenerationMetadata | null>(null);
   const taskTimers = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const startTimeRef = useRef<Date | null>(null);
 
   const updateTask = useCallback((taskId: string, updates: Partial<TaskStatus>) => {
     setTasks(prev => prev.map(task => {
@@ -45,6 +47,9 @@ export function useProgress(): UseProgressReturn {
 
         if (updates.status === 'in-progress' && !task.startTime) {
           updated.startTime = new Date();
+          if (!startTimeRef.current) {
+            startTimeRef.current = updated.startTime;
+          }
         }
         if (updates.status === 'completed' || updates.status === 'failed') {
           updated.endTime = new Date();
@@ -94,6 +99,7 @@ export function useProgress(): UseProgressReturn {
     updateTask(taskId, {
       status: 'failed',
       endTime: new Date(),
+      error,
     });
     setCurrentTask(null);
   }, [updateTask]);
@@ -103,13 +109,13 @@ export function useProgress(): UseProgressReturn {
       if (prev.find(f => f.path === change.path && f.type === change.type)) {
         return prev;
       }
-      return [...prev, change];
+      return [...prev, { ...change, timestamp: new Date() }];
     });
   }, []);
 
   const updateTokenUsage = useCallback((usage: Partial<TokenUsage>) => {
     setTokenUsage(prev => {
-      const updated = { ...prev, ...usage };
+      const updated = { ...prev, ...usage, lastUpdated: new Date() };
       if (usage.used !== undefined) {
         updated.remaining = Math.max(0, updated.limit - updated.used);
       }
@@ -126,6 +132,9 @@ export function useProgress(): UseProgressReturn {
     setCurrentTask(null);
     setFileChanges([]);
     setMetadata(null);
+    startTimeRef.current = null;
+    taskTimers.current.forEach(timer => clearTimeout(timer));
+    taskTimers.current.clear();
   }, []);
 
   const getProgressPercentage = useCallback(() => {
@@ -133,6 +142,11 @@ export function useProgress(): UseProgressReturn {
     const completed = tasks.filter(t => t.status === 'completed').length;
     return Math.round((completed / tasks.length) * 100);
   }, [tasks]);
+
+  const getTotalDuration = useCallback(() => {
+    if (!startTimeRef.current) return 0;
+    return Date.now() - startTimeRef.current.getTime();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -156,5 +170,6 @@ export function useProgress(): UseProgressReturn {
     updateMetadata,
     reset,
     getProgressPercentage,
+    getTotalDuration,
   };
 }

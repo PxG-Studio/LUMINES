@@ -39,6 +39,7 @@ export interface TaskStatus {
   startTime?: Date;
   endTime?: Date;
   duration?: number;
+  error?: string;
 }
 
 export interface FileChange {
@@ -46,6 +47,7 @@ export interface FileChange {
   path: string;
   description?: string;
   size?: number;
+  timestamp?: Date;
 }
 
 export interface TokenUsage {
@@ -55,6 +57,7 @@ export interface TokenUsage {
   inputTokens?: number;
   outputTokens?: number;
   provider?: "claude" | "openai";
+  lastUpdated?: Date;
 }
 
 export interface GenerationMetadata {
@@ -67,6 +70,7 @@ export interface GenerationMetadata {
   generationTimeMs: number;
   success: boolean;
   errorMessage?: string;
+  scriptName?: string;
 }
 
 export type Message = TextMessage | ProgressMessage | FileChangeMessage;
@@ -78,3 +82,20 @@ export type ProgressCallback = (update: {
   tokenUsage?: TokenUsage;
   metadata?: GenerationMetadata;
 }) => void;
+
+/**
+ * Job status for polling/SSE
+ */
+export interface JobStatus {
+  jobId: string;
+  status: "pending" | "running" | "completed" | "failed";
+  progress: number;
+  currentTask?: TaskStatus;
+  tasks: TaskStatus[];
+  fileChanges: FileChange[];
+  tokenUsage?: TokenUsage;
+  result?: GenerationMetadata;
+  error?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
