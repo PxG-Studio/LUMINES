@@ -7,6 +7,9 @@ export interface GenerateResult {
   code?: string;
   scriptName?: string;
   error?: string;
+  tokensUsed?: number;
+  inputTokens?: number;
+  outputTokens?: number;
 }
 
 export type ClaudeModel =
@@ -51,14 +54,20 @@ export async function generateWithClaude(
     const generatedText = message.content[0].type === "text" ? message.content[0].text : "";
     const generationTime = Date.now() - startTime;
 
+    const inputTokens = message.usage?.input_tokens || 0;
+    const outputTokens = message.usage?.output_tokens || 0;
+    const tokensUsed = inputTokens + outputTokens;
+
     if (!generatedText) {
       return {
         success: false,
         error: "No code generated. Please try again.",
+        tokensUsed,
+        inputTokens,
+        outputTokens,
       };
     }
 
-    // Extract script name from the class definition
     const classMatch = generatedText.match(/class\s+(\w+)/);
     const scriptName = classMatch ? classMatch[1] : "GeneratedScript";
 
@@ -66,6 +75,9 @@ export async function generateWithClaude(
       success: true,
       code: generatedText,
       scriptName,
+      tokensUsed,
+      inputTokens,
+      outputTokens,
     };
   } catch (error) {
     const aiError = parseAnthropicError(error);

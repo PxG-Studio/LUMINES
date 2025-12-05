@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { generateUnityScript, ClaudeModel, OpenAIModel } from "../actions/generate";
-
-interface Message {
-  role: "user" | "assistant" | "error";
-  content: string;
-}
+import { useProgress } from "@/lib/hooks/useProgress";
+import ProgressPanel from "./ProgressPanel";
+import { Message, TaskStatus, FileChange } from "@/lib/types/progress";
 
 interface MCPChatProps {
   onCodeGenerated: (code: string, scriptName: string) => void;
@@ -29,7 +27,9 @@ const OPENAI_MODELS: { value: OpenAIModel; label: string }[] = [
 export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
+      id: "1",
       role: "assistant",
+      timestamp: new Date(),
       content: "Hello! I'm SPARK, your Unity C# script generator. Describe what Unity script you'd like to create, and I'll generate it for you.",
     },
   ]);
@@ -39,6 +39,32 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   const [claudeModel, setClaudeModel] = useState<ClaudeModel>("claude-sonnet-3-5-20241022");
   const [openaiModel, setOpenaiModel] = useState<OpenAIModel>("gpt-4");
 
+  const {
+    currentTask,
+    tasks,
+    fileChanges,
+    tokenUsage,
+    metadata,
+    addTask,
+    completeTask,
+    failTask,
+    addFileChange,
+    updateTokenUsage,
+    reset,
+  } = useProgress();
+
+  useEffect(() => {
+    if (metadata?.tokensUsed) {
+      updateTokenUsage({
+        used: tokenUsage.used + metadata.tokensUsed,
+        remaining: Math.max(0, tokenUsage.remaining - metadata.tokensUsed),
+        inputTokens: metadata.inputTokens,
+        outputTokens: metadata.outputTokens,
+        provider: metadata.provider,
+      });
+    }
+  }, [metadata]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -47,44 +73,101 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
     const userMessage = input.trim();
     setInput("");
     setIsLoading(true);
+    reset();
 
-    // Add user message
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: "user",
+        timestamp: new Date(),
+        content: userMessage,
+      },
+    ]);
+
+    const initialTasks: TaskStatus[] = [
+      { id: "analyzing", label: "Analyzing request", status: "pending" },
+      { id: "preferences", label: "Loading user preferences", status: "pending" },
+      { id: "generating", label: `Generating code with ${provider === "claude" ? "Claude" : "OpenAI"}`, status: "pending" },
+      { id: "validating", label: "Validating C# syntax", status: "pending" },
+      { id: "logging", label: "Logging to database", status: "pending" },
+    ];
+
+    initialTasks.forEach(task => addTask(task));
 
     try {
+      const simulateProgress = async () => {
+        addTask({ ...initialTasks[0], status: "in-progress", startTime: new Date() });
+        await new Promise(resolve => setTimeout(resolve, 300));
+        completeTask(initialTasks[0].id);
+
+        addTask({ ...initialTasks[1], status: "in-progress", startTime: new Date() });
+        await new Promise(resolve => setTimeout(resolve, 200));
+        completeTask(initialTasks[1].id);
+
+        addTask({ ...initialTasks[2], status: "in-progress", startTime: new Date() });
+      };
+
+      simulateProgress();
+
       const result = await generateUnityScript(userMessage, {
         provider,
-        claudeModel,
-        openaiModel,
+        claudeModel: provider === "claude" ? claudeModel : undefined,
+        openaiModel: provider === "openai" ? openaiModel : undefined,
       });
 
+      if (result.success) {
+        completeTask(initialTasks[2].id);
+        completeTask(initialTasks[3].id);
+        completeTask(initialTasks[4].id);
+
+        if (result.scriptName) {
+          addFileChange({
+            type: "created",
+            path: `Assets/Scripts/${result.scriptName}.cs`,
+            description: "Generated Unity C# script",
+          });
+          addFileChange({
+            type: "created",
+            path: `Assets/Scripts/${result.scriptName}.cs.meta`,
+            description: "Unity meta file",
+          });
+        }
+      } else {
+        failTask(initialTasks[2].id, result.error);
+      }
+
       if (result.success && result.code && result.scriptName) {
-        // Add success message
         setMessages((prev) => [
           ...prev,
           {
+            id: Date.now().toString(),
             role: "assistant",
-            content: `Generated ${result.scriptName}! Check the preview panel on the right.`,
+            timestamp: new Date(),
+            content: `✅ Generated ${result.scriptName}.cs successfully! Check the preview panel on the right.`,
           },
         ]);
 
-        // Send code to preview
         onCodeGenerated(result.code, result.scriptName);
       } else {
-        // Add error message
         setMessages((prev) => [
           ...prev,
           {
+            id: Date.now().toString(),
             role: "error",
+            timestamp: new Date(),
             content: result.error || "Failed to generate script. Please try again.",
           },
         ]);
       }
     } catch (error) {
+      failTask(initialTasks[2].id, error instanceof Error ? error.message : "Unknown error");
       setMessages((prev) => [
         ...prev,
         {
+          id: Date.now().toString(),
           role: "error",
+          timestamp: new Date(),
           content: "An unexpected error occurred. Please try again.",
         },
       ]);
@@ -93,8 +176,18 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
     }
   };
 
+  const hasProgress = tasks.length > 0 || fileChanges.length > 0;
+
   return (
     <div className="chat-container">
+      <ProgressPanel
+        currentTask={currentTask}
+        tasks={tasks}
+        fileChanges={fileChanges}
+        tokenUsage={tokenUsage}
+        isVisible={hasProgress}
+      />
+
       <div className="provider-selector">
         <div className="provider-config">
           <label htmlFor="ai-provider" className="provider-label">
@@ -149,8 +242,8 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
       </div>
 
       <div className="chat-messages">
-        {messages.map((message, index) => (
-          <div key={index} className={`chat-message ${message.role}`}>
+        {messages.map((message) => (
+          <div key={message.id} className={`chat-message ${message.role}`}>
             {message.content}
           </div>
         ))}

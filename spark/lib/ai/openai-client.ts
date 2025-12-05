@@ -7,6 +7,9 @@ export interface GenerateResult {
   code?: string;
   scriptName?: string;
   error?: string;
+  tokensUsed?: number;
+  inputTokens?: number;
+  outputTokens?: number;
 }
 
 export type OpenAIModel = "gpt-4" | "gpt-4-turbo-preview" | "gpt-3.5-turbo";
@@ -52,14 +55,20 @@ export async function generateWithOpenAI(
     const generatedText = completion.choices[0]?.message?.content || "";
     const generationTime = Date.now() - startTime;
 
+    const inputTokens = completion.usage?.prompt_tokens || 0;
+    const outputTokens = completion.usage?.completion_tokens || 0;
+    const tokensUsed = inputTokens + outputTokens;
+
     if (!generatedText) {
       return {
         success: false,
         error: "No code generated. Please try again.",
+        tokensUsed,
+        inputTokens,
+        outputTokens,
       };
     }
 
-    // Extract script name from the class definition
     const classMatch = generatedText.match(/class\s+(\w+)/);
     const scriptName = classMatch ? classMatch[1] : "GeneratedScript";
 
@@ -67,6 +76,9 @@ export async function generateWithOpenAI(
       success: true,
       code: generatedText,
       scriptName,
+      tokensUsed,
+      inputTokens,
+      outputTokens,
     };
   } catch (error) {
     const aiError = parseOpenAIError(error);
