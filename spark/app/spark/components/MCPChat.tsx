@@ -12,6 +12,8 @@ interface MCPChatProps {
   onCodeGenerated: (code: string, scriptName: string) => void;
 }
 
+export type AIProvider = "claude" | "openai";
+
 export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -21,6 +23,7 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [provider, setProvider] = useState<AIProvider>("claude");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -35,7 +38,7 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
 
     try {
-      const result = await generateUnityScript(userMessage);
+      const result = await generateUnityScript(userMessage, provider);
 
       if (result.success && result.code && result.scriptName) {
         // Add success message
@@ -74,6 +77,22 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
 
   return (
     <div className="chat-container">
+      <div className="provider-selector">
+        <label htmlFor="ai-provider" className="provider-label">
+          AI Provider:
+        </label>
+        <select
+          id="ai-provider"
+          value={provider}
+          onChange={(e) => setProvider(e.target.value as AIProvider)}
+          disabled={isLoading}
+          className="provider-select"
+        >
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="openai">GPT-4 (OpenAI)</option>
+        </select>
+      </div>
+
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div key={index} className={`chat-message ${message.role}`}>

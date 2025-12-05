@@ -1,11 +1,10 @@
 "use server";
 
-import Anthropic from "@anthropic-ai/sdk";
 import { validateCSharp } from "@/lib/unity/validator";
+import { generateWithClaude } from "@/lib/ai/claude-client";
+import { generateWithOpenAI } from "@/lib/ai/openai-client";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || "",
-});
+export type AIProvider = "claude" | "openai";
 
 interface GenerateResult {
   success: boolean;
@@ -14,53 +13,27 @@ interface GenerateResult {
   error?: string;
 }
 
-export async function generateUnityScript(prompt: string): Promise<GenerateResult> {
+export async function generateUnityScript(
+  prompt: string,
+  provider: AIProvider = "claude"
+): Promise<GenerateResult> {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return {
-        success: false,
-        error: "API key not configured. Please add ANTHROPIC_API_KEY to .env.local",
-      };
+    // Generate code using the selected provider
+    let result: GenerateResult;
+
+    if (provider === "openai") {
+      result = await generateWithOpenAI(prompt);
+    } else {
+      result = await generateWithClaude(prompt);
     }
 
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-3-5-20241022",
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: `You are a Unity C# script generator. Generate a complete, working Unity C# script based on this request: "${prompt}"
-
-IMPORTANT REQUIREMENTS:
-1. Generate ONLY valid C# code - no explanations, no markdown, no comments outside the code
-2. Include proper using statements (UnityEngine, System.Collections, etc.)
-3. Use MonoBehaviour as the base class for components
-4. Follow Unity naming conventions (PascalCase for classes and methods)
-5. Add XML documentation comments for the class
-6. Make the script immediately usable in Unity
-7. Include necessary Unity lifecycle methods (Awake, Start, Update, etc.) only if needed
-8. Use proper C# syntax and Unity API
-
-Format: Return ONLY the C# code, starting with 'using' statements.`,
-        },
-      ],
-    });
-
-    const generatedText = message.content[0].type === "text" ? message.content[0].text : "";
-
-    if (!generatedText) {
-      return {
-        success: false,
-        error: "No code generated. Please try again.",
-      };
+    // If generation failed, return the error
+    if (!result.success || !result.code) {
+      return result;
     }
-
-    // Extract script name from the class definition
-    const classMatch = generatedText.match(/class\s+(\w+)/);
-    const scriptName = classMatch ? classMatch[1] : "GeneratedScript";
 
     // Validate the generated C#
-    const validation = validateCSharp(generatedText);
+    const validation = validateCSharp(result.code);
     if (!validation.isValid) {
       return {
         success: false,
@@ -68,11 +41,7 @@ Format: Return ONLY the C# code, starting with 'using' statements.`,
       };
     }
 
-    return {
-      success: true,
-      code: generatedText,
-      scriptName,
-    };
+    return result;
   } catch (error) {
     console.error("Generation error:", error);
     return {
