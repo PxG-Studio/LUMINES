@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { SlateProject, SlateProjectInsert, SlateProjectUpdate } from '../lib/database/types';
-import * as projectOps from '../lib/database/operations/projects';
+import { apiClient } from '../lib/api/client';
 
 export function useProjects(userId: string) {
   const [projects, setProjects] = useState<SlateProject[]>([]);
@@ -13,7 +13,7 @@ export function useProjects(userId: string) {
     try {
       setLoading(true);
       setError(null);
-      const data = await projectOps.listProjects(userId);
+      const data = await apiClient.get<SlateProject[]>(`/projects?userId=${userId}`);
       setProjects(data);
     } catch (err) {
       setError(err as Error);
@@ -27,19 +27,19 @@ export function useProjects(userId: string) {
   }, [fetchProjects]);
 
   const createProject = async (project: SlateProjectInsert): Promise<SlateProject> => {
-    const newProject = await projectOps.createProject(project);
+    const newProject = await apiClient.post<SlateProject>('/projects', project);
     setProjects((prev) => [newProject, ...prev]);
     return newProject;
   };
 
   const updateProject = async (projectId: string, updates: SlateProjectUpdate): Promise<SlateProject> => {
-    const updatedProject = await projectOps.updateProject(projectId, updates);
+    const updatedProject = await apiClient.put<SlateProject>(`/projects/${projectId}`, updates);
     setProjects((prev) => prev.map((p) => (p.id === projectId ? updatedProject : p)));
     return updatedProject;
   };
 
   const deleteProject = async (projectId: string): Promise<void> => {
-    await projectOps.deleteProject(projectId);
+    await apiClient.delete(`/projects/${projectId}`);
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
   };
 
@@ -70,7 +70,7 @@ export function useProject(projectId: string | null) {
       try {
         setLoading(true);
         setError(null);
-        const data = await projectOps.getProject(projectId);
+        const data = await apiClient.get<SlateProject>(`/projects/${projectId}`);
         setProject(data);
       } catch (err) {
         setError(err as Error);

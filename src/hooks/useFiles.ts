@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { SlateFile, SlateFileInsert, SlateFileUpdate } from '../lib/database/types';
-import * as fileOps from '../lib/database/operations/files';
+import { apiClient } from '../lib/api/client';
 import type { FileTreeNode } from '../lib/database/operations/files';
+import { buildFileTree } from '../lib/database/operations/files';
 
 export function useFiles(projectId: string | null) {
   const [files, setFiles] = useState<SlateFile[]>([]);
@@ -18,7 +19,7 @@ export function useFiles(projectId: string | null) {
     try {
       setLoading(true);
       setError(null);
-      const data = await fileOps.listFiles(projectId);
+      const data = await apiClient.get<SlateFile[]>(`/files?projectId=${projectId}`);
       setFiles(data);
     } catch (err) {
       setError(err as Error);
@@ -31,28 +32,28 @@ export function useFiles(projectId: string | null) {
     fetchFiles();
   }, [fetchFiles]);
 
-  const fileTree = useMemo(() => fileOps.buildFileTree(files), [files]);
+  const fileTree = useMemo(() => buildFileTree(files), [files]);
 
   const createFile = async (file: SlateFileInsert): Promise<SlateFile> => {
-    const newFile = await fileOps.createFile(file);
+    const newFile = await apiClient.post<SlateFile>('/files', file);
     setFiles((prev) => [...prev, newFile]);
     return newFile;
   };
 
   const updateFile = async (fileId: string, updates: SlateFileUpdate): Promise<SlateFile> => {
-    const updatedFile = await fileOps.updateFile(fileId, updates);
+    const updatedFile = await apiClient.put<SlateFile>(`/files/${fileId}`, updates);
     setFiles((prev) => prev.map((f) => (f.id === fileId ? updatedFile : f)));
     return updatedFile;
   };
 
   const deleteFile = async (fileId: string): Promise<void> => {
-    await fileOps.deleteFile(fileId);
+    await apiClient.delete(`/files/${fileId}`);
     setFiles((prev) => prev.filter((f) => f.id !== fileId));
   };
 
   const searchFiles = async (query: string): Promise<SlateFile[]> => {
     if (!projectId) return [];
-    return fileOps.searchFiles(projectId, query);
+    return apiClient.get<SlateFile[]>(`/files/search?projectId=${projectId}&q=${encodeURIComponent(query)}`);
   };
 
   return {
@@ -83,7 +84,7 @@ export function useFile(fileId: string | null) {
     try {
       setLoading(true);
       setError(null);
-      const data = await fileOps.getFile(fileId);
+      const data = await apiClient.get<SlateFile>(`/files/${fileId}`);
       setFile(data);
     } catch (err) {
       setError(err as Error);
@@ -98,7 +99,7 @@ export function useFile(fileId: string | null) {
 
   const updateFile = async (updates: SlateFileUpdate): Promise<SlateFile> => {
     if (!fileId) throw new Error('File ID is required');
-    const updatedFile = await fileOps.updateFile(fileId, updates);
+    const updatedFile = await apiClient.put<SlateFile>(`/files/${fileId}`, updates);
     setFile(updatedFile);
     return updatedFile;
   };

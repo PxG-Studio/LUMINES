@@ -5,7 +5,7 @@ import type {
   SlateAssetUpdate,
   SlateAssetComponentInsert,
 } from '../lib/database/types';
-import * as assetOps from '../lib/database/operations/assets';
+import { apiClient } from '../lib/api/client';
 import type { AssetWithComponents } from '../lib/database/operations/assets';
 
 export function useAssets(projectId: string | null) {
@@ -23,7 +23,7 @@ export function useAssets(projectId: string | null) {
     try {
       setLoading(true);
       setError(null);
-      const data = await assetOps.listAssets(projectId);
+      const data = await apiClient.get<SlateAsset[]>(`/assets?projectId=${projectId}`);
       setAssets(data);
     } catch (err) {
       setError(err as Error);
@@ -37,19 +37,19 @@ export function useAssets(projectId: string | null) {
   }, [fetchAssets]);
 
   const createAsset = async (asset: SlateAssetInsert): Promise<SlateAsset> => {
-    const newAsset = await assetOps.createAsset(asset);
+    const newAsset = await apiClient.post<SlateAsset>('/assets', asset);
     setAssets((prev) => [newAsset, ...prev]);
     return newAsset;
   };
 
   const updateAsset = async (assetId: string, updates: SlateAssetUpdate): Promise<SlateAsset> => {
-    const updatedAsset = await assetOps.updateAsset(assetId, updates);
+    const updatedAsset = await apiClient.put<SlateAsset>(`/assets/${assetId}`, updates);
     setAssets((prev) => prev.map((a) => (a.id === assetId ? updatedAsset : a)));
     return updatedAsset;
   };
 
   const deleteAsset = async (assetId: string): Promise<void> => {
-    await assetOps.deleteAsset(assetId);
+    await apiClient.delete(`/assets/${assetId}`);
     setAssets((prev) => prev.filter((a) => a.id !== assetId));
   };
 
@@ -79,7 +79,7 @@ export function useAsset(assetId: string | null) {
     try {
       setLoading(true);
       setError(null);
-      const data = await assetOps.getAssetWithComponents(assetId);
+      const data = await apiClient.get<AssetWithComponents>(`/assets/${assetId}`);
       setAsset(data);
     } catch (err) {
       setError(err as Error);
@@ -93,19 +93,19 @@ export function useAsset(assetId: string | null) {
   }, [fetchAsset]);
 
   const createComponent = async (component: SlateAssetComponentInsert) => {
-    const newComponent = await assetOps.createAssetComponent(component);
+    const newComponent = await apiClient.post(`/assets/${assetId}/components`, component);
     await fetchAsset();
     return newComponent;
   };
 
   const updateComponent = async (componentId: string, properties: any) => {
-    const updatedComponent = await assetOps.updateAssetComponent(componentId, properties);
+    const updatedComponent = await apiClient.put(`/assets/${assetId}/components/${componentId}`, { properties });
     await fetchAsset();
     return updatedComponent;
   };
 
   const deleteComponent = async (componentId: string) => {
-    await assetOps.deleteAssetComponent(componentId);
+    await apiClient.delete(`/assets/${assetId}/components/${componentId}`);
     await fetchAsset();
   };
 
