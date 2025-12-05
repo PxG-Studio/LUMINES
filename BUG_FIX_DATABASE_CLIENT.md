@@ -6,10 +6,12 @@ The error `pg.js: Uncaught ReferenceError: process is not defined` was occurring
 ## Root Cause
 - React hooks (`useProjects`, `useFiles`, `useAssets`) were directly importing database operations
 - Database operations imported `pg` (PostgreSQL client) which is a Node.js library
+- The `buildFileTree` utility was in the same file as database operations, causing the entire module to be bundled
 - When bundled for the browser, `pg` tries to access `process`, `net`, `tls`, etc. which don't exist
 
 ## Solution
-Created a client-side API wrapper that uses `fetch()` to call backend API routes instead of directly accessing the database:
+1. Created a client-side API wrapper that uses `fetch()` to call backend API routes
+2. Moved browser-safe utilities to separate files to prevent bundling database client code
 
 ### Changes Made
 
@@ -18,10 +20,18 @@ Created a client-side API wrapper that uses `fetch()` to call backend API routes
    - Handles GET, POST, PUT, DELETE requests
    - Centralized error handling
 
-2. **Updated Hooks**
+2. **Moved File Tree Utilities** (`src/lib/utils/fileTree.ts`)
+   - Extracted `buildFileTree()` and `FileTreeNode` type
+   - Pure utility functions with no database dependencies
+   - Can be safely imported in browser code
+
+3. **Updated Hooks**
    - `useProjects.ts` - Now calls `/api/projects` instead of direct database operations
-   - `useFiles.ts` - Now calls `/api/files`
+   - `useFiles.ts` - Now calls `/api/files` and imports `buildFileTree` from utils
    - `useAssets.ts` - Now calls `/api/assets`
+
+4. **Updated Components**
+   - `ExplorerPanelConnected.tsx` - Imports `FileTreeNode` from utils instead of database operations
 
 ### Required: Create API Routes
 
@@ -122,5 +132,19 @@ npm run dev
 
 ## Status
 - ✅ Client-side hooks updated to use API client
+- ✅ File tree utilities extracted to separate module
+- ✅ All browser-side imports no longer pull in database client
 - ⚠️ API routes need to be created (see implementation example above)
 - ✅ Database operations remain server-side only
+
+## Verification
+Build succeeds without errors:
+```
+✓ 1592 modules transformed.
+✓ built in 22.77s
+```
+
+The browser console should no longer show the `pg.js: process is not defined` error after:
+1. Clearing browser cache
+2. Hard refreshing the page (Ctrl+Shift+R or Cmd+Shift+R)
+3. Ensuring the dev server has restarted with the new code

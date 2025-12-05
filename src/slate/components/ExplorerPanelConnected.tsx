@@ -3,7 +3,7 @@ import { Folder, File, ChevronRight, ChevronDown, Search, Upload as UploadIcon, 
 import { lumenForgeColors, transitions } from '../../design-system/tokens';
 import { useFiles } from '../../hooks/useFiles';
 import { useProjectContext } from '../context/ProjectContext';
-import type { FileTreeNode } from '../../lib/database/operations/files';
+import type { FileTreeNode } from '../../lib/utils/fileTree';
 
 interface ExplorerPanelConnectedProps {
   onFileSelect?: (fileId: string, path: string) => void;

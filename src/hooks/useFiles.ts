@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { SlateFile, SlateFileInsert, SlateFileUpdate } from '../lib/database/types';
 import { apiClient } from '../lib/api/client';
-import type { FileTreeNode } from '../lib/database/operations/files';
-import { buildFileTree } from '../lib/database/operations/files';
+import type { FileTreeNode } from '../lib/utils/fileTree';
+import { buildFileTree } from '../lib/utils/fileTree';
 
 export function useFiles(projectId: string | null) {
   const [files, setFiles] = useState<SlateFile[]>([]);
