@@ -1,5 +1,5 @@
 /**
- * Unity MCP Client (HTTP Transport)
+ * Unity MCP Client (HTTP Transport with Circuit Breaker)
  *
  * Connects to unity-mcp server running alongside Unity Editor
  * Repo: https://github.com/CoplayDev/unity-mcp
@@ -7,81 +7,16 @@
  * Security: Endpoint MUST be auth-protected; never expose raw on LAN
  */
 
-import { z } from "zod";
-
-const UNITY_MCP_URL = process.env.UNITY_MCP_URL || "http://localhost:8080/mcp";
-const UNITY_MCP_TOKEN = process.env.UNITY_MCP_TOKEN || "";
-
-// Request timeout (30s for long Unity operations)
-const TIMEOUT_MS = 30000;
-
-// Validation schemas
-const UnityGenerateScriptArgsSchema = z.object({
-  name: z.string().min(1).max(200),
-  code: z.string().min(1).max(500000), // 500KB max
-  path: z.string().max(500).optional(),
-});
-
-const UnityApplyPatchArgsSchema = z.object({
-  path: z.string().min(1).max(500),
-  patch: z.string().min(1).max(100000), // 100KB max
-});
-
-const UnityRenderPreviewArgsSchema = z.object({
-  scenePath: z.string().max(500).optional(),
-  gameObject: z.string().max(200).optional(),
-  width: z.number().int().min(320).max(1920).default(800),
-  height: z.number().int().min(240).max(1080).default(600),
-});
-
-const UnityIngestAssetArgsSchema = z.object({
-  path: z.string().min(1).max(500),
-});
-
-const UnityRunBuildArgsSchema = z.object({
-  target: z.enum(["WebGL", "Windows", "Mac", "Linux", "Android", "iOS"]),
-  development: z.boolean().default(false),
-});
-
-/**
- * Call Unity MCP HTTP endpoint
- */
-async function callUnityMcp(path: string, body: any): Promise<any> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-  try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    if (UNITY_MCP_TOKEN) {
-      headers["Authorization"] = `Bearer ${UNITY_MCP_TOKEN}`;
-    }
-
-    const res = await fetch(`${UNITY_MCP_URL}${path}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Unity MCP error ${res.status}: ${text}`);
-    }
-
-    return res.json();
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error(`Unity MCP timeout after ${TIMEOUT_MS}ms`);
-    }
-    throw error;
-  }
-}
+import { unityMcpClient } from "../services/serviceClient";
+import {
+  zUnityGenerateScript,
+  zUnityApplyPatch,
+  zUnityRenderPreview,
+  zUnityIngestAsset,
+  zUnityDeconstructAsset,
+  zUnityRunBuild,
+  zUnityGetBuildStatus,
+} from "./unitySchemas";
 
 /**
  * Generate or update Unity C# script
@@ -91,11 +26,11 @@ export async function unityGenerateScript(args: {
   code: string;
   path?: string;
 }): Promise<{ success: boolean; path: string }> {
-  const validated = UnityGenerateScriptArgsSchema.parse(args);
+  const validated = zUnityGenerateScript.parse(args);
 
   const targetPath = validated.path || `Assets/Scripts/${validated.name}.cs`;
 
-  return callUnityMcp("/tools/create_or_update_file", {
+  return unityMcpClient.call("/tools/create_or_update_file", {
     path: targetPath,
     content: validated.code,
   });
@@ -108,9 +43,9 @@ export async function unityApplyPatch(args: {
   path: string;
   patch: string;
 }): Promise<{ success: boolean; newContent: string }> {
-  const validated = UnityApplyPatchArgsSchema.parse(args);
+  const validated = zUnityApplyPatch.parse(args);
 
-  return callUnityMcp("/tools/apply_patch", {
+  return unityMcpClient.call("/tools/apply_patch", {
     path: validated.path,
     patch: validated.patch,
   });
@@ -130,9 +65,9 @@ export async function unityRenderPreview(args: {
   frameRef: string;
   format: "data-url" | "url";
 }> {
-  const validated = UnityRenderPreviewArgsSchema.parse(args);
+  const validated = zUnityRenderPreview.parse(args);
 
-  return callUnityMcp("/tools/render_scene_capture", {
+  return unityMcpClient.call("/tools/render_scene_capture", {
     scenePath: validated.scenePath,
     gameObject: validated.gameObject,
     width: validated.width,
@@ -151,9 +86,9 @@ export async function unityIngestAsset(args: {
   metadata: Record<string, any>;
   content?: any;
 }> {
-  const validated = UnityIngestAssetArgsSchema.parse(args);
+  const validated = zUnityIngestAsset.parse(args);
 
-  return callUnityMcp("/tools/read_asset", {
+  return unityMcpClient.call("/tools/read_asset", {
     path: validated.path,
   });
 }
@@ -171,9 +106,9 @@ export async function unityDeconstructAsset(args: {
   }>;
   uas: Record<string, any>;
 }> {
-  const validated = UnityIngestAssetArgsSchema.parse(args);
+  const validated = zUnityDeconstructAsset.parse(args);
 
-  return callUnityMcp("/tools/deconstruct_asset", {
+  return unityMcpClient.call("/tools/deconstruct_asset", {
     path: validated.path,
   });
 }
@@ -189,9 +124,9 @@ export async function unityRunBuild(args: {
   jobId: string;
   status: "queued" | "building";
 }> {
-  const validated = UnityRunBuildArgsSchema.parse(args);
+  const validated = zUnityRunBuild.parse(args);
 
-  return callUnityMcp("/tools/run_build", {
+  return unityMcpClient.call("/tools/run_build", {
     target: validated.target,
     development: validated.development,
   });
@@ -206,7 +141,8 @@ export async function unityGetBuildStatus(jobId: string): Promise<{
   error?: string;
   outputPath?: string;
 }> {
-  return callUnityMcp("/tools/get_build_status", { jobId });
+  const validated = zUnityGetBuildStatus.parse({ jobId });
+  return unityMcpClient.call("/tools/get_build_status", { jobId: validated.jobId });
 }
 
 /**
@@ -214,7 +150,7 @@ export async function unityGetBuildStatus(jobId: string): Promise<{
  */
 export async function unityHealthCheck(): Promise<boolean> {
   try {
-    await callUnityMcp("/health", {});
+    await unityMcpClient.call("/health", {});
     return true;
   } catch (error) {
     console.error("Unity MCP health check failed:", error);
