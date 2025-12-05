@@ -15,7 +15,7 @@ interface PresetSelectorProps {
   onApplyPreset?: (preset: GamePreset) => Promise<void>;
 }
 
-export function PresetSelector({ sessionId, onApplyPreset }: PresetSelectorProps) {
+export default function PresetSelector({ sessionId, onApplyPreset }: PresetSelectorProps) {
   const [selectedPreset, setSelectedPreset] = useState<GamePreset | null>(null);
   const [applying, setApplying] = useState(false);
 

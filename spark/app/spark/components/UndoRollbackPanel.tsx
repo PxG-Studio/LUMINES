@@ -26,7 +26,7 @@ interface UndoRollbackPanelProps {
   onRollbackTo?: (operation: PatchOperation) => Promise<void>;
 }
 
-export function UndoRollbackPanel({
+export default function UndoRollbackPanel({
   sessionId,
   onUndo,
   onRollbackTo,

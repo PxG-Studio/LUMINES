@@ -1,0 +1,172 @@
+# SPARK Full Stack Development Environment
+# Includes: PostgreSQL, NATS, Redis, Spark UI
+
+version: '3.8'
+
+services:
+  # PostgreSQL Primary Database
+  postgres-primary:
+    image: postgres:16-alpine
+    container_name: spark-postgres-primary
+    environment:
+      POSTGRES_DB: spark
+      POSTGRES_USER: spark_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spark_dev_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./spark/database:/docker-entrypoint-initdb.d
+    networks:
+      - spark-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spark_user -d spark"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Replica (Read-only)
+  postgres-replica:
+    image: postgres:16-alpine
+    container_name: spark-postgres-replica
+    environment:
+      POSTGRES_DB: spark
+      POSTGRES_USER: spark_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spark_dev_password}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+    networks:
+      - spark-network
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+
+  # NATS Message Broker
+  nats:
+    image: nats:2.10-alpine
+    container_name: spark-nats
+    command: >
+      --jetstream
+      --store_dir=/data
+      --max_payload=10485760
+      --max_connections=1000
+      --websocket_port=4222
+      --websocket_compression
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    volumes:
+      - nats-data:/data
+    networks:
+      - spark-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: spark-redis
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - spark-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SPARK Next.js Application
+  spark-ui:
+    build:
+      context: ./spark
+      dockerfile: Dockerfile
+      args:
+        UNITY_MCP_URL: ${UNITY_MCP_URL:-http://host.docker.internal:8080/mcp}
+        CV_SERVICE_URL: ${CV_SERVICE_URL:-http://host.docker.internal:8081}
+        ASR_SERVICE_URL: ${ASR_SERVICE_URL:-http://host.docker.internal:8082}
+        NATS_URL: nats://nats:4222
+        NEXT_PUBLIC_NATS_WS_URL: ws://localhost:4222
+        DATABASE_URL: postgresql://spark_user:${POSTGRES_PASSWORD:-spark_dev_password}@postgres-primary:5432/spark
+    container_name: spark-ui
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      UNITY_MCP_URL: ${UNITY_MCP_URL:-http://host.docker.internal:8080/mcp}
+      UNITY_MCP_TOKEN: ${UNITY_MCP_TOKEN}
+      CV_SERVICE_URL: ${CV_SERVICE_URL:-http://host.docker.internal:8081}
+      CV_SERVICE_TOKEN: ${CV_SERVICE_TOKEN}
+      ASR_SERVICE_URL: ${ASR_SERVICE_URL:-http://host.docker.internal:8082}
+      ASR_SERVICE_TOKEN: ${ASR_SERVICE_TOKEN}
+      NATS_URL: nats://nats:4222
+      NEXT_PUBLIC_NATS_WS_URL: ws://localhost:4222
+      DATABASE_URL: postgresql://spark_user:${POSTGRES_PASSWORD:-spark_dev_password}@postgres-primary:5432/spark
+      DATABASE_REPLICA_URL: postgresql://spark_user:${POSTGRES_PASSWORD:-spark_dev_password}@postgres-replica:5432/spark
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"
+    networks:
+      - spark-network
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Grafana Dashboards (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: spark-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - spark-network
+    profiles:
+      - monitoring
+
+  # Prometheus Metrics (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: spark-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - spark-network
+    profiles:
+      - monitoring
+
+networks:
+  spark-network:
+    driver: bridge
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
+  nats-data:
+  redis-data:
+  grafana-data:
+  prometheus-data:

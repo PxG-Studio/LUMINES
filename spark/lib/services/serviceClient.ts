@@ -4,7 +4,7 @@
  * High-performance HTTP client for MCP/CV/ASR services
  */
 
-import { setTimeout as sleep } from "timers/promises";
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 interface ServiceConfig {
   baseUrl: string;

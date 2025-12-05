@@ -23,7 +23,7 @@ interface UnityProgressTrackerProps {
   maxOperations?: number;
 }
 
-export function UnityProgressTracker({
+export default function UnityProgressTracker({
   sessionId,
   maxOperations = 10,
 }: UnityProgressTrackerProps) {

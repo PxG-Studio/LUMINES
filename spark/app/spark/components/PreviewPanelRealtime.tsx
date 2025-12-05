@@ -20,7 +20,7 @@ interface PreviewPanelRealtimeProps {
   onFrameUpdate?: (frameRef: string) => void;
 }
 
-export function PreviewPanelRealtime({ sessionId, onFrameUpdate }: PreviewPanelRealtimeProps) {
+export default function PreviewPanelRealtime({ sessionId, onFrameUpdate }: PreviewPanelRealtimeProps) {
   const [preview, setPreview] = useState<PreviewState>({ status: "idle" });
 
   useEffect(() => {
