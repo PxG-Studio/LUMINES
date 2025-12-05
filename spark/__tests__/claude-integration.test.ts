@@ -1,4 +1,35 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
+
+// Mock the Anthropic SDK
+vi.mock('@anthropic-ai/sdk', () => {
+  return {
+    default: class Anthropic {
+      messages = {
+        create: vi.fn().mockResolvedValue({
+          content: [{
+            type: 'text',
+            text: `using UnityEngine;
+using System.Collections;
+
+/// <summary>
+/// A simple PlayerController
+/// </summary>
+public class PlayerController : MonoBehaviour
+{
+    void Update()
+    {
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+        transform.Translate(new Vector3(h, 0, v) * Time.deltaTime);
+    }
+}`
+          }]
+        })
+      };
+    }
+  };
+});
+
 import { generateWithClaude } from '../lib/ai/claude-client';
 
 describe('Claude API Integration', () => {
@@ -9,10 +40,8 @@ describe('Claude API Integration', () => {
   });
 
   it('should generate a simple Unity script', async () => {
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_key_here') {
-      console.log('Skipping test - API key not configured');
-      return;
-    }
+    // Set a mock API key for testing
+    process.env.ANTHROPIC_API_KEY = 'test-key';
 
     const result = await generateWithClaude(
       'Create a simple PlayerController that moves with WASD keys',
@@ -39,10 +68,8 @@ describe('Claude API Integration', () => {
   });
 
   it('should extract script name from generated code', async () => {
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_key_here') {
-      console.log('Skipping test - API key not configured');
-      return;
-    }
+    // Set a mock API key for testing
+    process.env.ANTHROPIC_API_KEY = 'test-key';
 
     const result = await generateWithClaude(
       'Create a Coin script that rotates',

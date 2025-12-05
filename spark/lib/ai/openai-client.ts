@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { retryWithBackoff, parseOpenAIError } from "./error-handler";
+import { UNITY_SYSTEM_PROMPT, UNITY_USER_PROMPT_TEMPLATE } from "./prompts";
 
 export interface GenerateResult {
   success: boolean;
@@ -37,23 +38,11 @@ export async function generateWithOpenAI(
       messages: [
         {
           role: "system",
-          content: "You are a Unity C# script generator. Generate complete, working Unity C# scripts based on user requests.",
+          content: UNITY_SYSTEM_PROMPT,
         },
         {
           role: "user",
-          content: `Generate a Unity C# script based on this request: "${prompt}"
-
-IMPORTANT REQUIREMENTS:
-1. Generate ONLY valid C# code - no explanations, no markdown, no comments outside the code
-2. Include proper using statements (UnityEngine, System.Collections, etc.)
-3. Use MonoBehaviour as the base class for components
-4. Follow Unity naming conventions (PascalCase for classes and methods)
-5. Add XML documentation comments for the class
-6. Make the script immediately usable in Unity
-7. Include necessary Unity lifecycle methods (Awake, Start, Update, etc.) only if needed
-8. Use proper C# syntax and Unity API
-
-Format: Return ONLY the C# code, starting with 'using' statements.`,
+          content: UNITY_USER_PROMPT_TEMPLATE(prompt),
         },
       ],
     }),
