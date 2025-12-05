@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { retryWithBackoff, parseAnthropicError } from "./error-handler";
 import { UNITY_SYSTEM_PROMPT, UNITY_USER_PROMPT_TEMPLATE } from "./prompts";
+import { withConnectionPool } from "./connection-pool";
 
 export interface GenerateResult {
   success: boolean;
@@ -35,20 +36,22 @@ export async function generateWithClaude(
       };
     }
 
-    // Wrap API call in retry logic
-    const message = await retryWithBackoff(
-      async () =>
-        await anthropic.messages.create({
-      model,
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: `${UNITY_SYSTEM_PROMPT}\n\n${UNITY_USER_PROMPT_TEMPLATE(prompt)}`,
-        },
-      ],
-    }),
-      { maxRetries: 3, initialDelayMs: 1000 }
+    // Wrap API call with connection pooling and retry logic
+    const message = await withConnectionPool('claude', async () =>
+      await retryWithBackoff(
+        async () =>
+          await anthropic.messages.create({
+        model,
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: `${UNITY_SYSTEM_PROMPT}\n\n${UNITY_USER_PROMPT_TEMPLATE(prompt)}`,
+          },
+        ],
+      }),
+        { maxRetries: 3, initialDelayMs: 1000 }
+      )
     );
 
     const generatedText = message.content[0].type === "text" ? message.content[0].text : "";

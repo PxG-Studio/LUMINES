@@ -14,6 +14,9 @@ interface GenerateResult {
   code?: string;
   scriptName?: string;
   error?: string;
+  tokensUsed?: number;
+  inputTokens?: number;
+  outputTokens?: number;
 }
 
 export interface GenerateOptions {
@@ -67,6 +70,7 @@ export async function generateUnityScript(
 
     const generationTimeMs = Date.now() - startTime;
     const success = result.success && !!result.code;
+    tokensUsed = result.tokensUsed || 0;
 
     try {
       await logGeneration({

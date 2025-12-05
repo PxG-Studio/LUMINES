@@ -1,579 +1,324 @@
 # SPARK Deployment Guide
 
-Complete guide for deploying SPARK MVP 1 to production.
-
-## Table of Contents
-1. [Overview](#overview)
-2. [Pre-Deployment Checklist](#pre-deployment-checklist)
-3. [Vercel Deployment (Recommended)](#vercel-deployment-recommended)
-4. [Alternative Platforms](#alternative-platforms)
-5. [Environment Configuration](#environment-configuration)
-6. [Post-Deployment](#post-deployment)
-7. [Monitoring and Maintenance](#monitoring-and-maintenance)
-8. [Troubleshooting](#troubleshooting)
+**Version:** 1.0  
+**Last Updated:** 2024-12-19
 
 ---
 
 ## Overview
 
-### What You'll Deploy
-
-- **Next.js 15 application** with App Router
-- **Server actions** for AI generation
-- **API routes** for export functionality
-- **Static assets** (HTML, CSS, JS)
-- **Environment variables** (API keys)
-
-### Deployment Requirements
-
-- **Node.js**: 18.x or later
-- **NPM**: 9.x or later
-- **Build time**: ~20-40 seconds
-- **Cold start**: <500ms
-- **Memory**: 128-256 MB
-
-### Cost Estimates
-
-**Vercel (Recommended)**
-- **Hobby (Free)**: Perfect for MVP 1
-  - 100GB bandwidth/month
-  - Unlimited requests
-  - Serverless functions
-  - Free custom domains
-- **Pro ($20/month)**: If scaling
-  - 1TB bandwidth
-  - Advanced analytics
-  - Team features
-
-**AI API Costs (Separate)**
-- **Claude**: $3-15 per 1M tokens (~2000-10000 scripts)
-- **OpenAI GPT-4**: $30-60 per 1M tokens (~2000-10000 scripts)
-- **OpenAI GPT-3.5**: $0.50-2 per 1M tokens (~20000-80000 scripts)
+This guide covers the complete deployment process for the SPARK application, including infrastructure setup, configuration, and monitoring.
 
 ---
 
-## Pre-Deployment Checklist
+## Prerequisites
 
-### 1. Code Quality
-
-- [ ] All tests pass (`npm test`)
-- [ ] Production build succeeds (`npm run build`)
-- [ ] No console errors in dev mode
-- [ ] No TypeScript errors (`npm run typecheck`)
-- [ ] Linting passes (`npm run lint`)
-
-### 2. Configuration
-
-- [ ] `.env.local` configured with real API keys
-- [ ] API keys tested and working
-- [ ] No hardcoded secrets in code
-- [ ] `.env.example` up to date
-- [ ] `.gitignore` excludes sensitive files
-
-### 3. Documentation
-
-- [ ] USER_GUIDE.md complete
-- [ ] UNITY_IMPORT_GUIDE.md complete
-- [ ] README.md accurate
-- [ ] QUICK_START.md helpful
-
-### 4. Testing
-
-- [ ] Tested script generation end-to-end
-- [ ] Tested export functionality
-- [ ] Tested with both AI providers
-- [ ] Tested error scenarios
-- [ ] Tested on mobile devices
-
-### 5. Performance
-
-- [ ] Generation time < 5 seconds
-- [ ] Export time < 2 seconds
-- [ ] Page loads < 1 second
-- [ ] No memory leaks
+- Kubernetes cluster (v1.24+)
+- kubectl configured
+- Docker registry access
+- SSL certificates
+- OAuth provider (Google) configured
+- PostgreSQL database
+- Monitoring infrastructure (optional)
 
 ---
 
-## Vercel Deployment (Recommended)
+## 1. Build and Push Docker Image
 
-Vercel is the easiest and best platform for Next.js apps.
-
-### Step 1: Prepare Your Repository
-
-**1.1 Create Git Repository**
 ```bash
-cd spark
-git init
-git add .
-git commit -m "Initial SPARK MVP 1"
-```
+# Build the image
+docker build -t spark:latest .
 
-**1.2 Push to GitHub**
-```bash
-# Create new repo on GitHub first, then:
-git remote add origin https://github.com/yourusername/spark.git
-git branch -M main
-git push -u origin main
-```
+# Tag for registry
+docker tag spark:latest your-registry/spark:latest
 
-### Step 2: Connect to Vercel
-
-**2.1 Sign Up**
-1. Go to https://vercel.com/signup
-2. Sign up with GitHub (recommended)
-3. Authorize Vercel to access your repos
-
-**2.2 Import Project**
-1. Click "New Project"
-2. Select your SPARK repository
-3. Vercel auto-detects Next.js configuration
-
-**2.3 Configure Build Settings**
-- **Framework Preset**: Next.js (auto-detected)
-- **Root Directory**: `./` (or `./spark` if nested)
-- **Build Command**: `next build` (auto-detected)
-- **Output Directory**: `.next` (auto-detected)
-- **Install Command**: `npm install` (auto-detected)
-
-### Step 3: Environment Variables
-
-**3.1 Add Production Variables**
-
-In Vercel dashboard:
-1. Go to Project Settings
-2. Navigate to "Environment Variables"
-3. Add the following:
-
-```
-ANTHROPIC_API_KEY=sk-ant-xxx...
-OPENAI_API_KEY=sk-xxx...
-NEXT_PUBLIC_APP_URL=https://your-spark-app.vercel.app
-```
-
-**3.2 Variable Scopes**
-- Set to: **Production, Preview, Development**
-- This ensures keys work in all environments
-
-**3.3 Sensitive Variables**
-- Mark as "Sensitive" to hide from logs
-- Never commit to Git
-
-### Step 4: Deploy
-
-**4.1 Initial Deployment**
-1. Click "Deploy"
-2. Wait ~30-60 seconds
-3. Vercel builds and deploys automatically
-
-**4.2 Deployment URL**
-- Vercel provides: `https://spark-xxx.vercel.app`
-- Or use custom domain (see below)
-
-**4.3 Verify Deployment**
-1. Visit deployment URL
-2. Test script generation
-3. Test export functionality
-4. Check all features work
-
-### Step 5: Custom Domain (Optional)
-
-**5.1 Add Domain**
-1. In Vercel, go to Project Settings > Domains
-2. Click "Add Domain"
-3. Enter your domain (e.g., `spark.yourdomain.com`)
-
-**5.2 Configure DNS**
-Add CNAME record with your DNS provider:
-```
-Type: CNAME
-Name: spark (or @ for root domain)
-Value: cname.vercel-dns.com
-```
-
-**5.3 SSL Certificate**
-- Vercel auto-provisions SSL (Let's Encrypt)
-- Takes 1-5 minutes
-- HTTPS enabled automatically
-
-### Step 6: Continuous Deployment
-
-**Auto-Deploy on Push**
-- Every `git push` to main triggers new deployment
-- Preview deployments for pull requests
-- Rollback to previous deployments in one click
-
-**Manual Deploy**
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy from command line
-vercel --prod
+# Push to registry
+docker push your-registry/spark:latest
 ```
 
 ---
 
-## Alternative Platforms
+## 2. Configure Secrets
 
-### Netlify
+Create Kubernetes secrets:
 
-**Pros**: Similar to Vercel, great Next.js support
-**Cons**: Slightly slower builds
-
-**Quick Deploy:**
 ```bash
-npm install -g netlify-cli
-netlify init
-netlify deploy --prod
-```
+kubectl create namespace spark
 
-**Environment Variables:**
-Set in Netlify dashboard under Site Settings > Environment Variables
-
-### Railway
-
-**Pros**: Simple, Docker support, databases included
-**Cons**: Not specialized for Next.js
-
-**Quick Deploy:**
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login and deploy
-railway login
-railway init
-railway up
-```
-
-### AWS (Advanced)
-
-**Services Needed:**
-- **AWS Amplify**: For Next.js hosting
-- **AWS Lambda**: For serverless functions
-- **CloudFront**: For CDN
-
-**Use Case**: Enterprise deployments with custom requirements
-
-### Self-Hosted
-
-**Requirements:**
-- Node.js 18+ server
-- PM2 or similar process manager
-- Nginx for reverse proxy
-- SSL certificate (Let's Encrypt)
-
-**Quick Start:**
-```bash
-# Build
-npm run build
-
-# Start with PM2
-npm install -g pm2
-pm2 start npm --name "spark" -- start
-pm2 save
-pm2 startup
+kubectl create secret generic spark-secrets \
+  --from-literal=database-url='postgresql://...' \
+  --from-literal=anthropic-api-key='sk-...' \
+  --from-literal=openai-api-key='sk-...' \
+  --from-literal=nextauth-secret='your-secret-here' \
+  --from-literal=google-client-id='your-client-id' \
+  --from-literal=google-client-secret='your-client-secret' \
+  -n spark
 ```
 
 ---
 
-## Environment Configuration
+## 3. Deploy Application
 
-### Production Environment Variables
-
-**Required:**
-```env
-ANTHROPIC_API_KEY=sk-ant-xxx...
-OPENAI_API_KEY=sk-xxx...
-```
-
-**Optional:**
-```env
-NEXT_PUBLIC_APP_URL=https://yourdomain.com
-NODE_ENV=production
-```
-
-### Security Best Practices
-
-**1. Never Commit Secrets**
-```gitignore
-.env.local
-.env*.local
-.env.production
-```
-
-**2. Use Different Keys Per Environment**
-- Development: Use test/sandbox keys
-- Production: Use production keys
-- Rotate keys regularly
-
-**3. Rate Limiting**
-- Implement API rate limiting
-- Monitor usage
-- Set budget alerts
-
-**4. CORS Configuration**
-Already configured in API routes:
-```typescript
-headers: {
-  'Access-Control-Allow-Origin': '*', // Restrict in production
-  'Access-Control-Allow-Methods': 'GET,POST',
-}
-```
-
-For production, restrict to your domain:
-```typescript
-'Access-Control-Allow-Origin': 'https://yourdomain.com'
+```bash
+# Update deployment.yaml with your image registry
+# Then deploy:
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/hpa.yaml
 ```
 
 ---
 
-## Post-Deployment
+## 4. Configure TLS
 
-### Verify Production
+### Option A: Ingress with TLS
 
-**1. Functional Testing**
-- [ ] Homepage loads correctly
-- [ ] Script generation works
-- [ ] Both AI providers work
-- [ ] Export downloads successfully
-- [ ] Error handling works
-
-**2. Performance Testing**
-- [ ] Page load < 2 seconds
-- [ ] Generation < 5 seconds
-- [ ] Export < 3 seconds
-- [ ] No console errors
-
-**3. Mobile Testing**
-- [ ] Responsive layout works
-- [ ] Touch interactions work
-- [ ] Export works on mobile
-- [ ] Text is readable
-
-### Configure Monitoring
-
-**Vercel Analytics (Recommended)**
-1. Enable in Project Settings > Analytics
-2. Free on all plans
-3. See page views, performance, demographics
-
-**Custom Monitoring**
-Add to `app/spark/layout.tsx`:
-```typescript
-// Google Analytics
-<Script src="https://www.googletagmanager.com/gtag/js?id=G-XXX" />
-
-// PostHog, Mixpanel, etc.
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spark-ingress
+  namespace: spark
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - spark.example.com
+    secretName: spark-tls
+  rules:
+  - host: spark.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: spark-service
+            port:
+              number: 80
 ```
 
-### Set Up Alerts
+### Option B: LoadBalancer with TLS
 
-**Vercel Notifications:**
-1. Go to Project Settings > Notifications
-2. Enable:
-   - Deployment failures
-   - Performance degradation
-   - Budget alerts
-
-**API Budget Alerts:**
-1. Anthropic Console: Set budget alerts
-2. OpenAI Dashboard: Set usage notifications
+Configure TLS in your load balancer (AWS ALB, GCP LB, etc.)
 
 ---
 
-## Monitoring and Maintenance
+## 5. Configure OIDC SSO
 
-### Daily Monitoring
+1. **Google Cloud Console:**
+   - Create OAuth 2.0 Client ID
+   - Add authorized redirect URI: `https://your-domain.com/api/auth/callback/google`
+   - Enable MFA enforcement (if required)
 
-**Check Daily:**
-- Deployment status (Vercel dashboard)
-- Error logs (Vercel logs)
-- API usage (AI provider dashboards)
-- User feedback
+2. **Environment Variables:**
+   ```bash
+   GOOGLE_CLIENT_ID=your-client-id
+   GOOGLE_CLIENT_SECRET=your-client-secret
+   GOOGLE_REDIRECT_URI=https://your-domain.com/api/auth/callback/google
+   GOOGLE_MFA_REQUIRED=true
+   NEXTAUTH_URL=https://your-domain.com
+   NEXTAUTH_SECRET=your-secret-key
+   ```
 
-**Vercel Logs:**
+---
+
+## 6. Configure CDN
+
+### Cloudflare
+
+1. Add your domain to Cloudflare
+2. Configure DNS records
+3. Enable caching rules
+4. Set environment variable: `CDN_PROVIDER=cloudflare`
+
+### AWS CloudFront
+
+1. Create CloudFront distribution
+2. Configure origin (your LoadBalancer)
+3. Set cache behaviors
+4. Set environment variable: `CDN_PROVIDER=aws-cloudfront`
+
+---
+
+## 7. Set Up Monitoring
+
+### OpenTelemetry
+
+1. Deploy OpenTelemetry Collector:
 ```bash
-# Install Vercel CLI
-vercel logs --prod
-
-# Filter by function
-vercel logs --prod -n 100
+kubectl apply -f https://raw.githubusercontent.com/open-telemetry/opentelemetry-operator/main/deploy/crds/opentelemetry.io_opentelemetrycollectors.yaml
 ```
 
-### Weekly Maintenance
-
-**Review Weekly:**
-- Analytics and usage trends
-- Performance metrics
-- API costs
-- User-reported issues
-
-**Update Dependencies:**
+2. Configure environment variables:
 ```bash
-npm outdated
-npm update
-npm audit fix
+OTEL_ENABLED=true
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+OTEL_SERVICE_NAME=spark
+OTEL_SERVICE_VERSION=1.0.0
 ```
 
-### Monthly Tasks
+### Grafana Dashboards
 
-**Check Monthly:**
-- Security updates
-- Dependency vulnerabilities
-- API key rotation
-- Backup configurations
+1. Import dashboard from `config/grafana-dashboards.json`
+2. Configure Prometheus data source
+3. Set up alert rules
 
-### Scaling Considerations
+### Log Aggregation
 
-**When to Scale:**
-- >100 active users
-- >1000 scripts/day
-- API rate limits hit
-- Performance degradation
+Configure logging service URL:
+```bash
+LOGGING_SERVICE_URL=https://your-loki-endpoint/loki/api/v1/push
+# OR
+LOGGING_SERVICE_URL=https://your-elasticsearch-endpoint/_bulk
+```
 
-**Scaling Options:**
-1. **Upgrade Vercel plan** (Pro $20/mo)
-2. **Implement caching** (Redis)
-3. **Add rate limiting** (Upstash)
-4. **Optimize prompts** (reduce token usage)
-5. **Consider queue system** (Bull, BeeQueue)
+---
+
+## 8. Configure Alerting
+
+Set up notification channels:
+
+```bash
+# Slack
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+
+# Email
+ALERT_EMAIL_TO=alerts@yourcompany.com
+ALERT_EMAIL_FROM=noreply@yourcompany.com
+
+# Webhook
+ALERT_WEBHOOK_URL=https://your-webhook-endpoint.com/alerts
+```
+
+---
+
+## 9. Verify Deployment
+
+```bash
+# Check pods
+kubectl get pods -n spark
+
+# Check services
+kubectl get svc -n spark
+
+# Check HPA
+kubectl get hpa -n spark
+
+# Check logs
+kubectl logs -f deployment/spark-app -n spark
+
+# Test health endpoint
+curl https://your-domain.com/api/health
+```
+
+---
+
+## 10. Post-Deployment Checklist
+
+- [ ] TLS certificates configured
+- [ ] OIDC SSO working
+- [ ] Database connection verified
+- [ ] Health checks passing
+- [ ] Monitoring dashboards configured
+- [ ] Alerting channels tested
+- [ ] CDN configured
+- [ ] HPA scaling tested
+- [ ] Load testing completed
+- [ ] Backup strategy in place
 
 ---
 
 ## Troubleshooting
 
-### Build Failures
+### Pods Not Starting
 
-**Issue: "Module not found" during build**
 ```bash
-# Solution: Clear node_modules and reinstall
-rm -rf node_modules package-lock.json
-npm install
-npm run build
+# Check pod events
+kubectl describe pod <pod-name> -n spark
+
+# Check logs
+kubectl logs <pod-name> -n spark
 ```
 
-**Issue: "Environment variable not found"**
-- Verify environment variables are set in Vercel
-- Check variable names match exactly
-- Ensure variables are marked for Production environment
+### Database Connection Issues
 
-### Runtime Errors
+- Verify database URL in secrets
+- Check network policies
+- Verify database firewall rules
 
-**Issue: "API key not configured"**
-- Check environment variables in Vercel dashboard
-- Verify variable names: `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
-- Redeploy after adding variables
+### Authentication Issues
 
-**Issue: "Generation timeout"**
-- AI API might be slow
-- Increase timeout in `vercel.json`:
-```json
-{
-  "functions": {
-    "app/spark/actions/*.ts": {
-      "maxDuration": 30
-    }
-  }
-}
-```
-
-**Issue: "Export failed"**
-- Check browser console for errors
-- Verify API route is deployed
-- Test directly: `https://yourdomain.com/api/export`
+- Verify OAuth credentials
+- Check redirect URIs match
+- Verify NEXTAUTH_SECRET is set
 
 ### Performance Issues
 
-**Issue: Slow page load**
-```bash
-# Analyze bundle size
-npm run build -- --analyze
-
-# Optimize images
-# Lazy load components
-# Enable Next.js caching
-```
-
-**Issue: High API costs**
-- Switch to cheaper models (GPT-3.5, Claude Haiku)
-- Implement caching for common requests
-- Add rate limiting per user
+- Check HPA metrics
+- Review pod resource limits
+- Check database query performance
+- Review CDN cache hit rates
 
 ---
 
-## Rollback Procedure
+## Scaling
 
-If deployment fails or has critical bugs:
+### Horizontal Scaling
 
-**Vercel (Instant Rollback)**
-1. Go to Deployments tab
-2. Find last working deployment
-3. Click "..." menu
-4. Select "Promote to Production"
-5. Instant rollback (0 downtime)
+HPA automatically scales based on:
+- CPU utilization (70% threshold)
+- Memory utilization (80% threshold)
+- HTTP requests per second (100 req/s per pod)
 
-**Git Rollback**
+### Manual Scaling
+
 ```bash
-git revert HEAD
-git push origin main
-# Vercel auto-deploys the revert
+kubectl scale deployment spark-app --replicas=5 -n spark
 ```
 
 ---
 
-## Security Checklist
+## Backup and Recovery
 
-Before going live:
+### Database Backups
 
-- [ ] No API keys in code
-- [ ] Environment variables secure
-- [ ] CORS properly configured
-- [ ] Rate limiting implemented
-- [ ] HTTPS enabled (auto with Vercel)
-- [ ] No sensitive data logged
-- [ ] CSP headers configured
-- [ ] Dependencies up to date
+Set up automated PostgreSQL backups:
+```bash
+# Example: Daily backups
+0 2 * * * pg_dump -h db-host -U user -d spark > /backups/spark-$(date +%Y%m%d).sql
+```
 
----
+### Configuration Backups
 
-## Launch Checklist
-
-Ready to launch? Verify:
-
-- [ ] Production deployment successful
-- [ ] Custom domain configured (if applicable)
-- [ ] SSL certificate active
-- [ ] All features tested in production
-- [ ] Monitoring and alerts configured
-- [ ] Documentation up to date
-- [ ] Team has access to dashboards
-- [ ] Backup/rollback plan ready
-- [ ] Support channels established
-- [ ] Launch announcement prepared
+Back up Kubernetes secrets and configs:
+```bash
+kubectl get secrets -n spark -o yaml > spark-secrets-backup.yaml
+```
 
 ---
 
-## Next Steps
+## Security Considerations
 
-After successful deployment:
-
-1. **Announce launch** to beta users
-2. **Monitor closely** for first 48 hours
-3. **Collect feedback** actively
-4. **Iterate** based on usage patterns
-5. **Plan MVP 2** features
+1. **Secrets Management:** Use Kubernetes secrets or external secret management
+2. **Network Policies:** Restrict pod-to-pod communication
+3. **TLS:** Enforce TLS for all connections
+4. **RBAC:** Configure proper role-based access control
+5. **Audit Logging:** Monitor all authentication events
+6. **Rate Limiting:** Already configured in middleware
 
 ---
 
-**Related Documentation:**
-- User Guide: `USER_GUIDE.md`
-- Unity Import Guide: `UNITY_IMPORT_GUIDE.md`
-- Testing Guide: `TESTING_GUIDE.md`
+## Support
 
-**Need Help?**
-- Vercel Docs: https://vercel.com/docs
-- Next.js Docs: https://nextjs.org/docs
-- SPARK Issues: [Your GitHub repo]
+For issues or questions:
+- Check logs: `kubectl logs -f deployment/spark-app -n spark`
+- Review monitoring dashboards
+- Check alert notifications
+- Consult documentation in `/docs`
 
-**Generated by SPARK - Production-Ready AI Development**
+---
+
+**Deployment Guide Version:** 1.0  
+**Last Updated:** 2024-12-19

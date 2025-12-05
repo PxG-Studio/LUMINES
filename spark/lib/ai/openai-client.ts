@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { retryWithBackoff, parseOpenAIError } from "./error-handler";
 import { UNITY_SYSTEM_PROMPT, UNITY_USER_PROMPT_TEMPLATE } from "./prompts";
+import { withConnectionPool } from "./connection-pool";
 
 export interface GenerateResult {
   success: boolean;
@@ -32,24 +33,26 @@ export async function generateWithOpenAI(
       };
     }
 
-    // Wrap API call in retry logic
-    const completion = await retryWithBackoff(
-      async () =>
-        await openai.chat.completions.create({
-      model,
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "system",
-          content: UNITY_SYSTEM_PROMPT,
-        },
-        {
-          role: "user",
-          content: UNITY_USER_PROMPT_TEMPLATE(prompt),
-        },
-      ],
-    }),
-      { maxRetries: 3, initialDelayMs: 1000 }
+    // Wrap API call with connection pooling and retry logic
+    const completion = await withConnectionPool('openai', async () =>
+      await retryWithBackoff(
+        async () =>
+          await openai.chat.completions.create({
+        model,
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "system",
+            content: UNITY_SYSTEM_PROMPT,
+          },
+          {
+            role: "user",
+            content: UNITY_USER_PROMPT_TEMPLATE(prompt),
+          },
+        ],
+      }),
+        { maxRetries: 3, initialDelayMs: 1000 }
+      )
     );
 
     const generatedText = completion.choices[0]?.message?.content || "";

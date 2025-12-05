@@ -120,6 +120,20 @@ export async function retryWithBackoff<T>(
 }
 
 /**
+ * Log error using error logging system
+ */
+export async function logAIError(error: unknown, context?: Record<string, any>): Promise<void> {
+  const { getErrorLogger } = await import('../monitoring/error-logging');
+  const logger = getErrorLogger();
+  
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+  await logger.logError(errorObj, {
+    ...context,
+    source: 'ai-error-handler',
+  });
+}
+
+/**
  * Parse Anthropic API errors
  */
 export function parseAnthropicError(error: unknown): AIError {

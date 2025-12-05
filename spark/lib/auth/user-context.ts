@@ -1,11 +1,14 @@
 /**
  * User context helper for SPARK
  *
- * TEMPORARY: MVP uses default user ID
- * TODO: Replace with actual auth integration:
+ * CURRENT: MVP uses default user ID
+ * FUTURE: Production auth integration planned
+ * 
+ * See INTEGRATION_PLAN.md for full authentication integration plan:
  * - Cloudflare Zero Trust JWT validation
  * - nocturnaID user management
  * - Session management
+ * - Database RLS integration
  */
 
 /**

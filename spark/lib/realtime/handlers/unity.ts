@@ -43,6 +43,7 @@ export async function handleGenerateUnityScript(args: any): Promise<{
 
     // Store generated script in database
     if (result.code && result.scriptName) {
+      const tokensUsed = result.tokensUsed || 0;
       await supabase.from("spark_generated_scripts").insert({
         script_name: result.scriptName,
         script_content: result.code,
@@ -50,7 +51,7 @@ export async function handleGenerateUnityScript(args: any): Promise<{
         class_name: validated.className,
         namespace: validated.namespace,
         base_class: validated.baseClass,
-        tokens_used: 0, // TODO: Extract from AI client response
+        tokens_used: tokensUsed,
         created_at: new Date().toISOString(),
       });
     }
@@ -59,7 +60,7 @@ export async function handleGenerateUnityScript(args: any): Promise<{
       success: true,
       script: result.code,
       scriptName: result.scriptName,
-      tokensUsed: 0, // TODO: Add token tracking to generate action
+      tokensUsed: result.tokensUsed || 0,
     };
   } catch (error) {
     console.error("Unity script generation error:", error);
