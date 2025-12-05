@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { generateUnityScript } from "../actions/generate";
+import { generateUnityScript, ClaudeModel, OpenAIModel } from "../actions/generate";
 
 interface Message {
   role: "user" | "assistant" | "error";
@@ -14,6 +14,18 @@ interface MCPChatProps {
 
 export type AIProvider = "claude" | "openai";
 
+const CLAUDE_MODELS: { value: ClaudeModel; label: string }[] = [
+  { value: "claude-sonnet-3-5-20241022", label: "Claude 3.5 Sonnet (Latest)" },
+  { value: "claude-3-5-sonnet-20240620", label: "Claude 3.5 Sonnet (June)" },
+  { value: "claude-3-haiku-20240307", label: "Claude 3 Haiku (Fast)" },
+];
+
+const OPENAI_MODELS: { value: OpenAIModel; label: string }[] = [
+  { value: "gpt-4", label: "GPT-4 (Best)" },
+  { value: "gpt-4-turbo-preview", label: "GPT-4 Turbo" },
+  { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo (Fast)" },
+];
+
 export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -24,6 +36,8 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [provider, setProvider] = useState<AIProvider>("claude");
+  const [claudeModel, setClaudeModel] = useState<ClaudeModel>("claude-sonnet-3-5-20241022");
+  const [openaiModel, setOpenaiModel] = useState<OpenAIModel>("gpt-4");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,7 +52,11 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
 
     try {
-      const result = await generateUnityScript(userMessage, provider);
+      const result = await generateUnityScript(userMessage, {
+        provider,
+        claudeModel,
+        openaiModel,
+      });
 
       if (result.success && result.code && result.scriptName) {
         // Add success message
@@ -78,19 +96,56 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
   return (
     <div className="chat-container">
       <div className="provider-selector">
-        <label htmlFor="ai-provider" className="provider-label">
-          AI Provider:
-        </label>
-        <select
-          id="ai-provider"
-          value={provider}
-          onChange={(e) => setProvider(e.target.value as AIProvider)}
-          disabled={isLoading}
-          className="provider-select"
-        >
-          <option value="claude">Claude (Anthropic)</option>
-          <option value="openai">GPT-4 (OpenAI)</option>
-        </select>
+        <div className="provider-config">
+          <label htmlFor="ai-provider" className="provider-label">
+            Provider:
+          </label>
+          <select
+            id="ai-provider"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as AIProvider)}
+            disabled={isLoading}
+            className="provider-select"
+          >
+            <option value="claude">Claude (Anthropic)</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </div>
+
+        <div className="provider-config">
+          <label htmlFor="ai-model" className="provider-label">
+            Model:
+          </label>
+          {provider === "claude" ? (
+            <select
+              id="ai-model"
+              value={claudeModel}
+              onChange={(e) => setClaudeModel(e.target.value as ClaudeModel)}
+              disabled={isLoading}
+              className="provider-select"
+            >
+              {CLAUDE_MODELS.map((model) => (
+                <option key={model.value} value={model.value}>
+                  {model.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <select
+              id="ai-model"
+              value={openaiModel}
+              onChange={(e) => setOpenaiModel(e.target.value as OpenAIModel)}
+              disabled={isLoading}
+              className="provider-select"
+            >
+              {OPENAI_MODELS.map((model) => (
+                <option key={model.value} value={model.value}>
+                  {model.label}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
 
       <div className="chat-messages">

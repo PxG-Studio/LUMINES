@@ -1,10 +1,11 @@
 "use server";
 
 import { validateCSharp } from "@/lib/unity/validator";
-import { generateWithClaude } from "@/lib/ai/claude-client";
-import { generateWithOpenAI } from "@/lib/ai/openai-client";
+import { generateWithClaude, ClaudeModel } from "@/lib/ai/claude-client";
+import { generateWithOpenAI, OpenAIModel } from "@/lib/ai/openai-client";
 
 export type AIProvider = "claude" | "openai";
+export type { ClaudeModel, OpenAIModel };
 
 interface GenerateResult {
   success: boolean;
@@ -13,18 +14,24 @@ interface GenerateResult {
   error?: string;
 }
 
+export interface GenerateOptions {
+  provider: AIProvider;
+  claudeModel?: ClaudeModel;
+  openaiModel?: OpenAIModel;
+}
+
 export async function generateUnityScript(
   prompt: string,
-  provider: AIProvider = "claude"
+  options: GenerateOptions = { provider: "claude" }
 ): Promise<GenerateResult> {
   try {
     // Generate code using the selected provider
     let result: GenerateResult;
 
-    if (provider === "openai") {
-      result = await generateWithOpenAI(prompt);
+    if (options.provider === "openai") {
+      result = await generateWithOpenAI(prompt, options.openaiModel);
     } else {
-      result = await generateWithClaude(prompt);
+      result = await generateWithClaude(prompt, options.claudeModel);
     }
 
     // If generation failed, return the error

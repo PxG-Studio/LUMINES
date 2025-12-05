@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { retryWithBackoff, parseOpenAIError } from "./error-handler";
 
 export interface GenerateResult {
   success: boolean;
@@ -7,11 +8,18 @@ export interface GenerateResult {
   error?: string;
 }
 
+export type OpenAIModel = "gpt-4" | "gpt-4-turbo-preview" | "gpt-3.5-turbo";
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
 });
 
-export async function generateWithOpenAI(prompt: string): Promise<GenerateResult> {
+export async function generateWithOpenAI(
+  prompt: string,
+  model: OpenAIModel = "gpt-4"
+): Promise<GenerateResult> {
+  const startTime = Date.now();
+
   try {
     if (!process.env.OPENAI_API_KEY) {
       return {
@@ -20,8 +28,11 @@ export async function generateWithOpenAI(prompt: string): Promise<GenerateResult
       };
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+    // Wrap API call in retry logic
+    const completion = await retryWithBackoff(
+      async () =>
+        await openai.chat.completions.create({
+      model,
       max_tokens: 2000,
       messages: [
         {
@@ -45,9 +56,12 @@ IMPORTANT REQUIREMENTS:
 Format: Return ONLY the C# code, starting with 'using' statements.`,
         },
       ],
-    });
+    }),
+      { maxRetries: 3, initialDelayMs: 1000 }
+    );
 
     const generatedText = completion.choices[0]?.message?.content || "";
+    const generationTime = Date.now() - startTime;
 
     if (!generatedText) {
       return {
@@ -66,10 +80,11 @@ Format: Return ONLY the C# code, starting with 'using' statements.`,
       scriptName,
     };
   } catch (error) {
-    console.error("OpenAI generation error:", error);
+    const aiError = parseOpenAIError(error);
+    console.error("OpenAI generation error:", aiError);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: aiError.message,
     };
   }
 }
