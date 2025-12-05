@@ -178,7 +178,14 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
           disabled={isLoading || !input.trim()}
           className="btn btn-primary"
         >
-          {isLoading ? "Generating..." : "Generate"}
+          {isLoading ? (
+            <span className="spinner-container">
+              <span className="spinner"></span>
+              <span>Generating...</span>
+            </span>
+          ) : (
+            "Generate"
+          )}
         </button>
       </form>
     </div>

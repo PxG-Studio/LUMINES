@@ -34,20 +34,8 @@ export function validateCSharp(code: string): ValidationResult {
     errors.push("Missing UnityEngine namespace");
   }
 
-  // Check for MonoBehaviour (common for Unity scripts)
-  const hasMonoBehaviour = code.includes("MonoBehaviour");
-  const hasScriptableObject = code.includes("ScriptableObject");
-
-  if (!hasMonoBehaviour && !hasScriptableObject) {
-    // This is just a warning, not an error
-    // Some scripts might not derive from these
-  }
-
-  // Check for semicolons in likely places (basic check)
-  const statements = code.match(/\w+\s*=\s*[^;]+$/gm);
-  if (statements && statements.length > 0) {
-    errors.push("Possible missing semicolons");
-  }
+  // Removed: Semicolon validation is too error-prone
+  // Unity compiler will catch these errors during compilation
 
   return {
     isValid: errors.length === 0,

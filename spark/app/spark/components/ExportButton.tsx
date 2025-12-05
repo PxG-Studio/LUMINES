@@ -53,7 +53,14 @@ export default function ExportButton({ code, scriptName }: ExportButtonProps) {
         disabled={isExporting || !code}
         className="btn btn-primary"
       >
-        {isExporting ? "Exporting..." : "Export as ZIP"}
+        {isExporting ? (
+          <span className="spinner-container">
+            <span className="spinner"></span>
+            <span>Exporting...</span>
+          </span>
+        ) : (
+          "Export as ZIP"
+        )}
       </button>
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
     </div>
