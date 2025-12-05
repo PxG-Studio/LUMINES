@@ -244,7 +244,9 @@ export default function MCPChat({ onCodeGenerated }: MCPChatProps) {
       <div className="chat-messages">
         {messages.map((message) => (
           <div key={message.id} className={`chat-message ${message.role}`}>
-            {message.content}
+            {message.role === "user" || message.role === "assistant" || message.role === "error" || message.role === "system"
+              ? (message as any).content
+              : null}
           </div>
         ))}
         {isLoading && (

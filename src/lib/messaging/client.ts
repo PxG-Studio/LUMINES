@@ -12,7 +12,9 @@ export async function getNatsClient(): Promise<NatsConnection> {
     return connectionPromise;
   }
 
-  const natsUrl = import.meta.env.VITE_NATS_URL || 'ws://192.168.86.27:4222';
+  const natsUrl = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_NATS_URL) ||
+                  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_NATS_URL) ||
+                  'ws://192.168.86.27:4222';
 
   if (!natsUrl.startsWith('ws://') && !natsUrl.startsWith('wss://')) {
     console.warn('NATS URL should use ws:// or wss:// for browser WebSocket connection');
