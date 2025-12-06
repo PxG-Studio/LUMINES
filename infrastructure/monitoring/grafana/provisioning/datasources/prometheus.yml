@@ -14,4 +14,3 @@ datasources:
       timeInterval: "15s"
       httpMethod: POST
     version: 1
-

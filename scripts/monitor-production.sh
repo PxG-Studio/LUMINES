@@ -61,28 +61,28 @@ check_production() {
     ((CHECK_COUNT++))
     CURRENT_TIME=$(date +%s)
     ELAPSED=$((CURRENT_TIME - START_TIME))
-    
+
     log_section "Check #$CHECK_COUNT (Elapsed: ${ELAPSED}s)"
-    
+
     # Health check
     if command -v curl &> /dev/null; then
         HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/health" 2>&1 || echo "ERROR")
         HTTP_CODE=$(echo "$HEALTH_RESPONSE" | tail -n1)
         HEALTH_BODY=$(echo "$HEALTH_RESPONSE" | head -n-1)
-        
+
         if [ "$HTTP_CODE" = "200" ]; then
             log_info "✅ Health check: OK"
         else
             log_error "❌ Health check: FAILED (HTTP $HTTP_CODE)"
             ((ERROR_COUNT++))
         fi
-        
+
         # Response time check
         START=$(date +%s%N)
         curl -f -s "$PRODUCTION_URL/api/health" > /dev/null 2>&1
         END=$(date +%s%N)
         DURATION=$(( (END - START) / 1000000 ))
-        
+
         if [ "$DURATION" -lt 500 ]; then
             log_info "✅ Response time: ${DURATION}ms (OK)"
         elif [ "$DURATION" -lt 1000 ]; then
@@ -92,22 +92,22 @@ check_production() {
             log_error "❌ Response time: ${DURATION}ms (CRITICAL)"
             ((ERROR_COUNT++))
         fi
-        
+
         # Database health
         DB_HEALTH=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/health/db" 2>&1 || echo "ERROR")
         DB_HTTP_CODE=$(echo "$DB_HEALTH" | tail -n1)
-        
+
         if [ "$DB_HTTP_CODE" = "200" ]; then
             log_info "✅ Database health: OK"
         else
             log_error "❌ Database health: FAILED (HTTP $DB_HTTP_CODE)"
             ((ERROR_COUNT++))
         fi
-        
+
         # Metrics check
         METRICS_RESPONSE=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/metrics" 2>&1 || echo "ERROR")
         METRICS_HTTP_CODE=$(echo "$METRICS_RESPONSE" | tail -n1)
-        
+
         if [ "$METRICS_HTTP_CODE" = "200" ]; then
             log_info "✅ Metrics endpoint: OK"
         else
@@ -117,7 +117,7 @@ check_production() {
     else
         log_warn "curl not available, skipping checks"
     fi
-    
+
     # Summary
     log_info "Summary: $CHECK_COUNT checks, $ERROR_COUNT errors, $WARNING_COUNT warnings"
 }
@@ -127,12 +127,12 @@ log_section "Starting Production Monitoring"
 
 while [ $(date +%s) -lt $END_TIME ]; do
     check_production
-    
+
     # Check if we should continue
     if [ $(date +%s) -ge $END_TIME ]; then
         break
     fi
-    
+
     # Wait for next check
     sleep "$MONITORING_INTERVAL"
 done
@@ -161,4 +161,3 @@ else
     log_error "Review production logs and consider rollback if issues persist"
     exit 1
 fi
-

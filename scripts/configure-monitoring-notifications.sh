@@ -81,7 +81,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo
     read -p "From Address (e.g., alerts@lumenforge.io): " FROM_EMAIL
     read -p "To Address (e.g., oncall@lumenforge.io): " TO_EMAIL
-    
+
     if [ -n "$SMTP_SERVER" ] && [ -n "$FROM_EMAIL" ] && [ -n "$TO_EMAIL" ]; then
         log_info "Email configuration:"
         log_info "  SMTP Server: $SMTP_SERVER"
@@ -117,4 +117,3 @@ log_info "  docker-compose -f docker-compose.monitoring.yml restart alertmanager
 log_info ""
 log_info "Or if using Kubernetes:"
 log_info "  kubectl rollout restart deployment/alertmanager -n monitoring"
-

@@ -99,4 +99,3 @@ log_info ""
 log_warn "⚠️  Review the updated files and commit changes:"
 log_info "  git add docs/PRODUCTION_RUNBOOK.md docs/DISASTER_RECOVERY.md docs/SECURITY_HARDENING.md"
 log_info "  git commit -m 'Update contact information in production documentation'"
-

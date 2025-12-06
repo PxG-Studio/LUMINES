@@ -143,4 +143,3 @@ log_info "Next steps:"
 log_info "  1. Review .env.production"
 log_info "  2. Run: ./scripts/final-validation.sh"
 log_info "  3. Deploy: ./scripts/deploy-production.sh staging"
-

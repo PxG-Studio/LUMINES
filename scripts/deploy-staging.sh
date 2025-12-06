@@ -93,7 +93,7 @@ if [ -f "$SCRIPT_DIR/verify-deployment.sh" ]; then
     }
 else
     log_warn "Verification script not found, performing basic checks..."
-    
+
     # Basic health check
     if command -v curl &> /dev/null; then
         for i in {1..30}; do
@@ -116,7 +116,7 @@ log_section "Running Smoke Tests"
 if [ -f "$PROJECT_ROOT/tests/e2e/smoke.spec.ts" ] || [ -f "$PROJECT_ROOT/tests/e2e/auth-flow.spec.ts" ]; then
     log_info "Running smoke tests..."
     export BASE_URL="$STAGING_URL"
-    
+
     # Run critical smoke tests
     if command -v npx &> /dev/null; then
         npx playwright test tests/e2e/auth-flow.spec.ts --grep "smoke" || {
@@ -156,4 +156,3 @@ log_info ""
 log_info "To rollback:"
 log_info "  git checkout <previous-commit>"
 log_info "  ./scripts/deploy-staging.sh"
-

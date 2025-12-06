@@ -154,4 +154,3 @@ log_warn "  1. Update contact information in runbooks"
 log_warn "  2. Set up on-call rotation"
 log_warn "  3. Review and test all procedures"
 log_warn "  4. Document any custom configurations"
-

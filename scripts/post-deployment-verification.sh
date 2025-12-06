@@ -52,9 +52,9 @@ run_check() {
     local name=$1
     local command=$2
     local critical=${3:-true}
-    
+
     log_info "Checking: $name"
-    
+
     if eval "$command" > /dev/null 2>&1; then
         log_info "  ✅ PASSED: $name"
         ((PASSED++))
@@ -78,7 +78,7 @@ log_section "1. Comprehensive Health Check"
 if command -v curl &> /dev/null; then
     HEALTH_RESPONSE=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/health" 2>&1 || echo "ERROR")
     HTTP_CODE=$(echo "$HEALTH_RESPONSE" | tail -n1)
-    
+
     if [ "$HTTP_CODE" = "200" ]; then
         log_info "  ✅ Application health: OK"
         ((PASSED++))
@@ -86,11 +86,11 @@ if command -v curl &> /dev/null; then
         log_error "  ❌ Application health: FAILED (HTTP $HTTP_CODE)"
         ((FAILED++))
     fi
-    
+
     # Database health
     DB_HEALTH=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/health/db" 2>&1 || echo "ERROR")
     DB_HTTP_CODE=$(echo "$DB_HEALTH" | tail -n1)
-    
+
     if [ "$DB_HTTP_CODE" = "200" ]; then
         log_info "  ✅ Database health: OK"
         ((PASSED++))
@@ -98,11 +98,11 @@ if command -v curl &> /dev/null; then
         log_error "  ❌ Database health: FAILED (HTTP $DB_HTTP_CODE)"
         ((FAILED++))
     fi
-    
+
     # Cache health (if endpoint exists)
     CACHE_HEALTH=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/health/cache" 2>&1 || echo "ERROR")
     CACHE_HTTP_CODE=$(echo "$CACHE_HEALTH" | tail -n1)
-    
+
     if [ "$CACHE_HTTP_CODE" = "200" ]; then
         log_info "  ✅ Cache health: OK"
         ((PASSED++))
@@ -136,7 +136,7 @@ if command -v curl &> /dev/null; then
     curl -f -s "$PRODUCTION_URL/api/health" > /dev/null 2>&1
     END=$(date +%s%N)
     DURATION=$(( (END - START) / 1000000 ))
-    
+
     if [ "$DURATION" -lt 500 ]; then
         log_info "  ✅ Response time: ${DURATION}ms (OK)"
         ((PASSED++))
@@ -192,7 +192,7 @@ if command -v curl &> /dev/null; then
     # Metrics endpoint
     METRICS_RESPONSE=$(curl -s -w "\n%{http_code}" "$PRODUCTION_URL/api/metrics" 2>&1 || echo "ERROR")
     METRICS_HTTP_CODE=$(echo "$METRICS_RESPONSE" | tail -n1)
-    
+
     if [ "$METRICS_HTTP_CODE" = "200" ]; then
         log_info "  ✅ Metrics endpoint: OK"
         ((PASSED++))
@@ -251,4 +251,3 @@ else
     log_error "Consider rollback if issues persist"
     exit 1
 fi
-

@@ -3,3 +3,7 @@
 prisma/migrations/**/*_migration.sql
 prisma/migrations/**/*_migration_lock.toml
 .env.example
+
+# Build outputs
+node_modules/
+storybook-static/

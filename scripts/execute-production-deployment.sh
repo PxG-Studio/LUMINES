@@ -80,7 +80,7 @@ if [ -f "$SCRIPT_DIR/verify-deployment.sh" ]; then
     export HEALTH_URL="$PRODUCTION_URL/api/health"
     export DB_HEALTH_URL="$PRODUCTION_URL/api/health/db"
     export METRICS_URL="$PRODUCTION_URL/api/metrics"
-    
+
     "$SCRIPT_DIR/verify-deployment.sh" || {
         log_error "Deployment verification failed"
         log_error "Consider rolling back if issues persist"
@@ -88,7 +88,7 @@ if [ -f "$SCRIPT_DIR/verify-deployment.sh" ]; then
     }
 else
     log_warn "Verification script not found, performing basic checks..."
-    
+
     # Basic health check
     if command -v curl &> /dev/null; then
         for i in {1..30}; do
@@ -111,7 +111,7 @@ log_section "Production Smoke Tests"
 if [ -f "$PROJECT_ROOT/tests/e2e/smoke.spec.ts" ]; then
     log_info "Running production smoke tests..."
     export BASE_URL="$PRODUCTION_URL"
-    
+
     if command -v npx &> /dev/null; then
         npx playwright test tests/e2e/smoke.spec.ts --reporter=list || {
             log_warn "Some smoke tests failed, but deployment succeeded"
@@ -180,4 +180,3 @@ log_info ""
 log_info "Rollback Procedure (if needed):"
 log_info "  ./scripts/deploy-production.sh production --rollback"
 log_info "  Or: git checkout <previous-commit> && ./scripts/deploy-production.sh production"
-

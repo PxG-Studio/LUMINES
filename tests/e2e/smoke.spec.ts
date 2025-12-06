@@ -13,7 +13,7 @@ test.describe('Smoke Tests - Staging Deployment', () => {
     const response = await request.get(`${API_BASE}/health`);
     expect(response.ok()).toBeTruthy();
     expect(response.status()).toBe(200);
-    
+
     const body = await response.json();
     expect(body).toHaveProperty('status');
     expect(body.status).toBe('healthy');
@@ -22,7 +22,7 @@ test.describe('Smoke Tests - Staging Deployment', () => {
   test('should have database health endpoint', async ({ request }) => {
     const response = await request.get(`${API_BASE}/health/db`);
     expect(response.ok()).toBeTruthy();
-    
+
     const body = await response.json();
     expect(body).toHaveProperty('status');
   });
@@ -31,7 +31,7 @@ test.describe('Smoke Tests - Staging Deployment', () => {
     const response = await request.get(`${API_BASE}/metrics`);
     expect(response.ok()).toBeTruthy();
     expect(response.status()).toBe(200);
-    
+
     const body = await response.text();
     expect(body).toContain('# HELP');
     expect(body).toContain('# TYPE');
@@ -61,8 +61,7 @@ test.describe('Smoke Tests - Staging Deployment', () => {
     const start = Date.now();
     await request.get(`${API_BASE}/health`);
     const duration = Date.now() - start;
-    
+
     expect(duration).toBeLessThan(1000);
   });
 });
-

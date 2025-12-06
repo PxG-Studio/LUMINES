@@ -121,4 +121,3 @@ inhibit_rules:
     target_match:
       severity: 'info'
     equal: ['alertname', 'cluster', 'service']
-

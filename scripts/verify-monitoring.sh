@@ -48,12 +48,12 @@ test_service() {
     local name=$1
     local url=$2
     local expected_status=${3:-200}
-    
+
     log_info "Testing: $name"
-    
+
     if command -v curl &> /dev/null; then
         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
-        
+
         if [ "$HTTP_CODE" = "$expected_status" ] || [ "$HTTP_CODE" = "200" ]; then
             log_info "  ✅ PASSED: $name (HTTP $HTTP_CODE)"
             ((PASSED++))
@@ -99,7 +99,7 @@ if command -v docker &> /dev/null; then
         log_error "  ❌ Prometheus container not running"
         ((FAILED++))
     fi
-    
+
     if docker ps | grep -q grafana; then
         log_info "  ✅ Grafana container running"
         ((PASSED++))
@@ -107,7 +107,7 @@ if command -v docker &> /dev/null; then
         log_error "  ❌ Grafana container not running"
         ((FAILED++))
     fi
-    
+
     if docker ps | grep -q alertmanager; then
         log_info "  ✅ Alertmanager container running"
         ((PASSED++))
@@ -137,4 +137,3 @@ else
     log_error "Review the errors above and fix issues before proceeding"
     exit 1
 fi
-
