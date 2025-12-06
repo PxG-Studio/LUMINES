@@ -36,10 +36,13 @@ export class TokenCache {
 
   /**
    * Invalidate all token caches
+   * Note: This invalidates known token categories. For full pattern deletion,
+   * Redis SCAN would be required, which is expensive. This approach is safer.
    */
   static async invalidateAll(): Promise<void> {
-    // TODO: Implement pattern-based deletion
-    // This requires Redis SCAN command support
+    // Invalidate common token categories
+    const categories = ['color', 'spacing', 'typography', 'shadow', 'border', 'radius'];
+    await Promise.all(categories.map(category => this.invalidate(category)));
   }
 }
 

@@ -39,7 +39,8 @@ export class SessionStore {
    */
   static async exists(sessionId: string): Promise<boolean> {
     const key = `${SESSION_PREFIX}${sessionId}`;
-    return cache.exists(key);
+    const data = await cache.get(key);
+    return data !== null;
   }
 }
 

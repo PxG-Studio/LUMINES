@@ -89,6 +89,36 @@ export async function verifyJWT(token: string): Promise<JWTClaims | null> {
 }
 
 /**
+ * Generate access token (for internal token generation)
+ * Uses HS256 for internally generated tokens
+ */
+export async function generateAccessToken(
+  userId: string,
+  roles: string[] = ['user'],
+  expiresIn: string = '15m'
+): Promise<string> {
+  const secret = new TextEncoder().encode(
+    env.NOCTURNA_JWT_SECRET || 'change-me-in-production'
+  );
+
+  const audience = env.NOCTURNA_JWT_AUDIENCE || 'lumines.nocturna.network';
+  const issuer = env.NOCTURNA_JWT_ISSUER || 'lumines.nocturna.network';
+
+  const token = await new jose.SignJWT({
+    sub: userId,
+    roles: roles,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(expiresIn)
+    .setIssuer(issuer)
+    .setAudience(audience)
+    .sign(secret);
+
+  return token;
+}
+
+/**
  * Decode JWT without verification (for inspection only)
  */
 export function decodeJWT(token: string): any {

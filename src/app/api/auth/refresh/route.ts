@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { verifyJWT, extractJWT } from '@/lib/middleware/auth';
+import { generateAccessToken } from '@/lib/auth/jwt';
+import { logger } from '@/lib/monitoring/logger';
 
 const refreshTokenSchema = z.object({
   refresh_token: z.string().min(1),
@@ -34,23 +36,27 @@ export async function POST(request: NextRequest) {
     // Note: In production, you'd check for 'refresh' scope in token claims
     // For now, we'll accept any valid JWT as a refresh token
 
-    // TODO: Generate new access token
-    // In a real implementation, you would:
-    // 1. Verify the refresh token was issued for refresh
-    // 2. Generate a new access token with shorter expiry
-    // 3. Return new access token
+    // Generate new access token with shorter expiry (15 minutes)
+    const newAccessToken = await generateAccessToken(
+      claims.sub,
+      claims.roles || ['user'],
+      '15m' // Access tokens expire in 15 minutes
+    );
 
-    // For now, return the same token (not ideal, but functional)
-    // In production, implement proper token generation
+    logger.info('Access token refreshed', { 
+      userId: claims.sub, 
+      email: claims.email 
+    });
     
     return NextResponse.json({
-      access_token: validated.refresh_token, // TODO: Generate new token
-      expires_in: 3600,
+      access_token: newAccessToken,
+      expires_in: 900, // 15 minutes in seconds
       token_type: 'Bearer',
+      refresh_token: validated.refresh_token, // Return the same refresh token
       user: {
         id: claims.sub,
         email: claims.email,
-        roles: claims.roles,
+        roles: claims.roles || ['user'],
       },
     });
   } catch (error) {
@@ -93,15 +99,27 @@ export async function PUT(request: NextRequest) {
     );
   }
 
-  // TODO: Generate new access token
+  // Generate new access token
+  const newAccessToken = await generateAccessToken(
+    claims.sub,
+    claims.roles || ['user'],
+    '15m' // Access tokens expire in 15 minutes
+  );
+
+  logger.info('Access token refreshed (via PUT)', { 
+    userId: claims.sub, 
+    email: claims.email 
+  });
+
   return NextResponse.json({
-    access_token: refreshToken, // TODO: Generate new token
-    expires_in: 3600,
+    access_token: newAccessToken,
+    expires_in: 900, // 15 minutes in seconds
     token_type: 'Bearer',
+    refresh_token: refreshToken, // Return the same refresh token
     user: {
       id: claims.sub,
       email: claims.email,
-      roles: claims.roles,
+      roles: claims.roles || ['user'],
     },
   });
 }

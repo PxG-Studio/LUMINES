@@ -70,6 +70,7 @@ const envSchema = z.object({
   // Authentication
   NOCTURNA_JWT_SECRET: z.string().optional(),
   NOCTURNA_JWT_AUDIENCE: z.string().default('lumines.nocturna.network'),
+  NOCTURNA_JWT_ISSUER: z.string().default('lumines.nocturna.network'),
 
   // AI Configuration (SPARK)
   SPARK_AI_ENDPOINT: z.string().url().optional(),
