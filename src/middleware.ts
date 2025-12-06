@@ -4,25 +4,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { checkRateLimit } from '@/lib/security/rate-limiter';
+import { rateLimiters } from '@/lib/security/rate-limiter';
 import { applySecurityHeaders } from '@/lib/security/security-headers';
+import { logger } from '@/lib/monitoring/logger';
 
 /**
  * Rate limiting configuration per route
  */
-const RATE_LIMIT_CONFIG: Record<string, { limiter: typeof rateLimiters.standard; paths: string[] }> = {
-  api: {
-    limiter: rateLimiters.standard, // 100 requests per 15 minutes
-    paths: ['/api'],
-  },
-  auth: {
-    limiter: rateLimiters.strict, // 10 requests per minute
-    paths: ['/api/auth'],
-  },
-  public: {
-    limiter: rateLimiters.relaxed, // 1000 requests per hour
-    paths: ['/'],
-  },
+const RATE_LIMIT_CONFIG = {
+  api: rateLimiters.standard, // 100 requests per 15 minutes
+  auth: rateLimiters.strict, // 10 requests per minute
+  public: rateLimiters.relaxed, // 1000 requests per hour
 };
 
 /**
@@ -31,16 +23,16 @@ const RATE_LIMIT_CONFIG: Record<string, { limiter: typeof rateLimiters.standard;
 function getRateLimiterForPath(pathname: string) {
   // Check auth routes first (most restrictive)
   if (pathname.startsWith('/api/auth')) {
-    return RATE_LIMIT_CONFIG.auth.limiter;
+    return RATE_LIMIT_CONFIG.auth;
   }
   
   // Check API routes
   if (pathname.startsWith('/api')) {
-    return RATE_LIMIT_CONFIG.api.limiter;
+    return RATE_LIMIT_CONFIG.api;
   }
   
   // Default to relaxed for public routes
-  return RATE_LIMIT_CONFIG.public.limiter;
+  return RATE_LIMIT_CONFIG.public;
 }
 
 /**
