@@ -48,7 +48,7 @@ export function DatabaseDemo() {
     <div className="p-6 bg-slate-900 text-white rounded-lg space-y-6 max-w-4xl">
       <div className="border-b border-slate-700 pb-4">
         <h2 className="text-2xl font-bold text-slate-100">Database Integration Test</h2>
-        <p className="text-slate-400 text-sm mt-1">Phase 1.1: PostgreSQL via Supabase</p>
+        <p className="text-slate-400 text-sm mt-1">Phase 1.1: Direct PostgreSQL Connection</p>
       </div>
 
       <div className="space-y-4">
@@ -201,7 +201,7 @@ export function DatabaseDemo() {
           <li>• Files: {files.length} in active project</li>
           <li>• Assets: {assets.length} in active project</li>
           <li>• File Tree Nodes: {fileTree.length}</li>
-          <li>• All data persisted to Supabase (PostgreSQL)</li>
+          <li>• All data persisted to PostgreSQL (192.168.86.27)</li>
         </ul>
       </div>
     </div>
