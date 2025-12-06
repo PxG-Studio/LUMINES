@@ -1,8 +1,13 @@
 /**
- * NextAuth API Route Handler
- * Handles all authentication requests (sign in, sign out, callback, etc.)
+ * NextAuth.js API Route Handler
+ * 
+ * Handles authentication requests
  */
 
-import { handlers } from '@/lib/auth';
+import NextAuth from 'next-auth';
+import { getNextAuthConfig } from '@/lib/auth/nextauth';
 
-export const { GET, POST } = handlers;
+const handler = NextAuth(getNextAuthConfig());
+
+export { handler as GET, handler as POST };
+
