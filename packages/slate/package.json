@@ -1,0 +1,8 @@
+{
+  "name": "@lumines/slate",
+  "version": "0.0.0-placeholder",
+  "private": true,
+  "description": "⚠️ PLACEHOLDER - SLATE IDE/editor experience (future migration target)",
+  "// TODO": "SLATE currently lives in src/app/slate/ and is production-ready. Do not migrate yet."
+}
+

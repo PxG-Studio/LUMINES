@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "WIS2L Framework - Workspace, Identity, Spark, Slate, Ignis, Landing - LumenForge.io Ecosystem",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -36,7 +40,12 @@
     "check-docs": "tsx scripts/check-doc-coverage.ts",
     "verify-mdx": "tsx scripts/verify-mdx.ts",
     "audit-stories": "tsx scripts/audit-stories.ts",
-    "build-plugin": "cd packages/wissil-plugin-sdk && npm run build-plugin"
+    "build-plugin": "cd packages/wissil-plugin-sdk && npm run build-plugin",
+    "// TODO: Turborepo workspace scripts": "",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:storybook": "turbo run storybook --filter=storybook",
+    "build:all": "turbo run build",
+    "test:all": "turbo run test"
   },
   "dependencies": {
     "clsx": "^2.1.0",
