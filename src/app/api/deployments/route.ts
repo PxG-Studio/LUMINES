@@ -8,6 +8,9 @@ import { deploymentQueries, projectQueries, buildQueries } from '@/lib/db/querie
 import { eventQueries } from '@/lib/db/queries';
 import { deploymentEvents } from '@/lib/events/publishers';
 import { requireAuth, rateLimit } from '@/lib/middleware';
+import { parsePagination, createPaginatedResponse, addPaginationHeaders } from '@/lib/api/pagination';
+import { parseFilters, parseSort, buildWhereClause, buildOrderBy, validateFilters } from '@/lib/api/filtering';
+import { applyStandardHeaders } from '@/lib/api/headers';
 import { z } from 'zod';
 
 // Validation schemas
@@ -56,22 +59,85 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get('projectId');
     const userId = searchParams.get('userId');
 
-    let deployments;
-    if (projectId) {
-      deployments = await deploymentQueries.findByProjectId(projectId);
-    } else if (userId) {
-      deployments = await deploymentQueries.findByUserId(userId);
-    } else {
-      deployments = await deploymentQueries.findAll();
+    // Simple queries (backward compatible)
+    if (projectId && !searchParams.has('page') && !searchParams.has('sort')) {
+      const deployments = await deploymentQueries.findByProjectId(projectId);
+      const response = NextResponse.json(deployments);
+      return applyStandardHeaders(response);
+    }
+    if (userId && !searchParams.has('page') && !searchParams.has('sort')) {
+      const deployments = await deploymentQueries.findByUserId(userId);
+      const response = NextResponse.json(deployments);
+      return applyStandardHeaders(response);
     }
 
-    return NextResponse.json(deployments);
+    // Advanced query with pagination, filtering, and sorting
+    const pagination = parsePagination(request);
+    const filters = parseFilters(request);
+    const sort = parseSort(request);
+
+    // Add projectId/userId to filters if provided
+    if (projectId) {
+      filters.projectId = projectId;
+    }
+    if (userId) {
+      filters.userId = userId;
+    }
+
+    // Validate filters
+    const allowedFields = ['projectId', 'userId', 'status', 'environment', 'version', 'createdAt', 'updatedAt', 'deployedAt'];
+    const filterValidation = validateFilters(filters, allowedFields);
+    if (!filterValidation.valid) {
+      const response = NextResponse.json(
+        { error: 'Invalid filter parameters', details: filterValidation.errors },
+        { status: 400 }
+      );
+      return applyStandardHeaders(response);
+    }
+
+    // Build where clause
+    const where = buildWhereClause(filters);
+    const orderBy = buildOrderBy(sort, { field: 'createdAt', direction: 'desc' });
+
+    // Get total count
+    const { prisma } = await import('@/lib/db/client');
+    const total = await prisma.deployment.count({ where });
+
+    // Get paginated results
+    const deployments = await prisma.deployment.findMany({
+      where,
+      orderBy,
+      skip: pagination.offset,
+      take: pagination.limit,
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const paginatedResult = createPaginatedResponse(deployments, total, pagination);
+    const response = NextResponse.json(paginatedResult);
+    addPaginationHeaders(response, pagination, total);
+    return applyStandardHeaders(response);
   } catch (error) {
     console.error('Error fetching deployments:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return applyStandardHeaders(response);
   }
 }
 
@@ -154,20 +220,23 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(deployment, { status: 201 });
+    const response = NextResponse.json(deployment, { status: 201 });
+    return applyStandardHeaders(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Validation error', details: error.errors },
         { status: 400 }
       );
+      return applyStandardHeaders(response);
     }
 
     console.error('Error creating deployment:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return applyStandardHeaders(response);
   }
 }
 

@@ -6,6 +6,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userQueries, eventQueries } from '@/lib/db/queries';
 import { requireAuth, rateLimit } from '@/lib/middleware';
+import { parsePagination, createPaginatedResponse, addPaginationHeaders } from '@/lib/api/pagination';
+import { parseFilters, parseSort, buildWhereClause, buildOrderBy, validateFilters } from '@/lib/api/filtering';
+import { applyStandardHeaders } from '@/lib/api/headers';
 import { z } from 'zod';
 
 // Validation schemas
@@ -111,20 +114,23 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(user, { status: 201 });
+    const response = NextResponse.json(user, { status: 201 });
+    return applyStandardHeaders(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Validation error', details: error.errors },
         { status: 400 }
       );
+      return applyStandardHeaders(response);
     }
 
     console.error('Error creating user:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return applyStandardHeaders(response);
   }
 }
 

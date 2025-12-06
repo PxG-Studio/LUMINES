@@ -7,6 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { templateQueries } from '@/lib/db/queries';
 import { eventQueries } from '@/lib/db/queries';
 import { requireAuth, rateLimit } from '@/lib/middleware';
+import { parsePagination, createPaginatedResponse, addPaginationHeaders } from '@/lib/api/pagination';
+import { parseFilters, parseSort, buildWhereClause, buildOrderBy, validateFilters } from '@/lib/api/filtering';
+import { applyStandardHeaders, addCacheHeaders } from '@/lib/api/headers';
 import { z } from 'zod';
 
 // Validation schemas
@@ -37,15 +40,63 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const engine = searchParams.get('engine');
 
-    const templates = await templateQueries.findAll(engine || undefined);
+    // Simple engine filter (backward compatible)
+    if (engine && !searchParams.has('page') && !searchParams.has('sort')) {
+      const templates = await templateQueries.findAll(engine);
+      const response = NextResponse.json(templates);
+      addCacheHeaders(response, 3600, true); // Cache templates for 1 hour
+      return applyStandardHeaders(response, { noCache: false, cacheMaxAge: 3600 });
+    }
 
-    return NextResponse.json(templates);
+    // Advanced query with pagination, filtering, and sorting
+    const pagination = parsePagination(request);
+    const filters = parseFilters(request);
+    const sort = parseSort(request);
+
+    // Add engine to filters if provided
+    if (engine) {
+      filters.engine = engine;
+    }
+
+    // Validate filters
+    const allowedFields = ['engine', 'category', 'name', 'slug', 'createdAt', 'updatedAt'];
+    const filterValidation = validateFilters(filters, allowedFields);
+    if (!filterValidation.valid) {
+      const response = NextResponse.json(
+        { error: 'Invalid filter parameters', details: filterValidation.errors },
+        { status: 400 }
+      );
+      return applyStandardHeaders(response);
+    }
+
+    // Build where clause
+    const where = buildWhereClause(filters);
+    const orderBy = buildOrderBy(sort, { field: 'createdAt', direction: 'desc' });
+
+    // Get total count
+    const { prisma } = await import('@/lib/db/client');
+    const total = await prisma.template.count({ where });
+
+    // Get paginated results
+    const templates = await prisma.template.findMany({
+      where,
+      orderBy,
+      skip: pagination.offset,
+      take: pagination.limit,
+    });
+
+    const paginatedResult = createPaginatedResponse(templates, total, pagination);
+    const response = NextResponse.json(paginatedResult);
+    addPaginationHeaders(response, pagination, total);
+    addCacheHeaders(response, 3600, true); // Cache templates for 1 hour
+    return applyStandardHeaders(response, { noCache: false, cacheMaxAge: 3600 });
   } catch (error) {
     console.error('Error fetching templates:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return applyStandardHeaders(response);
   }
 }
 
@@ -110,20 +161,23 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(template, { status: 201 });
+    const response = NextResponse.json(template, { status: 201 });
+    return applyStandardHeaders(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Validation error', details: error.errors },
         { status: 400 }
       );
+      return applyStandardHeaders(response);
     }
 
     console.error('Error creating template:', error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    return applyStandardHeaders(response);
   }
 }
 
