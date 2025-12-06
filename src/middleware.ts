@@ -4,9 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimiters } from '@/lib/security/rate-limiter';
+import { checkRateLimit } from '@/lib/security/rate-limiter';
 import { applySecurityHeaders } from '@/lib/security/security-headers';
-import { logger } from '@/lib/monitoring/logger';
 
 /**
  * Rate limiting configuration per route
