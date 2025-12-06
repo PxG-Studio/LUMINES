@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lumines-config
+  namespace: lumines
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  K8S_NAMESPACE: "lumines"
+  K8S_CONTROL_NODE_IP: "192.168.86.114"
+  K8S_COMPUTE_NODE_IP: "192.168.86.115"
+  
+  # Service Ports
+  PORT_LANDING: "3000"
+  PORT_SLATE: "3001"
+  PORT_IGNITION: "3002"
+  PORT_SPARK: "3003"
+  PORT_IGNIS: "3004"
+  PORT_WAYPOINT: "3005"
+  
+  # Public URLs
+  NEXT_PUBLIC_LUMENFORGE_DOMAIN: "lumenforge.io"
+  NEXT_PUBLIC_NOCTURNA_ID_URL: "https://nocturnaID.org"
+  
+  # Database Configuration (host/port only, credentials in Secrets)
+  DATABASE_HOST: "192.168.86.27"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "lumines"
+  DATABASE_POOL_MIN: "2"
+  DATABASE_POOL_MAX: "10"
+  
+  # Redis Configuration
+  REDIS_HOST: "192.168.86.27"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  REDIS_TTL: "3600"
+  
+  # NATS Configuration
+  NATS_HOST: "192.168.86.27"
+  NATS_PORT: "4222"
+  NATS_CLUSTER: "lumines-cluster"
+  
+  # Container Registry
+  REGISTRY_HOST: "192.168.86.27"
+  REGISTRY_PORT: "5000"
+  
+  # Rate Limiting
+  RATE_LIMIT_FREE: "10"
+  RATE_LIMIT_PRO: "100"
+  RATE_LIMIT_ENTERPRISE: "1000"
+

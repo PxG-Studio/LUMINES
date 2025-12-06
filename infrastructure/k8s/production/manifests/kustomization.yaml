@@ -1,0 +1,43 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: lumines
+
+resources:
+  # Core infrastructure
+  - namespace.yaml
+  - configmap.yaml
+  - secrets-template.yaml
+
+  # Deployments
+  - landing-deployment.yaml
+  - slate-deployment.yaml
+  - ignition-deployment.yaml
+  - spark-deployment.yaml
+  - ignis-deployment.yaml
+  - waypoint-deployment.yaml
+
+  # Services
+  - landing-service.yaml
+  - slate-service.yaml
+  - ignition-service.yaml
+  - spark-service.yaml
+  - ignis-service.yaml
+  - waypoint-service.yaml
+
+  # Ingress
+  - ingress.yaml
+
+  # Autoscaling
+  - hpa-landing.yaml
+
+# Common labels
+commonLabels:
+  app: lumines
+  managed-by: kustomize
+
+# TODO: Create overlays for dev/staging environments
+# overlays:
+#   - dev
+#   - staging
+

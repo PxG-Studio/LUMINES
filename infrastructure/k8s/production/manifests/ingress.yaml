@@ -1,0 +1,91 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lumines-ingress
+  namespace: lumines
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # Cloudflare integration
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - lumenforge.io
+    - landing.lumenforge.io
+    - slate.lumenforge.io
+    - ignition.lumenforge.io
+    - spark.lumenforge.io
+    - ignis.lumenforge.io
+    - waypoint.lumenforge.io
+    secretName: lumines-tls
+  rules:
+  # Landing (Main Gateway)
+  - host: lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landing-service
+            port:
+              number: 3000
+  # SLATE
+  - host: slate.lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: slate-service
+            port:
+              number: 3001
+  # IGNITION
+  - host: ignition.lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ignition-service
+            port:
+              number: 3002
+  # SPARK
+  - host: spark.lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: spark-service
+            port:
+              number: 3003
+  # IGNIS
+  - host: ignis.lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ignis-service
+            port:
+              number: 3004
+  # WAYPOINT
+  - host: waypoint.lumenforge.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: waypoint-service
+            port:
+              number: 3005
+
