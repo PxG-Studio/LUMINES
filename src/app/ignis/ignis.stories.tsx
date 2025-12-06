@@ -3,7 +3,7 @@ import IgnisPage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Ignis/Build Pipeline',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Ignis/Pages/API Backend',
   component: IgnisPage,
   parameters: {
     layout: 'fullscreen',
@@ -85,7 +85,25 @@ export const Mobile: Story = {
   render: () => <IgnisPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Tablet: Story = {
+  render: () => <IgnisPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'tablet',
+    },
+  },
+};
+
+export const WideScreen: Story = {
+  render: () => <IgnisPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
     },
   },
 };

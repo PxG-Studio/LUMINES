@@ -3,7 +3,8 @@ import LandingPage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Landing/Main Gateway',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Landing/Pages/Main Gateway',
+  id: 'wis2l-landing-main-gateway-app',
   component: LandingPage,
   parameters: {
     layout: 'fullscreen',
@@ -22,7 +23,7 @@ The main marketing landing page for LumenForge.io ecosystem.
 
 ## Features
 - **Hero Section**: Main value proposition and CTAs
-- **WISSIL Systems**: Overview cards for all 5 subsystems
+- **WIS2L Framework Systems**: Overview cards for all 6 subsystems
 - **Features Section**: Key platform benefits
 - **Navigation**: Links to /about, /demo, /projects
 - **Responsive Design**: Optimized for all screen sizes
@@ -76,7 +77,7 @@ export const Mobile: Story = {
   render: () => <LandingPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
     },
   },
 };
@@ -100,7 +101,7 @@ export const WideScreen: Story = {
   render: () => <LandingPage />,
   parameters: {
     viewport: {
-      defaultViewport: 'wide',
+      defaultViewport: 'wideScreen',
     },
   },
 };

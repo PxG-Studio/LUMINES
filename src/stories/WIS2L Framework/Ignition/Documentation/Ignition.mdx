@@ -1,0 +1,350 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Lumenforge.io Design System/WIS2L Framework/Ignition/Documentation/Ignition"
+  id="wis2l-ignition-docs-stories"
+  name="Ignition WIS2L Docs"
+/>
+
+# IGNITION - Project Initialization System
+
+**IGNITION** kickstarts new projects with intelligent scaffolding, best practices, and seamless WISSIL integration.
+
+## Purpose
+
+IGNITION automates project setup by:
+- **Template Selection**: Pre-configured project templates
+- **Smart Scaffolding**: Intelligent file structure generation
+- **Best Practices**: Built-in linting, testing, CI/CD
+- **WISSIL Integration**: Automatic subsystem connections
+- **Configuration Wizard**: 5-step guided setup
+
+## Templates
+
+### Next.js Application
+
+Full-stack React application with modern tooling:
+
+**Features:**
+- App Router (Next.js 14+)
+- TypeScript with strict mode
+- Tailwind CSS with SLATE tokens
+- ESLint + Prettier configuration
+- Jest + React Testing Library
+- GitHub Actions CI/CD
+
+**Structure:**
+```
+my-app/
+├── src/
+│   ├── app/          # Next.js App Router
+│   ├── components/   # React components
+│   ├── tokens/       # SLATE design tokens
+│   └── styles/       # Global styles
+├── tests/            # Test files
+├── .github/          # CI/CD workflows
+└── package.json
+```
+
+### Component Library
+
+Standalone library with Storybook:
+
+**Features:**
+- Atomic Design structure
+- Storybook 8 integration
+- TypeScript declarations
+- Bundle optimization (Rollup)
+- Chromatic visual testing
+- NPM publishing workflow
+
+**Structure:**
+```
+my-library/
+├── src/
+│   ├── atoms/        # Atomic components
+│   ├── molecules/    # Composite components
+│   ├── organisms/    # Complex components
+│   └── index.ts      # Public API
+├── .storybook/       # Storybook config
+├── dist/             # Build output
+└── package.json
+```
+
+### API Service
+
+RESTful API with authentication:
+
+**Features:**
+- Express.js server
+- PostgreSQL with Prisma ORM
+- nocturnaID authentication
+- OpenAPI documentation
+- Docker containerization
+- Health check endpoints
+
+**Structure:**
+```
+my-api/
+├── src/
+│   ├── routes/       # API endpoints
+│   ├── controllers/  # Business logic
+│   ├── models/       # Data models
+│   ├── middleware/   # Auth, validation
+│   └── server.ts     # Entry point
+├── prisma/           # Database schema
+├── docker/           # Container config
+└── package.json
+```
+
+## Setup Process
+
+### Step 1: Project Details
+
+Configure basic metadata:
+
+```typescript
+interface ProjectDetails {
+  name: string;              // Project name (kebab-case)
+  displayName: string;       // Human-readable name
+  description: string;       // Brief description
+  author: string;            // Author name
+  license: 'MIT' | 'Apache-2.0' | 'Proprietary';
+  repository?: string;       // Git repository URL
+}
+```
+
+### Step 2: Template Selection
+
+Choose your starting point:
+- Next.js Application
+- Component Library
+- API Service
+- Blank (minimal setup)
+
+### Step 3: Dependencies
+
+Select integrations and packages:
+
+**UI Frameworks:**
+- ✅ Tailwind CSS (recommended)
+- ⬜ Styled Components
+- ⬜ Emotion
+
+**State Management:**
+- ✅ React Context
+- ⬜ Redux Toolkit
+- ⬜ Zustand
+
+**Testing:**
+- ✅ Jest (recommended)
+- ✅ React Testing Library
+- ⬜ Playwright
+- ⬜ Cypress
+
+**WISSIL Integrations:**
+- ✅ SLATE (design tokens)
+- ✅ SPARK (AI generation)
+- ✅ IGNIS (dev server)
+- ✅ WAYPOINT (deployment)
+
+### Step 4: Configuration
+
+Fine-tune your setup:
+
+**Code Style:**
+- ✅ ESLint (recommended)
+- ✅ Prettier (recommended)
+- ✅ TypeScript strict mode
+- ⬜ Husky pre-commit hooks
+
+**CI/CD:**
+- ✅ GitHub Actions
+- ⬜ GitLab CI
+- ⬜ CircleCI
+
+**Deployment:**
+- ✅ Vercel
+- ⬜ Netlify
+- ⬜ Custom Docker
+
+### Step 5: Initialize
+
+Generate and set up your project:
+
+```bash
+# 1. Create project structure
+$ ignition generate my-app --template nextjs
+
+# 2. Install dependencies
+$ cd my-app && npm install
+
+# 3. Initialize Git
+$ git init && git add . && git commit -m "Initial commit"
+
+# 4. Start development
+$ npm run dev
+```
+
+## Architecture
+
+### File Generation
+
+IGNITION uses templates with smart replacements:
+
+```typescript
+interface TemplateContext {
+  projectName: string;
+  displayName: string;
+  author: string;
+  dependencies: string[];
+  integrations: string[];
+}
+
+function generateFile(template: string, context: TemplateContext): string {
+  return template
+    .replace(/\{\{projectName\}\}/g, context.projectName)
+    .replace(/\{\{displayName\}\}/g, context.displayName)
+    // ... more replacements
+}
+```
+
+### Template Registry
+
+Templates are version-controlled and maintained:
+
+```typescript
+const templates = {
+  'nextjs-app': {
+    version: '1.2.0',
+    source: 'https://registry.nocturna.network/templates/nextjs-app',
+    files: ['package.json', 'tsconfig.json', 'next.config.js', ...],
+  },
+  'component-library': {
+    version: '1.1.0',
+    source: 'https://registry.nocturna.network/templates/component-library',
+    files: ['package.json', 'rollup.config.js', '.storybook/', ...],
+  },
+};
+```
+
+## Network Topology
+
+- **Location**: Helios Control (192.168.86.114)
+- **Port**: 3002
+- **Protocol**: HTTPS
+- **Auth**: nocturnaID with Engineer role
+- **Storage**: Synology NAS (192.168.86.27)
+
+## Integration Points
+
+### SLATE Integration
+
+Automatically includes design tokens:
+
+```typescript
+// Generated file: src/tokens/index.ts
+export { slateTokens } from '@wissil/slate';
+
+// Tailwind config extends SLATE
+module.exports = {
+  presets: [require('@wissil/slate/tailwind')],
+  // ... your customizations
+};
+```
+
+### SPARK Integration
+
+AI-powered component generation:
+
+```json
+{
+  "scripts": {
+    "spark:generate": "spark generate --project .",
+    "spark:chat": "spark chat --context ."
+  }
+}
+```
+
+### IGNIS Integration
+
+Development server configuration:
+
+```json
+{
+  "scripts": {
+    "dev": "ignis dev",
+    "build": "ignis build",
+    "preview": "ignis preview"
+  }
+}
+```
+
+### WAYPOINT Integration
+
+Deployment pipeline setup:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - run: npm run build
+      - uses: waypoint/deploy@v1
+```
+
+## Best Practices
+
+### Project Naming
+
+Follow these conventions:
+- **kebab-case**: `my-awesome-app`
+- **Descriptive**: Clear purpose from name
+- **Unique**: Avoid common names
+- **Consistent**: Match repository name
+
+### Directory Structure
+
+Maintain clean organization:
+- **Flat when possible**: Avoid deep nesting
+- **Logical grouping**: Related files together
+- **Index files**: Export from folders
+- **Tests alongside**: `Button.tsx` + `Button.test.tsx`
+
+### Configuration
+
+Keep configs minimal:
+- **Extend presets**: Don't reinvent the wheel
+- **Document overrides**: Explain custom settings
+- **Version control**: Commit all config files
+- **Environment variables**: Use `.env.example`
+
+## Performance
+
+- **Template download**: < 2s
+- **File generation**: < 5s
+- **Dependency install**: Varies (60s - 180s)
+- **Total setup time**: < 3 minutes
+
+## Accessibility
+
+- ✅ Keyboard navigation through wizard
+- ✅ Screen reader compatible
+- ✅ Clear error messages
+- ✅ Progress indicators
+- ✅ Cancel/back support
+
+## Future Enhancements
+
+- [ ] Custom template creation UI
+- [ ] Template marketplace
+- [ ] AI-assisted configuration
+- [ ] Visual project structure preview
+- [ ] One-click deployment setup

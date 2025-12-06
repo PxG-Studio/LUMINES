@@ -3,7 +3,7 @@ import SlatePage from './page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/Slate/Design System',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Slate/Pages/Workspace & Identity',
   component: SlatePage,
   parameters: {
     layout: 'fullscreen',
@@ -76,7 +76,7 @@ export const Mobile: Story = {
   render: () => <SlatePage />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
     },
   },
 };
@@ -86,6 +86,15 @@ export const Tablet: Story = {
   parameters: {
     viewport: {
       defaultViewport: 'tablet',
+    },
+  },
+};
+
+export const WideScreen: Story = {
+  render: () => <SlatePage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
     },
   },
 };

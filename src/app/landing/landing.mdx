@@ -1,41 +1,71 @@
 import { Meta } from '@storybook/blocks';
 
-<Meta title="WISSIL/Landing/Documentation" />
+<Meta
+  title="Lumenforge.io Docs/WIS2L Framework/Landing"
+  id="wis2l-landing-docs-app"
+  name="Landing App Docs"
+/>
 
 # LANDING - Main Gateway
 
-The **LANDING** subsystem serves as the primary entry point and navigation hub for the entire WISSIL ecosystem.
+The **LANDING** subsystem is the primary entry point into the WIS2L Framework ecosystem and the marketing surface for **Lumenforge.io**.
+It introduces the value of the platform, then routes users into the individual subsystems (SLATE, SPARK, IGNITION, IGNIS, WAYPOINT).
+
+The current hero copy is:
+
+> **Your Entire Creative Pipeline in One Workspace**  
+> Lumenforge.io unifies AI generation, design tokens, blueprint editing, live previews, and deployment into a single, high-velocity development environment built for modern teams.
 
 ## Purpose
 
 LANDING provides a unified interface for:
-- **System Overview**: Quick access to all 6 WISSIL subsystems
-- **Navigation Hub**: Direct routing to specialized tools
-- **Status Dashboard**: Real-time health monitoring
-- **Quick Actions**: Common tasks and workflows
+- **Product Story**: Explain what Lumenforge.io is and why it exists
+- **Navigation Hub**: Route into SPARK, SLATE, IGNITION, IGNIS, WAYPOINT
+- **Conversion Surface**: Capture signups, free trials, and demo requests
+- **System Overview**: Communicate the capabilities of the full **WIS2L** stack
 
 ## Architecture
 
-### Component Hierarchy
+### Component Hierarchy (Current Implementation)
+
+The canonical React composition lives in `src/wissil/Landing/LandingLayout.tsx`:
 
 ```
-LandingPage
-├── Hero Section
-│   ├── System Badge
-│   ├── Main Heading (WISSIL)
-│   ├── Description
-│   └── CTA Buttons
-├── Systems Grid
-│   ├── SLATE Card
-│   ├── IGNITION Card
-│   ├── SPARK Card
-│   ├── IGNIS Card
-│   └── WAYPOINT Card
-└── Features Section
-    ├── Lightning Fast
-    ├── AI-Powered
-    └── Fully Integrated
+LandingLayout
+├── SimpleNav
+├── HeroSection
+├── StatsSection
+├── FeatureGrid
+├── CTASection (mid-page)
+├── DetailedFeatures
+├── ProductDemo
+├── BenefitsSection
+├── UseCasesSection
+├── SocialProof
+├── IntegrationsShowcase
+├── ComparisonTable
+├── PricingSection
+├── FAQ
+├── CTASection (end-of-page)
+├── Footer
+└── StickyCTA
 ```
+
+- **SimpleNav** – Top navigation with Docs + Open Editor
+- **HeroSection** – Lumenforge.io hero copy + primary CTAs (Start Coding / Try AI Generator)
+- **StatsSection** – Key metrics (developers, projects, lines of code, uptime)
+- **FeatureGrid** – 3 core feature cards (Instant Preview, Clean Project Explorer, Code-First Workflow)
+- **DetailedFeatures** – 8 deeper feature explanations with benefits
+- **ProductDemo** – Video/demo slot and screenshot grid
+- **BenefitsSection** – ROI-focused messaging and key outcomes
+- **UseCasesSection** – “Perfect for teams like yours” by industry/use case
+- **SocialProof** – Testimonials, user counts, logos
+- **IntegrationsShowcase** – Logos for GitHub, Unity, Vercel, etc.
+- **ComparisonTable** – Lumenforge vs Bolt.new, StackBlitz, CodeSandbox
+- **PricingSection** – Free/Pro/Enterprise tiers
+- **FAQ** – 10 questions, accessible accordion
+- **CTASection / StickyCTA** – Mid-page, end-of-page, and sticky CTAs for conversion
+- **Footer** – Newsletter, navigation, legal, social links
 
 ### Network Topology
 
@@ -72,21 +102,32 @@ The LANDING subsystem uses the following SLATE tokens:
 
 ## Interactive Elements
 
-### System Cards
+### Primary CTAs
 
-Each subsystem card includes:
-- **Icon**: Lucide icon with system color
-- **Name**: Bold, system-colored heading
-- **Status Badge**: Real-time health indicator
-- **Description**: Brief explanation of purpose
-- **Link**: Hover effect with arrow animation
+The hero section exposes two primary calls to action:
+- **Start Coding** → `/slate/ide` (opens the SLATE IDE experience)
+- **Try AI Generator** → `/spark` (opens the SPARK AI component generator)
 
-### Animation Effects
+Additional CTAs appear mid-page, at the end of the page, and in a sticky bar:
+- **Start Coding Now** (accent CTA section)
+- **Get Started Free** / **Schedule Demo** (end-of-page CTA)
+- **Sticky CTA** that appears after scroll for persistent conversion.
 
-1. **Floating Orbs**: 6-second float animation with staggered delays
-2. **Card Hover**: -8px translateY + shadow enhancement
-3. **CTA Buttons**: Scale transform (1.05) on hover
-4. **Arrow Icons**: translateX on parent hover
+### Feature & Content Sections
+
+- **Feature Cards** – Each card highlights a core workflow (preview, project explorer, code-first workflow).
+- **Detailed Feature Lists** – Bullet lists explaining concrete benefits.
+- **Use Cases** – Chips/tags for industries and team types.
+- **Stats** – Large-number metrics for social proof.
+
+### Animation & Interaction Effects
+
+Animations are deliberately subtle to keep readability high:
+1. CTA hover states (scale + color shifts via design tokens)
+2. Card hover elevation and subtle transforms
+3. Sticky CTA reveal based on scroll position
+
+All interactions are covered by Storybook `play` functions so they are testable and reproducible.
 
 ## Responsive Design
 
@@ -107,8 +148,10 @@ Each subsystem card includes:
 
 ### Authentication
 
+The production deployment still sits behind **Cloudflare Zero Trust + nocturnaID** for authenticated environments, but the **marketing landing** itself is publicly accessible.
+
 ```typescript
-// nocturnaID integration
+// nocturnaID integration (protected surfaces)
 endpoint: /auth/login
 roles: ['Designer', 'Engineer', 'Admin', 'Agent']
 flow: Cloudflare Zero Trust → nocturnaID → JWT
@@ -116,14 +159,18 @@ flow: Cloudflare Zero Trust → nocturnaID → JWT
 
 ### Navigation
 
-- Direct routing to all WISSIL subsystems
-- Programmatic navigation via Next.js Link
-- State preservation across navigation
+- Top nav routes users into **Docs** and **SLATE IDE**.
+- Hero CTAs route into **SLATE** and **SPARK**.
+- Footer links expose About, Docs, Templates (IGNITION), and other key pages.
 
-### MCP Tools
+### Storybook & Agents
 
-- `mcp_luminera_read_component`: Read component definitions
-- `mcp_vfs_read`: Access file system data
+- Storybook exposes multiple views of the landing experience:
+  - `WIS2L Framework/Landing/Pages/Main Gateway` – Next.js-based landing page (`src/app/landing/page.tsx` → `LandingLayout`).
+  - `WIS2L Framework/Landing/Shared Framework Components/Interactive Landing` – Minimal interactive shell (Nav + Hero + Features + Footer).
+  - `WIS2L Framework/Landing/Shared Framework Components/LandingComponents` – Full `LandingLayout` with all sections.
+  - `Lumenforge.io / Landing / Pages / ProductionLanding` – The Vite app from `src/apps/lumenforge-landing/App.tsx` rendered inside Storybook.
+- External agents (Playwright, MCP, etc.) should prefer the **ProductionLanding** story or the Vite app directly; see `docs/LANDING_AGENT_REFERENCE.md` for precise instructions.
 
 ## User Flow
 
@@ -141,38 +188,43 @@ graph TD
 
 ## Performance Metrics
 
-- **Initial Load**: < 1.5s (optimized bundle)
-- **Time to Interactive**: < 2s
-- **Lighthouse Score**: 95+ (Performance, Accessibility)
-- **Bundle Size**: ~180 KB (gzipped)
+The landing page is designed to be light and fast:
+
+- **Initial Load Target**: < 1.5s (on typical broadband)
+- **Time to Interactive Target**: < 2s
+- **Key Optimizations**:
+  - Minimal above-the-fold JavaScript
+  - Shared design tokens between Next.js app, Storybook, and Vite app
+  - Ready for image/video lazy loading
 
 ## Accessibility
 
-### WCAG AA+ Compliance
+### WCAG AA+ Goals
 
-- ✅ Semantic HTML structure
-- ✅ ARIA labels on interactive elements
-- ✅ Keyboard navigation support
-- ✅ Focus indicators on all controls
-- ✅ Sufficient color contrast (4.5:1+)
-- ✅ Screen reader tested
+- ✅ Semantic HTML structure (`section`, `nav`, `footer`, `article`)
+- ✅ ARIA attributes on interactive controls where needed
+- ✅ Keyboard navigation support across all CTAs and FAQ accordions
+- ✅ Visible focus indicators for buttons/links
+- ✅ Contrast tuned with design tokens and verified via Storybook A11y panel
 
-### Keyboard Shortcuts
-
-- `Tab`: Navigate between cards
-- `Enter/Space`: Activate card link
-- `Esc`: Close modal dialogs
+Interactive stories (`Main Gateway`, `Interactive Landing`, `LandingComponents`) include `play` functions that:
+- Walk the page via keyboard
+- Click through all CTAs
+- Exercise the FAQ accordion
+- Scroll through the full layout
 
 ## Best Practices
 
-1. **Performance**: Lazy load system cards below the fold
-2. **SEO**: Dynamic meta tags based on user state
-3. **Analytics**: Track system selection and user paths
-4. **Error Handling**: Graceful fallbacks for offline mode
-5. **Loading States**: Skeleton screens during initial load
+1. **Performance**: Keep heavy media (videos, large images) lazy-loaded and below the fold.
+2. **SEO**: Mirror meta tags and OG data from `apps/lumenforge-landing/index.html`.
+3. **Analytics**: Track hero CTAs, mid-page CTAs, pricing clicks, and StickyCTA dismissals.
+4. **Error Handling**: Provide graceful fallbacks for content/API failures (e.g., default copy, disabled CTAs).
+5. **Loading States**: Use skeletons or graceful placeholders for any async-loaded sections.
 
 ## Related Subsystems
 
-- **SLATE**: Provides design tokens and theming
-- **IGNITION**: Used for new project initialization
-- **WAYPOINT**: Manages deployment of LANDING page
+- **SLATE**: Design system + IDE surface; primary target for \"Open Editor\" CTAs.
+- **SPARK**: AI component generator; primary target for \"Try AI Generator\" CTAs.
+- **IGNITION**: Project scaffolding; linked from Templates/Project Templates flows.
+- **IGNIS**: Build/runtime pipeline surfaced from marketing copy and deeper docs.
+- **WAYPOINT**: Manages deployment of the landing page and downstream apps.

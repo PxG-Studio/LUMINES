@@ -1,0 +1,70 @@
+/**
+ * Nocturna Design System - CSS Variables
+ */
+
+:root {
+  /* Backgrounds */
+  --nv-bg-0: #0c0f1a;
+  --nv-bg-1: #111421;
+  --nv-bg-2: #151827;
+  --nv-bg-3: #1a1d2e;
+  
+  /* Borders */
+  --nv-border: #1f2334;
+  --nv-border-hover: #2a2e42;
+  --nv-border-active: #3a3f58;
+  
+  /* Accents */
+  --nv-accent: #6d8cff;
+  --nv-accent-secondary: #8ba4ff;
+  --nv-accent-tertiary: #a5b9ff;
+  /* Button accent - darker for WCAG AA contrast with white text */
+  --nv-accent-button: #4c5eff;
+  
+  /* Text */
+  --nv-text-0: #ffffff;
+  --nv-text-1: #c7cdf5;
+  --nv-text-2: #7a84a9;
+  --nv-text-3: #4d5468;
+  
+  /* Semantic */
+  --nv-success: #33ffaa;
+  --nv-warning: #ffcc33;
+  --nv-error: #ff6363;
+  --nv-info: #6d8cff;
+  
+  /* Spacing */
+  --nv-space-1: 4px;
+  --nv-space-2: 8px;
+  --nv-space-3: 12px;
+  --nv-space-4: 16px;
+  --nv-space-5: 24px;
+  --nv-space-6: 32px;
+  --nv-space-7: 48px;
+  --nv-space-8: 64px;
+  --nv-space-9: 96px;
+  
+  /* Radii */
+  --nv-radius-sm: 4px;
+  --nv-radius-md: 8px;
+  --nv-radius-lg: 12px;
+  --nv-radius-xl: 16px;
+  
+  /* Shadows */
+  --nv-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --nv-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --nv-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+  
+  /* Transitions */
+  --nv-transition-fast: 150ms ease;
+  --nv-transition-base: 250ms ease;
+  --nv-transition-slow: 350ms ease;
+}
+
+/* Dark mode by default */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+

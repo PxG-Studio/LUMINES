@@ -1,0 +1,32 @@
+[20:09:09.640] [INFO] storybook v10.1.2
+[20:09:10.776] [DEBUG] Getting package.json info for E:/Projects/LUMINES/package.json...
+[20:09:10.778] [WARN] You are currently using Storybook [1m10.1.2[22m but you have packages which are incompatible with it:
+
+- @storybook/blocks@7.6.20 which depends on 7.6.20
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/ui/blocks
+- @storybook/test@7.6.20 which depends on 7.6.20
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/lib/test
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more details on compatibility guidance, see:
+https://github.com/storybookjs/storybook/issues/32836
+[20:09:11.685] [DEBUG] Serving static files from [36mpublic[39m at [36m/[39m
+[20:09:11.686] [INFO] Starting...
+[20:09:12.727] [DEBUG] Starting preview..
+[20:09:13.214] [DEBUG] Using tsconfig paths for react-docgen
+[20:09:17.254] [ERROR] Failed to build the preview
+[20:09:17.259] [ERROR] [38;2;241;97;97mError: Missing "./dist/mdx-react-shim.js" specifier in "@storybook/addon-docs" package[39m
+    at e (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46042:25)
+    at n (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46042:627)
+    at o (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46042:1297)
+    at resolveExportsOrImports (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46663:18)
+    at resolveDeepImport (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46686:25)
+    at tryNodeResolve (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46451:16)
+    at ResolveIdContext.resolveId (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:46201:19)
+    at PluginContainer.resolveId (file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49018:17)
+    at async file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:66542:15
+    at async file:///E:/Projects/LUMINES/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49933:14
+[20:09:17.261] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[20:13:10.285] [PROMPT] Would you like to send anonymous crash reports to improve Storybook and fix bugs faster? {"choice":false}
