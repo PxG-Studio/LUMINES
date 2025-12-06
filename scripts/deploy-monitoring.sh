@@ -47,11 +47,11 @@ log_section "Deployment Method: $DEPLOYMENT_METHOD"
 if [ "$DEPLOYMENT_METHOD" = "docker" ]; then
     # Docker Compose deployment
     log_info "Deploying with Docker Compose..."
-    
+
     if [ ! -f "docker-compose.monitoring.yml" ]; then
         log_error "docker-compose.monitoring.yml not found"
         log_info "Creating docker-compose.monitoring.yml..."
-        
+
         cat > docker-compose.monitoring.yml << 'EOF'
 version: '3.8'
 
@@ -97,7 +97,8 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
       - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./infrastructure/monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./infrastructure/monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
     networks:
       - monitoring-network
     depends_on:
@@ -114,49 +115,49 @@ networks:
 EOF
         log_info "Created docker-compose.monitoring.yml"
     fi
-    
+
     # Deploy
     log_info "Starting monitoring services..."
     docker-compose -f docker-compose.monitoring.yml up -d
-    
+
     log_info "✅ Monitoring services deployed"
     log_info ""
     log_info "Access:"
     log_info "  Prometheus: http://localhost:9090"
     log_info "  Grafana: http://localhost:3001 (admin/admin)"
     log_info "  Alertmanager: http://localhost:9093"
-    
+
 elif [ "$DEPLOYMENT_METHOD" = "kubernetes" ]; then
     # Kubernetes deployment
     log_info "Deploying with Kubernetes..."
-    
+
     if ! command -v kubectl &> /dev/null; then
         log_error "kubectl not found"
         exit 1
     fi
-    
+
     # Create namespace
     kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
-    
+
     # Deploy Prometheus
     if [ -f "infrastructure/monitoring/prometheus/prometheus-deployment.yaml" ]; then
         kubectl apply -f infrastructure/monitoring/prometheus/
     else
         log_warn "Prometheus Kubernetes manifests not found, skipping..."
     fi
-    
+
     # Deploy Grafana
     if [ -f "infrastructure/monitoring/grafana/grafana-deployment.yaml" ]; then
         kubectl apply -f infrastructure/monitoring/grafana/
     else
         log_warn "Grafana Kubernetes manifests not found, skipping..."
     fi
-    
+
     log_info "✅ Monitoring services deployed to Kubernetes"
     log_info ""
     log_info "Check status:"
     log_info "  kubectl get pods -n monitoring"
-    
+
 else
     log_error "Invalid deployment method: $DEPLOYMENT_METHOD"
     log_info "Usage: $0 [docker|kubernetes]"
@@ -176,7 +177,7 @@ if command -v curl &> /dev/null; then
     else
         log_warn "⚠️  Prometheus health check failed"
     fi
-    
+
     # Check Grafana
     if curl -f -s http://localhost:3001/api/health > /dev/null 2>&1; then
         log_info "✅ Grafana is running"
@@ -195,4 +196,3 @@ log_info "  1. Configure Grafana data sources"
 log_info "  2. Import dashboards"
 log_info "  3. Configure alert notification channels"
 log_info "  4. Review: docs/MONITORING_SETUP.md"
-
