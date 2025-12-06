@@ -25,12 +25,12 @@ function getRateLimiterForPath(pathname: string) {
   if (pathname.startsWith('/api/auth')) {
     return RATE_LIMIT_CONFIG.auth;
   }
-  
+
   // Check API routes
   if (pathname.startsWith('/api')) {
     return RATE_LIMIT_CONFIG.api;
   }
-  
+
   // Default to relaxed for public routes
   return RATE_LIMIT_CONFIG.public;
 }
@@ -47,7 +47,7 @@ function shouldSkipRateLimit(pathname: string): boolean {
     '/api/health/cache',
     '/api/health/nats',
   ];
-  
+
   return skipPaths.some(path => pathname.startsWith(path));
 }
 
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
   if (!shouldSkipRateLimit(pathname)) {
     const limiter = getRateLimiterForPath(pathname);
     const rateLimitResult = await limiter.middleware(request);
-    
+
     // If rate limit exceeded, return 429 response
     if (rateLimitResult) {
       logger.warn('Rate limit exceeded', {
@@ -113,4 +113,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 };
-
