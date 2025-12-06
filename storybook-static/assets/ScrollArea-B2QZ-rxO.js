@@ -1,1 +1,0 @@
-import{j as a}from"./iframe-BXkX_8oL.js";function o({children:r,style:e,...t}){return a.jsx("div",{...t,style:{overflowY:"auto",overflowX:"hidden",...e},children:r})}try{o.displayName="ScrollArea",o.__docgenInfo={description:"",displayName:"ScrollArea",props:{}}}catch{}export{o as S};
