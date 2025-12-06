@@ -1,13 +1,22 @@
 'use client';
 
 /**
- * SessionProvider wrapper for NextAuth
- * Must be a client component to use React context
+ * Session Provider for NextAuth
+ * Wraps the application with NextAuth session context
  */
-import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
-import React from 'react';
 
-export function SessionProvider({ children }: { children: React.ReactNode }) {
-  return <NextAuthSessionProvider>{children}</NextAuthSessionProvider>;
+import { SessionProvider as NextAuthSessionProvider } from 'next-auth/react';
+import type { Session } from 'next-auth';
+
+interface SessionProviderProps {
+  children: React.ReactNode;
+  session?: Session | null;
 }
 
+export function SessionProvider({ children, session }: SessionProviderProps) {
+  return (
+    <NextAuthSessionProvider session={session}>
+      {children}
+    </NextAuthSessionProvider>
+  );
+}
