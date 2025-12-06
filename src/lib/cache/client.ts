@@ -1,59 +1,101 @@
 /**
  * Redis Cache Client
- * Redis connection with abstraction layer
+ * Redis connection using ioredis with abstraction layer
  */
 
-import { redisConfig } from '../config/redis';
+import Redis from 'ioredis';
+import { redisConfig, getRedisUrl } from '../config/redis';
+import type { CacheClient } from './types';
 
-// TODO: Install and configure Redis client (ioredis or node-redis)
-// For now, this is a placeholder structure
+// Redis client singleton pattern for Next.js
+const globalForRedis = globalThis as unknown as {
+  redis: Redis | undefined;
+};
 
-/**
- * Cache client interface
- */
-export interface CacheClient {
-  get: (key: string) => Promise<string | null>;
-  set: (key: string, value: string, ttl?: number) => Promise<void>;
-  del: (key: string) => Promise<void>;
-  exists: (key: string) => Promise<boolean>;
-  close: () => Promise<void>;
+// Create Redis connection
+export const redis: Redis =
+  globalForRedis.redis ??
+  new Redis(getRedisUrl(), {
+    retryStrategy: redisConfig.retryStrategy,
+    reconnectOnError: redisConfig.reconnectOnError,
+    maxRetriesPerRequest: 3,
+    enableReadyCheck: true,
+    enableOfflineQueue: false,
+    lazyConnect: false,
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForRedis.redis = redis;
 }
 
-/**
- * Create Redis client
- * 
- * TODO: Implement based on chosen Redis client
- * Example with ioredis:
- * 
- * import Redis from 'ioredis';
- * export const redis = new Redis(redisConfig.url, {
- *   retryStrategy: redisConfig.retryStrategy,
- *   reconnectOnError: redisConfig.reconnectOnError,
- * });
- * 
- * export const cache: CacheClient = {
- *   get: (key) => redis.get(key),
- *   set: (key, value, ttl) => redis.setex(key, ttl || redisConfig.ttl, value),
- *   del: (key) => redis.del(key),
- *   exists: (key) => redis.exists(key).then(count => count > 0),
- *   close: () => redis.quit(),
- * };
- */
+// Handle connection events
+redis.on('connect', () => {
+  console.log('✅ Redis connected');
+});
+
+redis.on('error', (error) => {
+  console.error('❌ Redis error:', error);
+});
+
+redis.on('close', () => {
+  console.log('⚠️  Redis connection closed');
+});
+
+redis.on('reconnecting', () => {
+  console.log('🔄 Redis reconnecting...');
+});
+
+// Cache client implementation
 export const cache: CacheClient = {
-  get: async () => {
-    throw new Error('Redis client not implemented - install ioredis or node-redis');
+  get: async (key: string): Promise<string | null> => {
+    try {
+      return await redis.get(key);
+    } catch (error) {
+      console.error(`Redis GET error for key ${key}:`, error);
+      throw error;
+    }
   },
-  set: async () => {
-    throw new Error('Redis client not implemented - install ioredis or node-redis');
+
+  set: async (key: string, value: string, ttl?: number): Promise<void> => {
+    try {
+      if (ttl) {
+        await redis.setex(key, ttl, value);
+      } else {
+        await redis.set(key, value, 'EX', redisConfig.ttl);
+      }
+    } catch (error) {
+      console.error(`Redis SET error for key ${key}:`, error);
+      throw error;
+    }
   },
-  del: async () => {
-    throw new Error('Redis client not implemented - install ioredis or node-redis');
+
+  del: async (key: string): Promise<void> => {
+    try {
+      await redis.del(key);
+    } catch (error) {
+      console.error(`Redis DEL error for key ${key}:`, error);
+      throw error;
+    }
   },
-  exists: async () => {
-    throw new Error('Redis client not implemented - install ioredis or node-redis');
+
+  exists: async (key: string): Promise<boolean> => {
+    try {
+      const count = await redis.exists(key);
+      return count > 0;
+    } catch (error) {
+      console.error(`Redis EXISTS error for key ${key}:`, error);
+      throw error;
+    }
   },
-  close: async () => {
-    throw new Error('Redis client not implemented - install ioredis or node-redis');
+
+  close: async (): Promise<void> => {
+    try {
+      await redis.quit();
+    } catch (error) {
+      console.error('Redis close error:', error);
+      // Force disconnect if quit fails
+      redis.disconnect();
+    }
   },
 };
 
@@ -62,12 +104,13 @@ export const cache: CacheClient = {
  */
 export async function checkRedisHealth(): Promise<boolean> {
   try {
-    // TODO: Implement actual health check
-    // await cache.get('health-check');
-    return false; // Placeholder
+    const result = await redis.ping();
+    return result === 'PONG';
   } catch (error) {
     console.error('Redis health check failed:', error);
     return false;
   }
 }
 
+// Export Redis client for advanced usage
+export { Redis };

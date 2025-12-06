@@ -1,0 +1,3 @@
+# Prisma Migrations Directory
+# Migrations will be generated here when running: npx prisma migrate dev
+

@@ -1,51 +1,49 @@
 /**
  * Database Client
- * PostgreSQL client with connection pooling
+ * PostgreSQL client using Prisma ORM
  */
 
-import { databaseConfig } from '../config/database';
+import { PrismaClient } from '@prisma/client';
+import { databaseConfig, getDatabaseUrl } from '../config/database';
+import type { DatabaseClient } from './types';
 
-// TODO: Choose ORM/client library (Prisma, Drizzle, or pg)
-// For now, this is a placeholder structure
+// PrismaClient singleton pattern for Next.js
+// Prevents multiple instances in development hot-reload
 
-/**
- * Database client interface
- * 
- * Implementation will depend on chosen ORM/client:
- * - Prisma: PrismaClient
- * - Drizzle: DrizzleD1Database
- * - pg: Pool
- */
-export interface DatabaseClient {
-  // Placeholder - actual interface depends on chosen library
-  query: (sql: string, params?: any[]) => Promise<any>;
-  close: () => Promise<void>;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma: PrismaClient =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: getDatabaseUrl(),
+      },
+    },
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
 }
 
-/**
- * Create database client
- * 
- * TODO: Implement based on chosen ORM/client
- * Example with pg:
- * 
- * import { Pool } from 'pg';
- * const pool = new Pool({
- *   connectionString: databaseConfig.url,
- *   min: databaseConfig.pool.min,
- *   max: databaseConfig.pool.max,
- * });
- * 
- * export const db: DatabaseClient = {
- *   query: (sql, params) => pool.query(sql, params),
- *   close: () => pool.end(),
- * };
- */
+// Database client implementation
 export const db: DatabaseClient = {
-  query: async () => {
-    throw new Error('Database client not implemented - choose ORM/client library');
+  query: async (sql: string, params?: any[]) => {
+    // For raw SQL queries, use Prisma's $queryRaw
+    // Note: This is a simplified interface - Prisma handles type-safe queries differently
+    if (params && params.length > 0) {
+      return prisma.$queryRawUnsafe(sql, ...params);
+    }
+    return prisma.$queryRawUnsafe(sql);
   },
   close: async () => {
-    throw new Error('Database client not implemented - choose ORM/client library');
+    await prisma.$disconnect();
   },
 };
 
@@ -54,12 +52,13 @@ export const db: DatabaseClient = {
  */
 export async function checkDatabaseHealth(): Promise<boolean> {
   try {
-    // TODO: Implement actual health check query
-    // await db.query('SELECT 1');
-    return false; // Placeholder
+    await prisma.$queryRaw`SELECT 1`;
+    return true;
   } catch (error) {
     console.error('Database health check failed:', error);
     return false;
   }
 }
 
+// Export Prisma client for type-safe queries
+export { PrismaClient } from '@prisma/client';

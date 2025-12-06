@@ -6,6 +6,10 @@
 
 import { validateEnvironmentOnStartup, checkRequiredServices } from '../config/validate';
 import { env } from '../config/environment';
+import { checkDatabaseHealth } from '../db/client';
+import { checkRedisHealth } from '../cache/client';
+import { initializeNats, checkNatsHealth } from '../events/client';
+import { initializeEventSubscribers } from '../events/subscribers';
 
 /**
  * Initialize application on startup
@@ -24,7 +28,7 @@ export async function initializeApplication(): Promise<void> {
       console.warn('⚠️  Some services are not fully configured:', {
         database: services.database ? '✅' : '❌',
         redis: services.redis ? '✅' : '⚠️  (optional)',
-        nats: services.nats ? '✅' : '⚠️  (optional)',
+        nats: services.nats ? '⚠️  (optional)' : '⚠️  (optional)',
       });
     }
 
@@ -35,30 +39,52 @@ export async function initializeApplication(): Promise<void> {
       console.log('🚀 Starting LUMINES in production mode');
     }
 
-    // 4. TODO: Initialize database connection pool
-    // if (services.database) {
-    //   await initializeDatabase();
-    // }
+    // 4. Initialize database connection
+    if (services.database) {
+      console.log('🔌 Initializing database connection...');
+      const dbHealthy = await checkDatabaseHealth();
+      if (dbHealthy) {
+        console.log('✅ Database connected and healthy');
+      } else {
+        console.warn('⚠️  Database connection check failed, but continuing...');
+      }
+    }
 
-    // 5. TODO: Initialize Redis connection
-    // if (services.redis) {
-    //   await initializeRedis();
-    // }
+    // 5. Initialize Redis connection
+    console.log('🔌 Initializing Redis connection...');
+    const redisHealthy = await checkRedisHealth();
+    if (redisHealthy) {
+      console.log('✅ Redis connected and healthy');
+    } else {
+      console.warn('⚠️  Redis connection check failed, but continuing...');
+    }
 
-    // 6. TODO: Initialize NATS connection
-    // if (services.nats) {
-    //   await initializeNats();
-    // }
-
-    // 7. TODO: Initialize event subscribers
-    // if (services.nats) {
-    //   initializeEventSubscribers();
-    // }
+    // 6. Initialize NATS connection (async, don't block startup)
+    if (services.nats) {
+      console.log('🔌 Initializing NATS connection...');
+      try {
+        await initializeNats();
+        const natsHealthy = await checkNatsHealth();
+        if (natsHealthy) {
+          console.log('✅ NATS connected and healthy');
+          // Initialize event subscribers
+          initializeEventSubscribers();
+          console.log('✅ Event subscribers initialized');
+        } else {
+          console.warn('⚠️  NATS health check failed, but continuing...');
+        }
+      } catch (error) {
+        console.warn('⚠️  NATS initialization failed, but continuing:', error);
+      }
+    }
 
     console.log('✅ Application initialization complete');
   } catch (error) {
     console.error('❌ Application initialization failed:', error);
-    process.exit(1);
+    // Don't exit in production - allow graceful degradation
+    if (env.NODE_ENV === 'development') {
+      process.exit(1);
+    }
   }
 }
 
@@ -70,14 +96,20 @@ export function setupGracefulShutdown(onShutdown?: () => Promise<void>): void {
     console.log(`\n🛑 Received ${signal}, initiating graceful shutdown...`);
 
     try {
-      // TODO: Close database connections
-      // await db.close();
+      // Close database connections
+      const { db } = await import('../db/client');
+      await db.close();
+      console.log('✅ Database connections closed');
 
-      // TODO: Close Redis connections
-      // await cache.close();
+      // Close Redis connections
+      const { cache } = await import('../cache/client');
+      await cache.close();
+      console.log('✅ Redis connections closed');
 
-      // TODO: Close NATS connections
-      // await eventBus.close();
+      // Close NATS connections
+      const { eventBus } = await import('../events/client');
+      await eventBus.close();
+      console.log('✅ NATS connections closed');
 
       // Call custom shutdown handler
       if (onShutdown) {
@@ -95,4 +127,3 @@ export function setupGracefulShutdown(onShutdown?: () => Promise<void>): void {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
-
