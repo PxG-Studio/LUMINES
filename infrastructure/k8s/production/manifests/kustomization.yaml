@@ -30,6 +30,22 @@ resources:
 
   # Autoscaling
   - hpa-landing.yaml
+  - hpa-slate.yaml
+  - hpa-spark.yaml
+  - hpa-ignis.yaml
+  - hpa-waypoint.yaml
+
+  # Pod Disruption Budgets
+  - pdb-landing.yaml
+  - pdb-slate.yaml
+  - pdb-spark.yaml
+  - pdb-ignis.yaml
+
+  # Network Policy
+  - network-policy.yaml
+
+  # Monitoring
+  - servicemonitor.yaml
 
 # Common labels
 commonLabels:

@@ -22,12 +22,12 @@ const envSchema = z.object({
   NEXT_PUBLIC_NOCTURNA_ID_URL: z.string().url().optional(),
 
   // Database Configuration
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string().url().optional(),
   DATABASE_HOST: z.string().default('192.168.86.27'),
   DATABASE_PORT: z.string().transform(Number).pipe(z.number().int().positive()).default('5432'),
   DATABASE_NAME: z.string().default('lumines'),
-  DATABASE_USER: z.string(),
-  DATABASE_PASSWORD: z.string(),
+  DATABASE_USER: z.string().optional(),
+  DATABASE_PASSWORD: z.string().optional(),
   DATABASE_POOL_MIN: z.string().transform(Number).pipe(z.number().int().positive()).default('2'),
   DATABASE_POOL_MAX: z.string().transform(Number).pipe(z.number().int().positive()).default('10'),
 
@@ -140,6 +140,9 @@ export const serviceUrls = {
 export const getDatabaseUrl = (): string => {
   if (env.DATABASE_URL) {
     return env.DATABASE_URL;
+  }
+  if (!env.DATABASE_USER || !env.DATABASE_PASSWORD) {
+    throw new Error('Either DATABASE_URL or both DATABASE_USER and DATABASE_PASSWORD must be provided');
   }
   return `postgresql://${env.DATABASE_USER}:${env.DATABASE_PASSWORD}@${env.DATABASE_HOST}:${env.DATABASE_PORT}/${env.DATABASE_NAME}`;
 };
