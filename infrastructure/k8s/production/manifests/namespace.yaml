@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lumines
+  labels:
+    name: lumines
+    app: lumines
+    environment: production
+

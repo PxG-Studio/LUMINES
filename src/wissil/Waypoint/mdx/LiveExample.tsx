@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { IgnitionController } from "@/wissil/runtime/ignition/ignitionController";
+import { IgnitionController } from "@/wissil/runtime/projects/ignitionController";
 import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
 import { useTheme } from "@/design-system/themes/ThemeProvider";
 import { Button } from "@/design-system/primitives/Button";

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { fn } from 'storybook/test';
 import LandingPage from '@/app/landing/page';
-import { WISSILLayout } from '@/components/wissil/WISSILLayout';
+import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
 import { LandingLayout } from '@/wissil/Landing/LandingLayout';
 import { SimpleNav } from '@/wissil/Landing/SimpleNav';
 import { HeroSection } from '@/wissil/Landing/HeroSection';
@@ -488,13 +488,13 @@ export const Default: Story = {
 };
 
 /**
- * Landing page wrapped in WISSILLayout for consistency testing
+ * Landing page wrapped in WIS2LLayout for consistency testing
  */
 export const WithLayout: Story = {
   render: () => (
-    <WISSILLayout system="landing" showHeader={false}>
+    <WIS2LLayout system="landing" showHeader={false}>
       <LandingPage />
-    </WISSILLayout>
+    </WIS2LLayout>
   ),
   play: async ({ canvasElement, step }) => {
     const canvas = within(canvasElement);

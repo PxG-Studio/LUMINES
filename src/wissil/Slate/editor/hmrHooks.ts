@@ -3,7 +3,7 @@
  * Triggers automatic rebuild and runtime reload after file changes
  */
 
-import { IgnitionController } from "@/wissil/runtime/ignition/ignitionController";
+import { IgnitionController } from "@/wissil/runtime/projects/ignitionController";
 
 let timeout: NodeJS.Timeout | null = null;
 

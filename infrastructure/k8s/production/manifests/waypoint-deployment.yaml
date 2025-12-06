@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: waypoint
+  namespace: lumines
+  labels:
+    app: waypoint
+    component: waypoint
+    subsystem: wis2l
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: waypoint
+  template:
+    metadata:
+      labels:
+        app: waypoint
+        component: waypoint
+        subsystem: wis2l
+    spec:
+      containers:
+      - name: waypoint
+        image: 192.168.86.27:5000/lumines/waypoint:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3005
+          name: http
+          protocol: TCP
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3005"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: lumines-secrets
+              key: database-url
+        - name: NATS_URL
+          valueFrom:
+            secretKeyRef:
+              name: lumines-secrets
+              key: nats-url
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3005
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3005
+          initialDelaySeconds: 10
+          periodSeconds: 5
+

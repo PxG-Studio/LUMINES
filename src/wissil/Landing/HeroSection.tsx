@@ -90,7 +90,7 @@ export function HeroSection({ onNavigation }: HeroSectionProps) {
         </Button>
         <Button 
           style={{ fontSize: "16px", padding: "14px 28px" }}
-          onClick={() => handleNavigation('/spark', 'Try AI Generator')}
+          onClick={() => handleNavigation('/spark/generator', 'Try AI Generator')}
         >
           Try AI Generator
         </Button>

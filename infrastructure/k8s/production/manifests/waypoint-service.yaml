@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: waypoint-service
+  namespace: lumines
+  labels:
+    app: waypoint
+    component: waypoint
+spec:
+  type: ClusterIP
+  selector:
+    app: waypoint
+  ports:
+  - port: 3005
+    targetPort: 3005
+    protocol: TCP
+    name: http
+

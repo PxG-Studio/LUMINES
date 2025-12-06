@@ -1,8 +1,10 @@
-# WISSIL - Workspace Integrated Subsystem Structuring & Interfacing Layer
+# LUMINES - Browser-Based Unity Development IDE
 
-The unified development environment for the Nocturna Network.
+**LUMINES** is a comprehensive Unity development IDE running entirely in the browser.
 
-![WISSIL](https://img.shields.io/badge/WISSIL-v1.0.0-6366F1)
+**WIS2L** (Workspace, Identity, Spark, Slate, Ignis, Landing) is the core framework powering LUMINES.
+
+![WIS2L](https://img.shields.io/badge/WIS2L-v1.0.0-6366F1)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
 ![Storybook](https://img.shields.io/badge/Storybook-8.0-FF4785)
@@ -11,7 +13,9 @@ The unified development environment for the Nocturna Network.
 
 ## Overview
 
-WISSIL is a comprehensive development ecosystem consisting of 6 integrated subsystems:
+**LUMINES** is the product: A browser-based Unity IDE with visual scripting, AI assistance, and real-time collaboration.
+
+**WIS2L** is the framework: A comprehensive development ecosystem consisting of 6 integrated subsystems:
 
 1. **LANDING** - Main gateway and navigation hub
 2. **SLATE** - Design system and token management

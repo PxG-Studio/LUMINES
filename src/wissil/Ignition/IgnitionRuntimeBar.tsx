@@ -9,7 +9,7 @@ import React from "react";
 import { Button } from "@/design-system/primitives/Button";
 import { useEditorState } from "@/state/editorState";
 import { IgnitionStatusIndicator } from "./IgnitionStatusIndicator";
-import { IgnitionController } from "@/wissil/runtime/ignition/ignitionController";
+import { IgnitionController } from "@/wissil/runtime/projects/ignitionController";
 import { LiveCommand } from "@/wissil/runtime/unityBridge/LiveCommand";
 import { UnityMessagingBus } from "@/wissil/runtime/unityBridge/UnityMessagingBus";
 import { useTheme } from "@/design-system/themes/ThemeProvider";

@@ -6,7 +6,7 @@
 import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
 import { SparkTemplate } from "./sparkTemplates";
 import { openFile } from "@/wissil/Slate/editor/openFile";
-import { IgnitionController } from "@/wissil/runtime/ignition/ignitionController";
+import { IgnitionController } from "@/wissil/runtime/projects/ignitionController";
 import { regenerateTree } from "@/wissil/Slate/components/FileTreeState";
 
 /**

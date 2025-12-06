@@ -8,6 +8,7 @@
 import type { Preview } from '@storybook/nextjs';
 import React from 'react';
 import { ThemeProvider } from '../src/design-system/themes/ThemeProvider';
+import { withTheme } from './decorators';
 import '../src/styles/globals.css';
 import '../src/styles/editor.css';
 
@@ -156,26 +157,8 @@ const preview: Preview = {
     },
   },
 
-  // Global decorators
-  decorators: [
-    (Story, context) => {
-      const theme = context.globals.theme || 'dark';
-      
-      return (
-        <ThemeProvider theme={theme}>
-          <div
-            style={{
-              minHeight: '100vh',
-              background: theme === 'dark' ? '#0f1115' : '#ffffff',
-              color: theme === 'dark' ? '#e4e7eb' : '#1a1a1a',
-            }}
-          >
-            <Story />
-          </div>
-        </ThemeProvider>
-      );
-    },
-  ],
+  // Global decorators - Landing UI/UX DNA
+  decorators: [withTheme],
 
   // Global types
   globalTypes: {

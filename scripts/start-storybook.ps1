@@ -5,8 +5,8 @@
 Set-Item -Path Env:STORYBOOK_EDITOR -Value "cursor"
 
 # Run storybook sync first
-Write-Host "Syncing WISSIL stories..." -ForegroundColor Cyan
-npm run storybook:sync-wissil
+Write-Host "Syncing WIS2L stories..." -ForegroundColor Cyan
+npm run storybook:sync-wis2l
 
 # Start Storybook
 Write-Host "Starting Storybook..." -ForegroundColor Cyan

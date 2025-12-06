@@ -1,0 +1,316 @@
+// Prisma Schema for LUMINES/WIS2L
+// Database schema for all subsystems
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Identity & User Management
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  avatar        String?
+  roles         String[] // Array of role strings
+  
+  // Integration with nocturnaID.org
+  nocturnaId    String?  @unique
+  jwtSubject    String?  @unique
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastLoginAt   DateTime?
+  
+  // Relations
+  projects      Project[]
+  components    Component[]
+  builds        Build[]
+  deployments   Deployment[]
+  
+  @@index([email])
+  @@index([nocturnaId])
+  @@map("users")
+}
+
+// ============================================
+// Projects (WIS2L Projects)
+// ============================================
+
+model Project {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  
+  // Ownership
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Engine/Platform
+  engine        String   @default("unity") // unity, godot, pico8, etc.
+  platform      String   @default("webgl") // webgl, standalone, etc.
+  
+  // Project state
+  templateId    String?
+  template      Template? @relation(fields: [templateId], references: [id])
+  
+  // Metadata
+  metadata      Json?    // Flexible JSON for project-specific data
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lastOpenedAt  DateTime?
+  
+  // Relations
+  components    Component[]
+  builds        Build[]
+  deployments   Deployment[]
+  
+  @@index([userId])
+  @@index([slug])
+  @@index([engine])
+  @@index([userId, engine]) // Composite index for filtering by user and engine
+  @@index([updatedAt]) // For sorting by last updated
+  @@map("projects")
+}
+
+// ============================================
+// Templates (IGNITION)
+// ============================================
+
+model Template {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?
+  
+  // Template configuration
+  engine        String   @default("unity")
+  category      String?  // starter, advanced, game-type, etc.
+  metadata      Json?    // Template-specific configuration
+  
+  // Template files structure (stored as JSON)
+  structure     Json     // File tree structure
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  projects      Project[]
+  
+  @@index([slug])
+  @@index([engine])
+  @@index([engine, category]) // Composite index for filtering by engine and category
+  @@index([createdAt]) // For sorting
+  @@map("templates")
+}
+
+// ============================================
+// Components (SPARK - AI Generated)
+// ============================================
+
+model Component {
+  id            String   @id @default(cuid())
+  name          String
+  type          String   // script, prefab, material, shader, etc.
+  
+  // Ownership
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  projectId     String?
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // Component data
+  content       String   // Actual component code/content
+  language      String   @default("csharp") // csharp, glsl, etc.
+  
+  // SPARK generation metadata
+  prompt        String?  // Original prompt used for generation
+  model         String?  // AI model used (gpt-4, claude, etc.)
+  experts       String[] // Array of expert types used
+  generationId  String?  // SPARK generation ID
+  
+  // Versioning
+  version       Int      @default(1)
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([projectId])
+  @@index([type])
+  @@index([generationId])
+  @@index([userId, projectId]) // Composite index for common query pattern
+  @@index([createdAt]) // For sorting
+  @@map("components")
+}
+
+// ============================================
+// Design Tokens (SLATE)
+// ============================================
+
+model DesignToken {
+  id            String   @id @default(cuid())
+  name          String
+  category      String   // color, spacing, typography, shadow, etc.
+  value         String   // Token value (e.g., "#FF0000", "16px")
+  
+  // Grouping
+  group         String?  // Optional grouping within category
+  
+  // Metadata
+  description   String?
+  metadata      Json?    // Additional token metadata
+  
+  // Versioning
+  version       Int      @default(1)
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@unique([name, category])
+  @@index([category])
+  @@index([group])
+  @@map("design_tokens")
+}
+
+// ============================================
+// Builds (IGNIS)
+// ============================================
+
+model Build {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Build configuration
+  target        String   @default("webgl") // webgl, standalone, ios, android, etc.
+  configuration String   @default("development") // development, release, etc.
+  
+  // Build status
+  status        String   @default("pending") // pending, building, completed, failed, cancelled
+  progress      Int      @default(0) // 0-100
+  
+  // Build artifacts
+  artifactUrl   String?  // URL to built artifact
+  artifactSize  BigInt?  // Size in bytes
+  buildLog      String?  // Build output/logs
+  
+  // Build metadata
+  metadata      Json?    // Build-specific metadata
+  
+  // Error handling
+  error         String?  // Error message if failed
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  startedAt     DateTime?
+  completedAt   DateTime?
+  
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([projectId, status]) // Composite index for filtering builds by project and status
+  @@index([userId, status]) // Composite index for filtering builds by user and status
+  @@index([completedAt]) // For sorting by completion time
+  @@map("builds")
+}
+
+// ============================================
+// Deployments (WAYPOINT)
+// ============================================
+
+model Deployment {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  buildId       String?  // Associated build (optional)
+  
+  // Deployment configuration
+  environment   String   @default("staging") // staging, production
+  url           String?  // Deployment URL
+  
+  // Deployment status
+  status        String   @default("pending") // pending, deploying, live, failed, rolled_back
+  version       String   // Deployment version (semver or git commit)
+  
+  // Deployment metadata
+  metadata      Json?    // Deployment-specific metadata
+  
+  // Error handling
+  error         String?  // Error message if failed
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deployedAt    DateTime?
+  
+  @@index([projectId])
+  @@index([userId])
+  @@index([status])
+  @@index([environment])
+  @@index([createdAt])
+  @@index([projectId, environment, status]) // Composite index for filtering deployments
+  @@index([userId, status]) // Composite index for filtering by user and status
+  @@index([deployedAt]) // For sorting by deployment time
+  @@map("deployments")
+}
+
+// ============================================
+// Events/Audit Log (for debugging and analytics)
+// ============================================
+
+model Event {
+  id            String   @id @default(cuid())
+  
+  // Event classification
+  type          String   // component.created, build.started, deployment.completed, etc.
+  subsystem     String?  // spark, ignis, waypoint, slate, etc.
+  
+  // Associated entities
+  userId        String?
+  projectId     String?
+  componentId   String?
+  buildId       String?
+  deploymentId  String?
+  
+  // Event data
+  payload       Json?    // Event-specific data
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  
+  @@index([type])
+  @@index([subsystem])
+  @@index([userId])
+  @@index([projectId])
+  @@index([createdAt])
+  @@index([subsystem, type]) // Composite index for filtering events
+  @@index([projectId, createdAt]) // Composite index for project event history
+  @@index([userId, createdAt]) // Composite index for user event history
+  @@map("events")
+}
+

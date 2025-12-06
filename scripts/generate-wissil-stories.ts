@@ -1,22 +1,27 @@
 #!/usr/bin/env tsx
 
 /**
- * WISSIL Story Auto-Generator
+ * WIS2L Story Auto-Generator
  *
- * Scans all WISSIL subsystem folders and generates/updates Storybook stories
- * to maintain naming consistency and ensure all pages have proper documentation.
+ * Scans all WIS2L subsystem folders and generates/updates Storybook stories
+ * in the CANONICAL location: src/stories/WIS2L Framework/{System}/Pages/
+ *
+ * This script maintains the single source of truth for WIS2L page stories.
+ * Stories are written to the canonical tree, not to src/app (which is excluded
+ * from Storybook's main.ts configuration).
  *
  * Usage:
- *   npm run storybook:sync-wissil
- *   tsx scripts/generate-wissil-stories.ts
+ *   npm run storybook:sync-wis2l
+ *   tsx scripts/generate-wis2l-stories.ts
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface WISSILSystem {
+interface WIS2LSystem {
   name: string;
-  path: string;
+  appPagePath: string; // Path to src/app/{system}/page.tsx
+  canonicalStoryPath: string; // Path to src/stories/WIS2L Framework/{System}/Pages/
   displayName: string;
   description: string;
   color: string;
@@ -25,7 +30,7 @@ interface WISSILSystem {
   hasMDX: boolean;
 }
 
-const WISSIL_SYSTEMS = [
+const WIS2L_SYSTEMS = [
   'landing',
   'waypoint',
   'spark',
@@ -75,26 +80,38 @@ function getAppDir(): string {
   return path.join(getProjectRoot(), 'src', 'app');
 }
 
-function scanWISSILSystems(): WISSILSystem[] {
+function getCanonicalStoriesDir(): string {
+  return path.join(getProjectRoot(), 'src', 'stories', 'WIS2L Framework');
+}
+
+function scanWIS2LSystems(): WIS2LSystem[] {
   const appDir = getAppDir();
+  const canonicalDir = getCanonicalStoriesDir();
   const systems: WISSILSystem[] = [];
 
-  for (const systemName of WISSIL_SYSTEMS) {
-    const systemPath = path.join(appDir, systemName);
+  for (const systemName of WIS2L_SYSTEMS) {
+    const appSystemPath = path.join(appDir, systemName);
+    const canonicalSystemPath = path.join(canonicalDir, systemName.charAt(0).toUpperCase() + systemName.slice(1), 'Pages');
     const metadata = SYSTEM_METADATA[systemName];
 
-    if (!fs.existsSync(systemPath)) {
+    if (!fs.existsSync(appSystemPath)) {
       console.warn(`⚠️  System folder not found: ${systemName}`);
       continue;
     }
 
-    const pagePath = path.join(systemPath, 'page.tsx');
-    const storyPath = path.join(systemPath, `${systemName}.stories.tsx`);
-    const mdxPath = path.join(systemPath, `${systemName}.mdx`);
+    const pagePath = path.join(appSystemPath, 'page.tsx');
+    const storyPath = path.join(canonicalSystemPath, `${systemName.charAt(0).toUpperCase() + systemName.slice(1)}Experience.stories.tsx`);
+    const mdxPath = path.join(canonicalSystemPath, '..', 'Documentation', `${systemName.charAt(0).toUpperCase() + systemName.slice(1)}.mdx`);
+
+    // Ensure canonical directory exists
+    if (!fs.existsSync(canonicalSystemPath)) {
+      fs.mkdirSync(canonicalSystemPath, { recursive: true });
+    }
 
     systems.push({
       name: systemName,
-      path: systemPath,
+      appPagePath: appSystemPath,
+      canonicalStoryPath: canonicalSystemPath,
       displayName: metadata.displayName,
       description: metadata.description,
       color: metadata.color,
@@ -107,15 +124,17 @@ function scanWISSILSystems(): WISSILSystem[] {
   return systems;
 }
 
-function generateStoryTemplate(system: WISSILSystem): string {
+function generateStoryTemplate(system: WIS2LSystem): string {
   const componentName = system.name.charAt(0).toUpperCase() + system.name.slice(1);
+  const pageImportPath = `@/app/${system.name}/page`;
 
-  return `import type { Meta, StoryObj } from '@storybook/react';
-import ${componentName}Page from './page';
+  return `import type { Meta, StoryObj } from '@storybook/nextjs';
+import ${componentName}Page from '${pageImportPath}';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
-  title: 'WISSIL/${componentName}/${system.displayName}',
+  title: 'Lumenforge.io Design System/WIS2L Framework/${componentName}/Pages/${componentName} Experience',
+  id: 'wis2l-${system.name}-${system.name.toLowerCase().replace(/\\s+/g, '-')}-stories',
   component: ${componentName}Page,
   parameters: {
     layout: 'fullscreen',
@@ -178,7 +197,7 @@ export const Mobile: Story = {
   render: () => <${componentName}Page />,
   parameters: {
     viewport: {
-      defaultViewport: 'mobile',
+      defaultViewport: 'mobile1',
     },
   },
 };
@@ -194,13 +213,26 @@ export const Tablet: Story = {
     },
   },
 };
+
+/**
+ * Wide screen viewport
+ */
+export const WideScreen: Story = {
+  render: () => <${componentName}Page />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'wideScreen',
+    },
+  },
+};
 `;
 }
 
-function generateMDXTemplate(system: WISSILSystem): string {
+function generateMDXTemplate(system: WIS2LSystem): string {
+  const componentName = system.name.charAt(0).toUpperCase() + system.name.slice(1);
   return `import { Meta } from '@storybook/blocks';
 
-<Meta title="WISSIL/${system.name.charAt(0).toUpperCase() + system.name.slice(1)}/Documentation" />
+<Meta title="Lumenforge.io Design System/WIS2L Framework/${componentName}/Documentation" />
 
 # ${system.name.toUpperCase()} - ${system.displayName}
 
@@ -238,62 +270,67 @@ ${system.description}
 `;
 }
 
-function ensureStoryExists(system: WISSILSystem): void {
+function ensureStoryExists(system: WIS2LSystem): void {
   if (!system.hasPage) {
     console.log(`⏭️  Skipping ${system.name}: No page.tsx found`);
     return;
   }
 
-  const storyPath = path.join(system.path, `${system.name}.stories.tsx`);
+  const storyPath = path.join(system.canonicalStoryPath, `${system.name.charAt(0).toUpperCase() + system.name.slice(1)}Experience.stories.tsx`);
 
   if (system.hasStory) {
-    console.log(`✓ Story exists: ${system.name}.stories.tsx`);
+    console.log(`✓ Story exists: ${path.relative(getProjectRoot(), storyPath)}`);
     return;
   }
 
-  console.log(`📝 Generating story: ${system.name}.stories.tsx`);
+  console.log(`📝 Generating story: ${path.relative(getProjectRoot(), storyPath)}`);
   const storyContent = generateStoryTemplate(system);
   fs.writeFileSync(storyPath, storyContent, 'utf-8');
-  console.log(`✅ Created: ${system.name}.stories.tsx`);
+  console.log(`✅ Created: ${path.relative(getProjectRoot(), storyPath)}`);
 }
 
-function ensureMDXExists(system: WISSILSystem): void {
+function ensureMDXExists(system: WIS2LSystem): void {
   if (!system.hasPage) {
     return;
   }
 
-  const mdxPath = path.join(system.path, `${system.name}.mdx`);
+  const mdxDir = path.join(system.canonicalStoryPath, '..', 'Documentation');
+  if (!fs.existsSync(mdxDir)) {
+    fs.mkdirSync(mdxDir, { recursive: true });
+  }
+
+  const mdxPath = path.join(mdxDir, `${system.name.charAt(0).toUpperCase() + system.name.slice(1)}.mdx`);
 
   if (system.hasMDX) {
-    console.log(`✓ MDX exists: ${system.name}.mdx`);
+    console.log(`✓ MDX exists: ${path.relative(getProjectRoot(), mdxPath)}`);
     return;
   }
 
-  console.log(`📝 Generating MDX: ${system.name}.mdx`);
+  console.log(`📝 Generating MDX: ${path.relative(getProjectRoot(), mdxPath)}`);
   const mdxContent = generateMDXTemplate(system);
   fs.writeFileSync(mdxPath, mdxContent, 'utf-8');
-  console.log(`✅ Created: ${system.name}.mdx`);
+  console.log(`✅ Created: ${path.relative(getProjectRoot(), mdxPath)}`);
 }
 
-function validateStoryNaming(system: WISSILSystem): void {
+function validateStoryNaming(system: WIS2LSystem): void {
   if (!system.hasStory) return;
 
-  const storyPath = path.join(system.path, `${system.name}.stories.tsx`);
+  const storyPath = path.join(system.canonicalStoryPath, `${system.name.charAt(0).toUpperCase() + system.name.slice(1)}Experience.stories.tsx`);
   const content = fs.readFileSync(storyPath, 'utf-8');
 
-  const expectedTitle = `WISSIL/${system.name.charAt(0).toUpperCase() + system.name.slice(1)}/${system.displayName}`;
+  const expectedTitle = `Lumenforge.io Design System/WIS2L Framework/${system.name.charAt(0).toUpperCase() + system.name.slice(1)}/Pages/${system.name.charAt(0).toUpperCase() + system.name.slice(1)} Experience`;
 
   if (!content.includes(expectedTitle)) {
-    console.warn(`⚠️  Story title may need updating in ${system.name}.stories.tsx`);
+    console.warn(`⚠️  Story title may need updating in ${path.relative(getProjectRoot(), storyPath)}`);
     console.warn(`   Expected: ${expectedTitle}`);
   } else {
     console.log(`✓ Story naming validated: ${system.name}`);
   }
 }
 
-function generateSummaryReport(systems: WISSILSystem[]): void {
+function generateSummaryReport(systems: WIS2LSystem[]): void {
   console.log('\n' + '='.repeat(60));
-  console.log('WISSIL Story Generation Summary');
+  console.log('WIS2L Story Generation Summary');
   console.log('='.repeat(60));
 
   const stats = {
@@ -314,27 +351,30 @@ function generateSummaryReport(systems: WISSILSystem[]): void {
     console.log(`  ${status} ${system.name.toUpperCase()}: Page=${system.hasPage ? '✓' : '✗'} Story=${system.hasStory ? '✓' : '✗'} MDX=${system.hasMDX ? '✓' : '✗'}`);
   });
 
-  console.log('\n' + '='.repeat(60) + '\n');
+  console.log('\n' + '='.repeat(60));
+  console.log('📁 Canonical Story Location: src/stories/WIS2L Framework/{System}/Pages/');
+  console.log('📁 Canonical MDX Location: src/stories/WIS2L Framework/{System}/Documentation/');
+  console.log('='.repeat(60) + '\n');
 }
 
 async function main() {
-  console.log('🚀 WISSIL Story Auto-Generator\n');
-  console.log('Scanning WISSIL subsystems...\n');
+  console.log('🚀 WIS2L Story Auto-Generator (Canonical Tree)\n');
+  console.log('Scanning WIS2L subsystems...\n');
 
-  const systems = scanWISSILSystems();
+  const systems = scanWIS2LSystems();
 
   if (systems.length === 0) {
-    console.error('❌ No WISSIL systems found!');
+    console.error('❌ No WIS2L systems found!');
     process.exit(1);
   }
 
   console.log(`Found ${systems.length} WISSIL systems\n`);
 
   // Generate missing stories
-  console.log('📚 Ensuring all stories exist...\n');
+  console.log('📚 Ensuring all stories exist in canonical location...\n');
   systems.forEach(ensureStoryExists);
 
-  console.log('\n📄 Ensuring all MDX documentation exists...\n');
+  console.log('\n📄 Ensuring all MDX documentation exists in canonical location...\n');
   systems.forEach(ensureMDXExists);
 
   console.log('\n🔍 Validating story naming conventions...\n');

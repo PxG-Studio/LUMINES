@@ -1,0 +1,8 @@
+{
+  "name": "@lumines/spark",
+  "version": "0.0.0-placeholder",
+  "private": true,
+  "description": "⚠️ PLACEHOLDER - SPARK engine adapters (future migration target)",
+  "// TODO": "SPARK currently lives in src/app/spark/ and is production-ready. Do not migrate yet."
+}
+

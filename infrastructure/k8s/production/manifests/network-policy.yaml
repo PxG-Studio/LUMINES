@@ -1,0 +1,93 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: lumines-internal
+  namespace: lumines
+spec:
+  podSelector:
+    matchLabels:
+      app: lumines
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3001
+    - protocol: TCP
+      port: 3002
+    - protocol: TCP
+      port: 3003
+    - protocol: TCP
+      port: 3004
+    - protocol: TCP
+      port: 3005
+  # Allow internal service communication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: lumines
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3001
+    - protocol: TCP
+      port: 3002
+    - protocol: TCP
+      port: 3003
+    - protocol: TCP
+      port: 3004
+    - protocol: TCP
+      port: 3005
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow database access (PostgreSQL)
+  - to:
+    - podSelector: {} # External services
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis access
+  - to:
+    - podSelector: {} # External services
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow NATS access
+  - to:
+    - podSelector: {} # External services
+    ports:
+    - protocol: TCP
+      port: 4222
+  # Allow container registry access
+  - to:
+    - podSelector: {} # External services
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow HTTPS for external APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow HTTP for external APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
+
