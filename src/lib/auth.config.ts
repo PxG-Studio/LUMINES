@@ -5,25 +5,28 @@
 
 import type { NextAuthConfig } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import GitHubProvider from 'next-auth/providers/github';
 
 export const authConfig = {
   pages: {
-    signIn: '/landing',
-    signOut: '/landing',
-    error: '/landing',
+    signIn: '/login',
+    signOut: '/lumen',
+    error: '/login',
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnLanding = nextUrl.pathname.startsWith('/landing');
+      const isOnLumen = nextUrl.pathname.startsWith('/lumen');
+      const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isOnPublicRoute = isOnLumen || isOnLogin;
       
-      // Allow access to landing page without auth
-      if (isOnLanding) {
+      // Allow access to LUMEN marketing page and login page without auth
+      if (isOnPublicRoute) {
         return true;
       }
       
       // Require auth for other protected routes
-      if (!isLoggedIn && !isOnLanding) {
+      if (!isLoggedIn && !isOnPublicRoute) {
         return false; // Redirect to sign in
       }
       return true;
@@ -40,6 +43,19 @@ export const authConfig = {
         // For now, allow all Google sign-ins
         return true;
       }
+      
+      // If using GitHub OAuth
+      if (account?.provider === 'github') {
+        // You can add custom logic here, e.g.:
+        // - Check if user exists in your database
+        // - Create user if they don't exist
+        // - Link GitHub account to existing nocturnaID account
+        // - Sync roles/permissions
+        
+        // For now, allow all GitHub sign-ins
+        return true;
+      }
+      
       return true;
     },
     async jwt({ token, user, account, profile }) {
@@ -53,6 +69,13 @@ export const authConfig = {
           token.email = profile.email;
           token.picture = profile.picture;
           token.name = profile.name;
+        }
+        
+        // If user comes from GitHub, add GitHub profile info
+        if (account.provider === 'github' && profile) {
+          token.email = profile.email || (profile as any).login;
+          token.picture = (profile as any).avatar_url;
+          token.name = profile.name || (profile as any).login;
         }
         
         // If user comes from nocturnaID (existing system), merge data
@@ -86,6 +109,15 @@ export const authConfig = {
           prompt: 'consent',
           access_type: 'offline',
           response_type: 'code',
+        },
+      },
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: 'read:user user:email',
         },
       },
     }),

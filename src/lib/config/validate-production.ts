@@ -36,6 +36,23 @@ export function validateProductionEnvironment(): ValidationResult {
     errors.push('NOCTURNA_JWT_SECRET must be changed from default value');
   }
 
+  // NextAuth validation (warnings only - OAuth is optional)
+  if (!env.NEXTAUTH_SECRET) {
+    warnings.push('NEXTAUTH_SECRET not set - GitHub/Google OAuth will not work');
+  }
+
+  if (!env.NEXTAUTH_URL) {
+    warnings.push('NEXTAUTH_URL not set - OAuth callbacks may fail');
+  }
+
+  if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+    warnings.push('Google OAuth credentials not set - Google sign-in will not work');
+  }
+
+  if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET) {
+    warnings.push('GitHub OAuth credentials not set - GitHub sign-in will not work');
+  }
+
   // Warnings
   if (!env.SENTRY_DSN) {
     warnings.push('SENTRY_DSN not set - error tracking disabled');

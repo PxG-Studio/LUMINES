@@ -71,6 +71,16 @@ const envSchema = z.object({
   NOCTURNA_JWT_SECRET: z.string().optional(),
   NOCTURNA_JWT_AUDIENCE: z.string().default('lumines.nocturna.network'),
   NOCTURNA_JWT_ISSUER: z.string().default('lumines.nocturna.network'),
+  
+  // NextAuth Configuration
+  NEXTAUTH_SECRET: z.string().optional(),
+  NEXTAUTH_URL: z.string().url().optional(),
+  
+  // OAuth Providers
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
 
   // AI Configuration (SPARK)
   SPARK_AI_ENDPOINT: z.string().url().optional(),

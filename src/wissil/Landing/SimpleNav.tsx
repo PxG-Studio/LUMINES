@@ -9,6 +9,7 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/design-system/primitives/Button";
+import { AuthButtons } from "@/components/auth/AuthButtons";
 
 type SimpleNavProps = {
   /**
@@ -59,11 +60,11 @@ export function SimpleNav({ onNavigation }: SimpleNavProps) {
         borderBottom: "1px solid var(--nv-border)"
       }}
     >
-      <Link href="/landing" style={{ fontSize: 20, fontWeight: 600, textDecoration: "none", color: "var(--nv-text-0)" }}>
+      <Link href="/lumen" style={{ fontSize: 20, fontWeight: 600, textDecoration: "none", color: "var(--nv-text-0)" }}>
         Lumenforge.io
       </Link>
 
-      <div style={{ display: "flex", gap: 16 }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
         <Button 
           variant="ghost" 
           onClick={() => handleNavigation('/waypoint', 'Docs')}
@@ -71,11 +72,18 @@ export function SimpleNav({ onNavigation }: SimpleNavProps) {
           Docs
         </Button>
         <Button 
+          variant="ghost" 
+          onClick={() => handleNavigation('/spark', 'Templates')}
+        >
+          Templates
+        </Button>
+        <Button 
           variant="accent" 
           onClick={() => handleNavigation('/slate/ide', 'Open Editor')}
         >
           Open Editor
         </Button>
+        <AuthButtons size="sm" direction="row" showUserInfo={true} />
       </div>
     </div>
   );

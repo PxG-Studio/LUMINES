@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { LandingLayout } from '@/wissil/Landing/LandingLayout';
+import type { Metadata } from 'next';
 
 /**
- * LANDING - Production Landing Page
+ * LUMEN - Production Landing Page
  *
  * The main marketing landing page for WISSIL IDE
  * Bolt.new / StackBlitz-style clean design

@@ -110,7 +110,7 @@ lumines/
 
 ## WISSIL Subsystems
 
-### LANDING - Main Gateway
+### LUMEN - Main Gateway
 **Port:** 3000 | **Color:** Gold (#FFD700)
 
 Entry point and navigation hub for all WISSIL subsystems.
