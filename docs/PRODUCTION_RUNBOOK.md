@@ -1,9 +1,9 @@
 # Production Runbook
 ## Complete Operational Guide for LUMINES/WIS2L Production Environment
 
-**Version:** 1.0.0  
-**Last Updated:** December 6, 2025  
-**Status:** ✅ **PRODUCTION READY**  
+**Version:** 1.0.0
+**Last Updated:** December 6, 2025
+**Status:** ✅ **PRODUCTION READY**
 **Maintained By:** DevOps Team
 
 ---
@@ -1014,7 +1014,7 @@ kubectl logs -f deployment/lumines-web -n lumines
 
 ---
 
-**Document Version:** 1.0.0  
-**Last Updated:** December 6, 2025  
+**Document Version:** 1.0.0
+**Last Updated:** December 6, 2025
 **Next Review:** January 6, 2026
 

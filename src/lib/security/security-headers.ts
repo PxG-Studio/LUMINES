@@ -74,3 +74,4 @@ export function getSecurityHeaders(): Record<string, string> {
   return { ...securityHeaders };
 }
 
+

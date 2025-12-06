@@ -135,3 +135,4 @@ log_info "  2. Promote replica to primary"
 log_info "  3. Update application configuration"
 log_info "  4. Restart application"
 
+

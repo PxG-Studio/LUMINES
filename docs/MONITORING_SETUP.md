@@ -1,8 +1,8 @@
 # Monitoring Setup Guide
 ## Complete Monitoring Configuration for LUMINES/WIS2L
 
-**Version:** 1.0.0  
-**Last Updated:** December 6, 2025  
+**Version:** 1.0.0
+**Last Updated:** December 6, 2025
 **Status:** ✅ **CONFIGURATION READY**
 
 ---
@@ -541,7 +541,7 @@ pg_stat_database_numbackends
 
 ---
 
-**Document Version:** 1.0.0  
-**Last Updated:** December 6, 2025  
+**Document Version:** 1.0.0
+**Last Updated:** December 6, 2025
 **Next Review:** January 6, 2026
 
