@@ -33,3 +33,4 @@ dist-ssr
 *.sw?
 .env
 >>>>>>> slate/prototype-1
+.next/
