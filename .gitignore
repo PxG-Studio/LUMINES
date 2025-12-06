@@ -34,3 +34,8 @@ dist-ssr
 .env
 >>>>>>> slate/prototype-1
 .next/
+
+# Next.js build output
+.next/
+.next/cache/
+
