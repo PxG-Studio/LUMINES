@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import LandingPage from '@/app/landing/page';
+import LandingPage from '@/app/lumen/page';
 import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
 
 const meta = {
@@ -17,7 +17,7 @@ const meta = {
     docs: {
       description: {
         component: `
-# LANDING - Production Landing Page
+# LUMEN - Production Landing Page
 
 The main marketing landing page for LumenForge.io ecosystem
 

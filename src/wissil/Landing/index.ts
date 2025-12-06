@@ -1,5 +1,5 @@
 /**
- * Landing Module Exports
+ * LUMEN Landing Module Exports
  */
 
 export * from './LandingLayout';
