@@ -13,6 +13,7 @@ import { initializeNats, checkNatsHealth } from '../events/client';
 import { initializeEventSubscribers } from '../events/subscribers';
 import { logger } from '../monitoring/logger';
 import { errorTracker } from '../monitoring/error-tracking';
+import { startMemoryMonitoring } from '../monitoring/performance';
 
 /**
  * Initialize application on startup
@@ -94,6 +95,10 @@ export async function initializeApplication(): Promise<void> {
         console.warn('⚠️  NATS initialization failed, but continuing:', error);
       }
     }
+
+    // Start performance monitoring
+    startMemoryMonitoring(60000); // Monitor memory every minute
+    logger.info('Performance monitoring started');
 
     logger.info('Application initialization complete');
     console.log('✅ Application initialization complete');

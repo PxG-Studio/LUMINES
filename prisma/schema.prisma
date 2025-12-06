@@ -79,6 +79,8 @@ model Project {
   @@index([userId])
   @@index([slug])
   @@index([engine])
+  @@index([userId, engine]) // Composite index for filtering by user and engine
+  @@index([updatedAt]) // For sorting by last updated
   @@map("projects")
 }
 
@@ -109,6 +111,8 @@ model Template {
   
   @@index([slug])
   @@index([engine])
+  @@index([engine, category]) // Composite index for filtering by engine and category
+  @@index([createdAt]) // For sorting
   @@map("templates")
 }
 
@@ -149,6 +153,8 @@ model Component {
   @@index([projectId])
   @@index([type])
   @@index([generationId])
+  @@index([userId, projectId]) // Composite index for common query pattern
+  @@index([createdAt]) // For sorting
   @@map("components")
 }
 
@@ -223,6 +229,9 @@ model Build {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([projectId, status]) // Composite index for filtering builds by project and status
+  @@index([userId, status]) // Composite index for filtering builds by user and status
+  @@index([completedAt]) // For sorting by completion time
   @@map("builds")
 }
 
@@ -264,6 +273,9 @@ model Deployment {
   @@index([status])
   @@index([environment])
   @@index([createdAt])
+  @@index([projectId, environment, status]) // Composite index for filtering deployments
+  @@index([userId, status]) // Composite index for filtering by user and status
+  @@index([deployedAt]) // For sorting by deployment time
   @@map("deployments")
 }
 
@@ -296,6 +308,9 @@ model Event {
   @@index([userId])
   @@index([projectId])
   @@index([createdAt])
+  @@index([subsystem, type]) // Composite index for filtering events
+  @@index([projectId, createdAt]) // Composite index for project event history
+  @@index([userId, createdAt]) // Composite index for user event history
   @@map("events")
 }
 
