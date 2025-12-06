@@ -3,24 +3,21 @@
  * GET /api/performance
  */
 
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { performanceMonitor } from '@/lib/monitoring/performance';
 import { applyStandardHeaders } from '@/lib/api/headers';
-import { requireAuth } from '@/lib/middleware';
+import { authenticate } from '@/lib/middleware/auth';
 
 /**
  * GET /api/performance
  * Get performance metrics and statistics
  * Requires authentication
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   // Authentication required
-  const authResult = await requireAuth(request as any);
-  if (authResult.error) {
-    return NextResponse.json(
-      { error: authResult.error.message },
-      { status: authResult.error.status }
-    );
+  const authResponse = await authenticate(request);
+  if (authResponse) {
+    return authResponse; // Returns 401 if not authenticated
   }
 
   try {
