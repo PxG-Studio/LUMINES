@@ -5,6 +5,7 @@
 
 import { NextRequest } from 'next/server';
 import { userQueries } from '@/lib/db/queries';
+import { verifyJWT as verifyJWTToken, type JWTClaims } from '@/lib/auth/jwt';
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: {
@@ -28,29 +29,10 @@ export function extractJWT(request: NextRequest): string | null {
 
 /**
  * Verify JWT token
- * TODO: Implement actual JWT verification with nocturnaID.org public key
+ * Uses nocturnaID.org JWKS for verification
  */
-export async function verifyJWT(token: string): Promise<{
-  sub: string;
-  email: string;
-  roles: string[];
-} | null> {
-  try {
-    // TODO: Implement JWT verification
-    // For now, this is a placeholder
-    // Should:
-    // 1. Get public key from nocturnaID.org/.well-known/jwks.json
-    // 2. Verify token signature
-    // 3. Verify expiration, issuer, audience
-    // 4. Extract claims
-
-    // Placeholder: return null to indicate token is invalid
-    // In production, implement actual verification
-    return null;
-  } catch (error) {
-    console.error('JWT verification error:', error);
-    return null;
-  }
+export async function verifyJWT(token: string): Promise<JWTClaims | null> {
+  return verifyJWTToken(token);
 }
 
 /**

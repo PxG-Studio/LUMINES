@@ -382,6 +382,13 @@ export const templateQueries = {
       data,
     });
   },
+
+  update: async (id: string, data: Prisma.TemplateUpdateInput) => {
+    return prisma.template.update({
+      where: { id },
+      data,
+    });
+  },
 };
 
 /**
