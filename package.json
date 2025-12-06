@@ -59,8 +59,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
-    "@prisma/client": "^5.7.1",
     "@monaco-editor/react": "^4.6.0",
+    "@prisma/client": "^5.7.1",
     "@supabase/supabase-js": "^2.86.2",
     "clsx": "^2.1.0",
     "esbuild-wasm": "^0.19.12",
@@ -78,6 +78,7 @@
     "pg": "^8.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.4.0",
     "uuid": "^9.0.1",
     "yaml": "^2.3.4",
     "zod": "^3.25.76",

@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { Gamepad2, Target, MessageSquare } from "lucide-react";
-import { indieGamePresets, type GamePreset } from "../../../lib/presets/indieGamePresets";
+import { indieGamePresets, type GamePreset } from "@/lib/spark/presets/indieGamePresets";
 
 interface PresetSelectorProps {
   sessionId: string;

@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 import { Undo, RotateCcw, Trash2 } from "lucide-react";
-import { getPatchStack } from "../../../lib/undo/patchStack";
+import { getPatchStack } from "@/lib/spark/undo/patchStack";
 
 interface PatchOperation {
   id: string;

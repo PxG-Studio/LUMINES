@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, useEffect } from "react";
 import { generateUnityScript, ClaudeModel, OpenAIModel } from "../actions/generate";
-import { useProgress } from "@/lib/hooks/useProgress";
+import { useProgress } from "@/lib/spark/hooks/useProgress";
 import ProgressPanel from "./ProgressPanel";
 import { Message, TaskStatus, FileChange } from "@/lib/types/progress";
 
