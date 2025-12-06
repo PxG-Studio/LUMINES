@@ -5,11 +5,14 @@
  */
 
 import { validateEnvironmentOnStartup, checkRequiredServices } from '../config/validate';
+import { validateAndLogProductionEnvironment } from '../config/validate-production';
 import { env } from '../config/environment';
 import { checkDatabaseHealth } from '../db/client';
 import { checkRedisHealth } from '../cache/client';
 import { initializeNats, checkNatsHealth } from '../events/client';
 import { initializeEventSubscribers } from '../events/subscribers';
+import { logger } from '../monitoring/logger';
+import { errorTracker } from '../monitoring/error-tracking';
 
 /**
  * Initialize application on startup
@@ -17,14 +20,26 @@ import { initializeEventSubscribers } from '../events/subscribers';
  */
 export async function initializeApplication(): Promise<void> {
   try {
+    logger.info('Initializing application');
+
     // 1. Validate environment configuration
     console.log('🔍 Validating environment configuration...');
     validateEnvironmentOnStartup();
 
-    // 2. Check required services
+    // 2. Validate production environment (if in production)
+    if (env.NODE_ENV === 'production') {
+      validateAndLogProductionEnvironment();
+    }
+
+    // 3. Check required services
     console.log('🔍 Checking required services...');
     const services = checkRequiredServices();
     if (!services.allConfigured) {
+      logger.warn('Some services are not fully configured', {
+        database: services.database,
+        redis: services.redis,
+        nats: services.nats,
+      });
       console.warn('⚠️  Some services are not fully configured:', {
         database: services.database ? '✅' : '❌',
         redis: services.redis ? '✅' : '⚠️  (optional)',
@@ -32,14 +47,16 @@ export async function initializeApplication(): Promise<void> {
       });
     }
 
-    // 3. Log startup info
+    // 4. Log startup info
     if (env.NODE_ENV === 'development') {
+      logger.info('Starting LUMINES in development mode');
       console.log('🚀 Starting LUMINES in development mode');
     } else {
+      logger.info('Starting LUMINES in production mode');
       console.log('🚀 Starting LUMINES in production mode');
     }
 
-    // 4. Initialize database connection
+    // 5. Initialize database connection
     if (services.database) {
       console.log('🔌 Initializing database connection...');
       const dbHealthy = await checkDatabaseHealth();
@@ -50,7 +67,7 @@ export async function initializeApplication(): Promise<void> {
       }
     }
 
-    // 5. Initialize Redis connection
+    // 6. Initialize Redis connection
     console.log('🔌 Initializing Redis connection...');
     const redisHealthy = await checkRedisHealth();
     if (redisHealthy) {
@@ -59,7 +76,7 @@ export async function initializeApplication(): Promise<void> {
       console.warn('⚠️  Redis connection check failed, but continuing...');
     }
 
-    // 6. Initialize NATS connection (async, don't block startup)
+    // 7. Initialize NATS connection (async, don't block startup)
     if (services.nats) {
       console.log('🔌 Initializing NATS connection...');
       try {
@@ -78,8 +95,11 @@ export async function initializeApplication(): Promise<void> {
       }
     }
 
+    logger.info('Application initialization complete');
     console.log('✅ Application initialization complete');
   } catch (error) {
+    logger.error('Application initialization failed', error);
+    errorTracker.trackError(error as Error, { component: 'startup' }, 'critical');
     console.error('❌ Application initialization failed:', error);
     // Don't exit in production - allow graceful degradation
     if (env.NODE_ENV === 'development') {
@@ -93,22 +113,29 @@ export async function initializeApplication(): Promise<void> {
  */
 export function setupGracefulShutdown(onShutdown?: () => Promise<void>): void {
   const shutdown = async (signal: string) => {
+    logger.info(`Received ${signal}, initiating graceful shutdown`);
     console.log(`\n🛑 Received ${signal}, initiating graceful shutdown...`);
 
     try {
+      // Flush error tracker
+      errorTracker.stop();
+
       // Close database connections
       const { db } = await import('../db/client');
       await db.close();
+      logger.info('Database connections closed');
       console.log('✅ Database connections closed');
 
       // Close Redis connections
       const { cache } = await import('../cache/client');
       await cache.close();
+      logger.info('Redis connections closed');
       console.log('✅ Redis connections closed');
 
       // Close NATS connections
       const { eventBus } = await import('../events/client');
       await eventBus.close();
+      logger.info('NATS connections closed');
       console.log('✅ NATS connections closed');
 
       // Call custom shutdown handler
@@ -116,9 +143,11 @@ export function setupGracefulShutdown(onShutdown?: () => Promise<void>): void {
         await onShutdown();
       }
 
+      logger.info('Graceful shutdown complete');
       console.log('✅ Graceful shutdown complete');
       process.exit(0);
     } catch (error) {
+      logger.error('Error during shutdown', error);
       console.error('❌ Error during shutdown:', error);
       process.exit(1);
     }

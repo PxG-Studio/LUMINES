@@ -5,10 +5,13 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
+# Install dependencies for better caching
+RUN apk add --no-cache libc6-compat
+
 # Copy package files
 COPY package.json package-lock.json* ./
-COPY apps/*/package.json* ./apps/*/
-COPY packages/*/package.json* ./packages/*/
+COPY apps/*/package.json* ./apps/*/ 2>/dev/null || true
+COPY packages/*/package.json* ./packages/*/ 2>/dev/null || true
 
 # Install dependencies
 RUN npm ci --legacy-peer-deps
@@ -27,8 +30,14 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Generate Prisma client
+RUN npx prisma generate || true
+
 # Build application
 RUN npm run build
+
+# Run production validation
+RUN node -e "require('./src/lib/config/validate-production').validateAndLogProductionEnvironment()" || true
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
