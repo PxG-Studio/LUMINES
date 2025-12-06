@@ -24,14 +24,17 @@ export const componentEvents = {
  * Deployment events (WAYPOINT)
  */
 export const deploymentEvents = {
-  started: async (data: { deploymentId: string; projectId: string }) => {
+  started: async (data: { deploymentId: string; projectId: string; environment?: string }) => {
     await eventBus.publish('deployment.started', data);
   },
-  completed: async (data: { deploymentId: string; projectId: string; url: string }) => {
+  completed: async (data: { deploymentId: string; projectId: string; url: string; status: string }) => {
     await eventBus.publish('deployment.completed', data);
   },
   failed: async (data: { deploymentId: string; projectId: string; error: string }) => {
     await eventBus.publish('deployment.failed', data);
+  },
+  rolledBack: async (data: { deploymentId: string; projectId: string; userId: string; previousVersion: string; newStatus: string }) => {
+    await eventBus.publish('deployment.rolledBack', data);
   },
 };
 
@@ -45,7 +48,7 @@ export const buildEvents = {
   progress: async (data: { buildId: string; progress: number; stage: string }) => {
     await eventBus.publish('build.progress', data);
   },
-  completed: async (data: { buildId: string; projectId: string; artifactUrl: string }) => {
+  completed: async (data: { buildId: string; projectId: string; artifactUrl: string; artifactSize?: bigint; status: string }) => {
     await eventBus.publish('build.completed', data);
   },
   failed: async (data: { buildId: string; projectId: string; error: string }) => {
@@ -57,10 +60,10 @@ export const buildEvents = {
  * Token events (SLATE)
  */
 export const tokenEvents = {
-  updated: async (data: { category: string; tokens: any }) => {
+  updated: async (data: { tokenId: string; category: string; tokens?: any }) => {
     await eventBus.publish('token.updated', data);
   },
-  synced: async (data: { category: string }) => {
+  synced: async (data: { count: number; source: string }) => {
     await eventBus.publish('token.synced', data);
   },
 };

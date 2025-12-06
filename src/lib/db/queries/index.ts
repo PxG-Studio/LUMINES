@@ -14,19 +14,37 @@ export const userQueries = {
   findById: async (id: string) => {
     return prisma.user.findUnique({
       where: { id },
-      include: {
-        projects: true,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatar: true,
+        roles: true,
+        nocturnaId: true,
+        jwtSubject: true,
+        createdAt: true,
+        updatedAt: true,
+        lastLoginAt: true,
       },
     });
   },
 
   findByEmail: async (email: string) => {
-    return prisma.user.findUnique({
-      where: { email },
-      include: {
-        projects: true,
-      },
-    });
+  return prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      avatar: true,
+      roles: true,
+      nocturnaId: true,
+      jwtSubject: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLoginAt: true,
+    },
+  });
   },
 
   findByNocturnaId: async (nocturnaId: string) => {

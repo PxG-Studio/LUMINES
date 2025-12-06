@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { deploymentQueries } from '@/lib/db/queries';
 import { eventQueries } from '@/lib/db/queries';
+import { deploymentEvents } from '@/lib/events/publishers';
 import { requireAuth, requireRole } from '@/lib/middleware';
+import { logger } from '@/lib/monitoring/logger';
+import { applyStandardHeaders } from '@/lib/api/headers';
 
 /**
  * POST /api/deployments/[id]/rollback
@@ -72,7 +75,7 @@ export async function POST(
       status: 'pending',
     });
 
-    // Log events
+    // Log events to database
     await eventQueries.create({
       type: 'deployment.rolled_back',
       subsystem: 'waypoint',
@@ -85,14 +88,36 @@ export async function POST(
       },
     });
 
-    return NextResponse.json({
+    // Publish rollback event
+    await deploymentEvents.rolledBack({
+      deploymentId: params.id,
+      projectId: deployment.projectId,
+      userId: deployment.userId,
+      previousVersion: previousDeployment.version,
+      newStatus: rollbackDeployment.status,
+    });
+
+    logger.info('Deployment rollback successful', {
+      deploymentId: params.id,
+      rollbackDeploymentId: rollbackDeployment.id,
+      previousVersion: previousDeployment.version,
+    });
+
+    const response = NextResponse.json({
       success: true,
-      rollbackDeployment,
+      message: `Deployment ${params.id} rolled back successfully`,
+      rollbackDeployment: {
+        id: rollbackDeployment.id,
+        version: rollbackDeployment.version,
+        status: rollbackDeployment.status,
+      },
       previousDeployment: {
         id: previousDeployment.id,
         version: previousDeployment.version,
       },
     });
+
+    return applyStandardHeaders(response, { cache: 'no-store' });
   } catch (error) {
     console.error('Error rolling back deployment:', error);
     return NextResponse.json(

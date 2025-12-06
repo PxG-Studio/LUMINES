@@ -140,6 +140,47 @@ async function main() {
 
   console.log('✅ Created deployment:', deployment.id);
 
+  // Create sample events (for testing event system)
+  await prisma.event.createMany({
+    data: [
+      {
+        type: 'component.created',
+        subsystem: 'spark',
+        userId: user.id,
+        projectId: project.id,
+        componentId: component.id,
+        payload: {
+          componentName: component.name,
+          componentType: component.type,
+        },
+      },
+      {
+        type: 'build.completed',
+        subsystem: 'ignis',
+        userId: user.id,
+        projectId: project.id,
+        buildId: build.id,
+        payload: {
+          buildStatus: 'completed',
+          artifactUrl: build.artifactUrl,
+        },
+      },
+      {
+        type: 'deployment.completed',
+        subsystem: 'waypoint',
+        userId: user.id,
+        projectId: project.id,
+        deploymentId: deployment.id,
+        payload: {
+          deploymentUrl: deployment.url,
+          environment: deployment.environment,
+        },
+      },
+    ],
+  });
+
+  console.log('✅ Created sample events');
+
   console.log('✨ Seeding complete!');
 }
 

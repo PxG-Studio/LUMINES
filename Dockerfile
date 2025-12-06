@@ -36,8 +36,10 @@ RUN npx prisma generate || true
 # Build application
 RUN npm run build
 
-# Run production validation
-RUN node -e "require('./src/lib/config/validate-production').validateAndLogProductionEnvironment()" || true
+# Run production validation (only if NODE_ENV is production)
+RUN if [ "$NODE_ENV" = "production" ]; then \
+      node -e "require('./src/lib/config/validate-production').validateAndLogProductionEnvironment()" || exit 1; \
+    fi
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
