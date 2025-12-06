@@ -90,6 +90,7 @@ export const Tabs: React.FC<TabsProps> = ({
                 e.stopPropagation();
                 onTabClose?.(tab.id);
               }}
+              aria-label={`Close tab ${tab.label}`}
               style={{
                 padding: '2px 4px',
                 background: 'transparent',
@@ -108,7 +109,7 @@ export const Tabs: React.FC<TabsProps> = ({
                 e.currentTarget.style.background = 'transparent';
               }}
             >
-              ×
+              <span aria-hidden="true">×</span>
             </button>
           </div>
         );

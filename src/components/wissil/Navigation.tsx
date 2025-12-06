@@ -1,88 +1,323 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Gamepad2, Terminal, Users, Zap, Rocket } from 'lucide-react';
+import { Home, Code, Network, Play, Rocket, BookOpen } from 'lucide-react';
 
 interface NavItem {
   name: string;
+  label: string; // Display label with descriptor
   path: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  group: 'workspace' | 'system' | 'home';
 }
 
 const navItems: NavItem[] = [
-  { name: 'LANDING', path: '/landing', icon: Home, color: 'landing' },
-  { name: 'WAYPOINT', path: '/waypoint', icon: Gamepad2, color: 'waypoint' },
-  { name: 'SPARK', path: '/spark', icon: Terminal, color: 'spark' },
-  { name: 'SLATE', path: '/slate', icon: Users, color: 'slate' },
-  { name: 'IGNIS', path: '/ignis', icon: Zap, color: 'ignis' },
-  { name: 'IGNITION', path: '/ignition', icon: Rocket, color: 'ignition' },
+  // Workspace Tools (Primary)
+  { name: 'Spark', label: 'Spark (IDE)', path: '/spark', icon: Code, group: 'workspace' },
+  { name: 'Slate', label: 'Slate (Nodes)', path: '/slate', icon: Network, group: 'workspace' },
+  { name: 'Ignis', label: 'Ignis (Runtime)', path: '/ignis', icon: Play, group: 'workspace' },
+  
+  // System Tools (Secondary)
+  { name: 'Waypoint', label: 'Waypoint (Docs)', path: '/waypoint', icon: BookOpen, group: 'system' },
+  { name: 'Projects', label: 'Projects (Deploy)', path: '/projects', icon: Rocket, group: 'system' },
+  
+  // Home
+  { name: 'Landing', label: 'Landing', path: '/landing', icon: Home, group: 'home' },
 ];
 
 export function Navigation() {
-  const pathname = usePathname();
+  // Check if we're in Next.js context (not Storybook)
+  const isNextJs = typeof window !== 'undefined' && (window as any).__NEXT_DATA__;
+  let pathname: string | null = null;
+  
+  try {
+    if (isNextJs) {
+      pathname = usePathname();
+    }
+  } catch (e) {
+    // Not in Next.js context (Storybook)
+    pathname = null;
+  }
+
+  const currentPath = pathname || '';
+
+  const workspaceItems = navItems.filter(item => item.group === 'workspace');
+  const systemItems = navItems.filter(item => item.group === 'system');
+  const homeItem = navItems.find(item => item.group === 'home');
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background-primary/80 backdrop-blur-xl border-b border-border-primary">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/landing" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-landing flex items-center justify-center">
-              <Home className="w-5 h-5 text-background-primary" />
-            </div>
-            <span className="text-lg font-bold text-text-primary">WISSIL</span>
-          </Link>
+    <nav 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: 'var(--nv-bg-1)',
+        borderBottom: '1px solid var(--nv-border)',
+        height: '40px', // Krug-optimized: Reduced from 64px (37.5% reduction)
+      }}
+    >
+      <div 
+        style={{
+          maxWidth: '100%',
+          margin: '0 auto',
+          padding: `0 var(--nv-space-4)`,
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 'var(--nv-space-4)'
+        }}
+      >
+        {/* Logo */}
+        <Link 
+          href="/landing" 
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--nv-space-2)',
+            textDecoration: 'none',
+            color: 'var(--nv-text-0)',
+            fontWeight: 600,
+            fontSize: '14px',
+            flexShrink: 0
+          }}
+        >
+          <div 
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: 'var(--nv-radius-sm)',
+              background: 'var(--nv-accent)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--nv-text-0)'
+            }}
+          >
+            <Home style={{ width: '14px', height: '14px' }} />
+          </div>
+          <span>WIS2L</span>
+        </Link>
 
-          <div className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => {
+        {/* Desktop Navigation - Hidden on mobile */}
+        <div 
+          style={{ 
+            display: 'none',
+            alignItems: 'center', 
+            gap: 'var(--nv-space-1)', 
+            flex: 1, 
+            justifyContent: 'center',
+            overflowX: 'auto'
+          }}
+          className="desktop-nav"
+        >
+          {/* Workspace Group */}
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--nv-space-1)',
+              paddingRight: 'var(--nv-space-3)',
+              borderRight: '1px solid var(--nv-border)',
+              flexShrink: 0
+            }}
+          >
+            {workspaceItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.path;
-              const activeStyles = {
-                landing: isActive ? 'bg-landing-primary/20 text-landing-primary border border-landing-primary/30' : '',
-                waypoint: isActive ? 'bg-waypoint-primary/20 text-waypoint-primary border border-waypoint-primary/30' : '',
-                spark: isActive ? 'bg-spark-primary/20 text-spark-primary border border-spark-primary/30' : '',
-                slate: isActive ? 'bg-slate-primary/20 text-slate-primary border border-slate-primary/30' : '',
-                ignis: isActive ? 'bg-ignis-primary/20 text-ignis-primary border border-ignis-primary/30' : '',
-                ignition: isActive ? 'bg-ignition-primary/20 text-ignition-primary border border-ignition-primary/30' : '',
-              };
+              const isActive = currentPath === item.path;
               return (
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    isActive
-                      ? activeStyles[item.color as keyof typeof activeStyles]
-                      : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
-                  }`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--nv-space-2)',
+                    padding: `var(--nv-space-1) var(--nv-space-3)`,
+                    borderRadius: 'var(--nv-radius-sm)',
+                    fontSize: '12px',
+                    fontWeight: isActive ? 600 : 400,
+                    textDecoration: 'none',
+                    color: isActive ? 'var(--nv-text-0)' : 'var(--nv-text-2)',
+                    background: isActive ? 'var(--nv-bg-2)' : 'transparent',
+                    borderBottom: isActive ? `2px solid var(--nv-accent)` : '2px solid transparent',
+                    transition: 'var(--nv-transition-fast)',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'var(--nv-bg-2)';
+                      e.currentTarget.style.color = 'var(--nv-text-1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'var(--nv-text-2)';
+                    }
+                  }}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
+                  <Icon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </div>
 
-          {/* Mobile Menu */}
-          <div className="md:hidden">
-            <select
-              value={pathname}
-              onChange={(e) => {
-                window.location.href = e.target.value;
-              }}
-              className="px-3 py-2 rounded-lg bg-background-secondary border border-border-primary text-text-primary text-sm"
-            >
-              {navItems.map((item) => (
-                <option key={item.path} value={item.path}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
+          {/* System Group */}
+          <div 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--nv-space-1)',
+              paddingLeft: 'var(--nv-space-3)',
+              paddingRight: 'var(--nv-space-3)',
+              borderRight: '1px solid var(--nv-border)',
+              flexShrink: 0
+            }}
+          >
+            {systemItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentPath === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--nv-space-2)',
+                    padding: `var(--nv-space-1) var(--nv-space-3)`,
+                    borderRadius: 'var(--nv-radius-sm)',
+                    fontSize: '12px',
+                    fontWeight: isActive ? 600 : 400,
+                    textDecoration: 'none',
+                    color: isActive ? 'var(--nv-text-0)' : 'var(--nv-text-2)',
+                    background: isActive ? 'var(--nv-bg-2)' : 'transparent',
+                    borderBottom: isActive ? `2px solid var(--nv-accent)` : '2px solid transparent',
+                    transition: 'var(--nv-transition-fast)',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'var(--nv-bg-2)';
+                      e.currentTarget.style.color = 'var(--nv-text-1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.color = 'var(--nv-text-2)';
+                    }
+                  }}
+                >
+                  <Icon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
+
+          {/* Home */}
+          {homeItem && (
+            <div style={{ paddingLeft: 'var(--nv-space-3)', flexShrink: 0 }}>
+              <Link
+                href={homeItem.path}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 'var(--nv-space-2)',
+                  padding: `var(--nv-space-1) var(--nv-space-3)`,
+                  borderRadius: 'var(--nv-radius-sm)',
+                  fontSize: '12px',
+                  fontWeight: currentPath === homeItem.path ? 600 : 400,
+                  textDecoration: 'none',
+                  color: currentPath === homeItem.path ? 'var(--nv-text-0)' : 'var(--nv-text-2)',
+                  background: currentPath === homeItem.path ? 'var(--nv-bg-2)' : 'transparent',
+                  borderBottom: currentPath === homeItem.path ? `2px solid var(--nv-accent)` : '2px solid transparent',
+                  transition: 'var(--nv-transition-fast)',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (currentPath !== homeItem.path) {
+                    e.currentTarget.style.background = 'var(--nv-bg-2)';
+                    e.currentTarget.style.color = 'var(--nv-text-1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (currentPath !== homeItem.path) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--nv-text-2)';
+                  }
+                }}
+              >
+                <homeItem.icon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                <span>{homeItem.label}</span>
+              </Link>
+            </div>
+          )}
         </div>
+
+        {/* Mobile Menu - Hidden on desktop */}
+        <div 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            flexShrink: 0
+          }}
+          className="mobile-nav"
+        >
+          <select
+            value={currentPath}
+            onChange={(e) => {
+              window.location.href = e.target.value;
+            }}
+            style={{
+              padding: `var(--nv-space-1) var(--nv-space-2)`,
+              borderRadius: 'var(--nv-radius-sm)',
+              background: 'var(--nv-bg-2)',
+              border: `1px solid var(--nv-border)`,
+              color: 'var(--nv-text-0)',
+              fontSize: '12px',
+              cursor: 'pointer',
+              minWidth: '140px'
+            }}
+          >
+            {navItems.map((item) => (
+              <option key={item.path} value={item.path} style={{ background: 'var(--nv-bg-1)' }}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Responsive CSS */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (min-width: 768px) {
+            .desktop-nav {
+              display: flex !important;
+            }
+            .mobile-nav {
+              display: none !important;
+            }
+          }
+          @media (max-width: 767px) {
+            .desktop-nav {
+              display: none !important;
+            }
+            .mobile-nav {
+              display: flex !important;
+            }
+          }
+        `}} />
       </div>
     </nav>
   );
 }
-

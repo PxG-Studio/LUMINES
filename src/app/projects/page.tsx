@@ -6,16 +6,16 @@ import { Rocket, FolderPlus, FileCode, Sparkles, Settings, ArrowRight, CheckCirc
 import { Navigation } from '@/components/wissil/Navigation';
 
 /**
- * IGNITION - Project Bootstrap
+ * PROJECTS - Project Bootstrap
  *
  * Project creation wizard, template gallery, and project initialization.
  *
- * Domain: ignition.lumenforge.io, ignite.lumenforge.io
+ * Domain: projects.lumenforge.io
  * Network: Helios Control (192.168.86.114)
  * Port: 3005
  * Integration: Template service, MCP tools, GitHub integration
  */
-export default function IgnitionPage() {
+export default function ProjectsPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [projectName, setProjectName] = useState('');
@@ -96,7 +96,7 @@ export default function IgnitionPage() {
             </div>
 
             <h1 className="text-6xl sm:text-7xl font-bold mb-6 text-gradient-ignition">
-              IGNITION
+              PROJECTS
             </h1>
 
             <p className="text-xl text-text-secondary mb-4 leading-relaxed">
@@ -311,7 +311,7 @@ export default function IgnitionPage() {
                 <div>
                   <h3 className="text-lg font-bold text-text-primary mb-2">Game Project Creation</h3>
                   <p className="text-text-secondary text-sm leading-relaxed mb-3">
-                    IGNITION integrates with Unity templates, game asset libraries, and version control
+                    PROJECTS integrates with Unity templates, game asset libraries, and version control
                     for repository creation. Game projects are initialized with best practices,
                     proper folder structure, and ready-to-use game configurations.
                   </p>

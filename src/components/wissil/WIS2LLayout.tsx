@@ -1,7 +1,7 @@
 import React from 'react';
 import { slateTokens, ColorSystem } from '@/tokens/slate.tokens';
 
-export interface WISSILLayoutProps {
+export interface WIS2LLayoutProps {
   children: React.ReactNode;
   system: ColorSystem;
   title?: string;
@@ -11,12 +11,12 @@ export interface WISSILLayoutProps {
 }
 
 /**
- * WISSILLayout Component
+ * WIS2LLayout Component
  *
- * Universal layout wrapper for all WISSIL subsystem pages.
+ * Universal layout wrapper for all WIS2L subsystem pages.
  * Provides consistent structure, theming, and accessibility.
  */
-export const WISSILLayout: React.FC<WISSILLayoutProps> = ({
+export const WIS2LLayout: React.FC<WIS2LLayoutProps> = ({
   children,
   system,
   title,
@@ -107,4 +107,5 @@ export const WISSILLayout: React.FC<WISSILLayoutProps> = ({
   );
 };
 
-export default WISSILLayout;
+export default WIS2LLayout;
+

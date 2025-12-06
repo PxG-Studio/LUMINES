@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import SparkPage from './page';
+import SparkGeneratorPage from './generator/page';
 import { WISSILLayout } from '@/components/wissil/WISSILLayout';
 
 const meta = {
@@ -101,4 +102,55 @@ export const WideScreen: Story = {
       defaultViewport: 'wideScreen',
     },
   },
+};
+
+// === Generator Page Stories ===
+
+export const Generator: Story = {
+  name: 'Generator – Unity Assets',
+  render: () => <SparkGeneratorPage />,
+  parameters: {
+    docs: {
+      description: {
+        story: `
+### SPARK Generator – Unity Assets
+
+Minimal Bolt.new-style playground for generating Unity C# assets from natural language prompts.
+
+**Layout**
+- Left: prompt input + Unity presets (controllers, spawners, ScriptableObjects)
+- Right: Mixture-of-Experts cards (Design / Logic / Performance), generated C# output, and Unity usage checklist
+
+**Usage**
+- Type a description of the asset you want (e.g. "Top-down 2D controller with Rigidbody2D")
+- Click **Generate Unity Asset**
+- Copy the generated C# into a Unity script and follow the instructions under "How to use this in Unity"
+        `,
+      },
+    },
+  },
+};
+
+export const GeneratorMobile: Story = {
+  name: 'Generator – Mobile',
+  render: () => <SparkGeneratorPage />,
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const GeneratorWithLayout: Story = {
+  name: 'Generator – With WISSIL Layout',
+  render: () => (
+    <WISSILLayout
+      system="spark"
+      title="SPARK Generator"
+      description="Unity C# asset generation from natural language prompts"
+      showHeader
+    >
+      <SparkGeneratorPage />
+    </WISSILLayout>
+  ),
 };

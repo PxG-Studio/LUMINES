@@ -7,7 +7,7 @@ import { unzipToObject, isValidZip } from "./zipUtils";
 import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
 import { regenerateTree } from "@/wissil/Slate/components/FileTreeState";
 import { openFile } from "@/wissil/Slate/editor/openFile";
-import { IgnitionController } from "@/wissil/runtime/ignition/ignitionController";
+import { IgnitionController } from "@/wissil/runtime/projects/ignitionController";
 import { useEditorState } from "@/state/editorState";
 
 /**

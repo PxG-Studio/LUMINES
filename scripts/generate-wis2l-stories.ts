@@ -130,7 +130,7 @@ function generateStoryTemplate(system: WIS2LSystem): string {
 
   return `import type { Meta, StoryObj } from '@storybook/nextjs';
 import ${componentName}Page from '${pageImportPath}';
-import { WISSILLayout } from '@/components/wissil/WISSILLayout';
+import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
 
 const meta = {
   title: 'Lumenforge.io Design System/WIS2L Framework/${componentName}/Pages/${componentName} Experience',
@@ -179,14 +179,14 @@ export const Default: Story = {
  */
 export const WithLayout: Story = {
   render: () => (
-    <WISSILLayout
+    <WIS2LLayout
       system="${system.color}"
       title="${system.name.toUpperCase()}"
       description="${system.displayName}"
       showHeader
     >
       <${componentName}Page />
-    </WISSILLayout>
+    </WIS2LLayout>
   ),
 };
 

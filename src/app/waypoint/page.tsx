@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Gamepad2, Network, Settings, Layers, Code2, Play, Download, Share2, Zap, CheckCircle2 } from 'lucide-react';
 import { Navigation } from '@/components/wissil/Navigation';
+import { Button } from '@/design-system/primitives/Button';
 
 /**
  * WAYPOINT - Unity Visual Scripting
@@ -17,6 +19,19 @@ import { Navigation } from '@/components/wissil/Navigation';
  * Integration: NEC (Unity Runtime) for Unity WebGL execution
  */
 export default function WaypointPage() {
+  // Check if we're in Next.js context (not Storybook)
+  const isNextJs = typeof window !== 'undefined' && (window as any).__NEXT_DATA__;
+  let router: ReturnType<typeof useRouter> | null = null;
+  
+  try {
+    if (isNextJs) {
+      router = useRouter();
+    }
+  } catch (e) {
+    // Not in Next.js context (Storybook)
+    router = null;
+  }
+
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [graphStats, setGraphStats] = useState({ nodes: 12, connections: 18, complexity: 'Medium' });
@@ -84,29 +99,31 @@ export default function WaypointPage() {
               Create game logic visually with a powerful node-based editor. Connect nodes, define behaviors, and see your game come to life.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Button
+                variant="accent"
+                style={{ fontSize: '16px', padding: '14px 28px', display: 'flex', alignItems: 'center', gap: '8px' }}
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="group px-8 py-4 rounded-lg bg-gradient-waypoint font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl flex items-center gap-2 mx-auto"
               >
                 {isPlaying ? (
                   <>
-                    <Settings className="w-5 h-5" />
+                    <Settings style={{ width: '20px', height: '20px' }} />
                     Stop Execution
                   </>
                 ) : (
                   <>
-                    <Play className="w-5 h-5" />
+                    <Play style={{ width: '20px', height: '20px' }} />
                     Run Graph
                   </>
                 )}
-              </button>
-              <button 
+              </Button>
+              <Button
+                variant="default"
+                style={{ fontSize: '16px', padding: '14px 28px', display: 'flex', alignItems: 'center', gap: '8px' }}
                 onClick={() => {
                   // Export functionality
                   console.log('Exporting graph...');
                 }}
-                className="px-8 py-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 font-semibold text-text-primary transition-all duration-300 hover:bg-white/10 flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Export

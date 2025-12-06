@@ -37,7 +37,10 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-a11y"),
     getAbsolutePath("@storybook/addon-docs"),
     getAbsolutePath("@storybook/addon-mcp"),
-    getAbsolutePath("@storybook/addon-vitest")
+    // Temporarily disable @storybook/addon-vitest because the project is on
+    // Vitest v1 while the addon expects Vitest v3+, which causes the
+    // storybook/test runner to fail to start.
+    // getAbsolutePath("@storybook/addon-vitest"),
   ],
 
   framework: {
