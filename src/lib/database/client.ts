@@ -1,53 +1,22 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-let supabaseClient: SupabaseClient | null = null;
-
-export function getSupabaseClient(): SupabaseClient {
-  if (!supabaseClient) {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error(
-        'Missing Supabase credentials. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env file.'
-      );
-    }
-
-    supabaseClient = createClient(supabaseUrl, supabaseKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-      },
-    });
-  }
-
-  return supabaseClient;
-}
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export async function query<T = any>(
   text: string,
   params?: any[]
 ): Promise<{ rows: T[]; rowCount: number }> {
-  const client = getSupabaseClient();
-  const start = Date.now();
-
   try {
-    const { data, error } = await client.rpc('execute_sql', {
-      query: text,
-      params: params || [],
+    const response = await fetch(`${API_BASE}/api/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, params, useReplica: false }),
     });
 
-    if (error) throw error;
-
-    const duration = Date.now() - start;
-    if (duration > 1000) {
-      console.warn(`Slow query (${duration}ms):`, text.substring(0, 100));
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Query failed');
     }
 
-    return {
-      rows: data as T[],
-      rowCount: Array.isArray(data) ? data.length : 0,
-    };
+    return await response.json();
   } catch (error) {
     console.error('Database query error:', error);
     throw error;
@@ -58,18 +27,54 @@ export async function queryReplica<T = any>(
   text: string,
   params?: any[]
 ): Promise<{ rows: T[]; rowCount: number }> {
-  return query<T>(text, params);
+  try {
+    const response = await fetch(`${API_BASE}/api/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, params, useReplica: true }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Query failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Replica query error, falling back to primary:', error);
+    return query<T>(text, params);
+  }
 }
 
 export async function transaction<T>(
-  callback: (client: SupabaseClient) => Promise<T>
+  callback: (client: any) => Promise<T>
 ): Promise<T> {
-  const client = getSupabaseClient();
-  return callback(client);
+  throw new Error('Transaction callback pattern not supported with API client. Use transactionQueries instead.');
+}
+
+export async function transactionQueries(
+  queries: Array<{ text: string; params?: any[] }>
+): Promise<Array<{ rows: any[]; rowCount: number }>> {
+  try {
+    const response = await fetch(`${API_BASE}/api/transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queries }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Transaction failed');
+    }
+
+    const data = await response.json();
+    return data.results;
+  } catch (error) {
+    console.error('Transaction error:', error);
+    throw error;
+  }
 }
 
 export async function closeConnections(): Promise<void> {
-  supabaseClient = null;
+  // No-op for API client
 }
-
-export { supabaseClient };
