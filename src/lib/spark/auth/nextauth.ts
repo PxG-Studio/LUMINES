@@ -8,7 +8,7 @@
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { getOIDCConfig } from './oidc';
-import { logEvent, AuditEvent } from '../monitoring/audit';
+import { logAuthEvent } from '../monitoring/audit';
 
 export interface SessionUser {
   id: string;
@@ -48,14 +48,14 @@ export function getNextAuthConfig(): NextAuthOptions {
     callbacks: {
       async signIn({ user, account, profile }) {
         // Log sign-in attempt
-        await logEvent(
-          AuditEvent.USER_LOGIN,
+        await logAuthEvent(
+          user.id,
+          'login',
+          true,
           {
-            userId: user.id,
-            email: user.email,
-            provider: account?.provider,
-          },
-          user.id
+            ip_address: undefined, // Will be set by request context
+            user_agent: undefined, // Will be set by request context
+          }
         );
 
         // Check if MFA is required (Google handles this)

@@ -45,12 +45,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
     this.props.onError?.(error, errorInfo);
 
-    if (
-      typeof window !== "undefined" &&
-      process.env.NODE_ENV === "production"
-    ) {
-      // Log to external service (Sentry, etc.)
-    }
+    // Sentry logging is optional and disabled to avoid build-time dependencies
+    // To enable: install @sentry/nextjs and configure SENTRY_DSN
+    // Errors are still logged to console in development
   }
 
   handleReset = (): void => {

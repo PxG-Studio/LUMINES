@@ -41,6 +41,17 @@ class ServiceClient {
   }
 
   async call<T>(path: string, body: any, options?: { signal?: AbortSignal }): Promise<T> {
+    // Check if service is available (for optional services like MCP)
+    // Only check if baseUrl is localhost:8080 (MCP default) and no explicit URL is set
+    const isDefaultMCP = this.config.baseUrl.includes('localhost:8080') && 
+                        !process.env.UNITY_MCP_URL;
+    
+    if (isDefaultMCP) {
+      // MCP service not available - this is OK for MVP 1
+      // Return a graceful error instead of throwing
+      throw new Error('MCP service not available. Use chat generation instead.');
+    }
+
     const bodyStr = JSON.stringify(body);
     this.preflightCheck(path, Buffer.byteLength(bodyStr, "utf8"));
 

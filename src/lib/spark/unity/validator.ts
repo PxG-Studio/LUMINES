@@ -44,6 +44,7 @@ export function validateCSharp(code: string): ValidationResult {
 }
 
 export function extractScriptName(code: string): string | null {
-  const match = code.match(/class\s+(\w+)/);
+  // Match class name, including escaped keywords with @ prefix
+  const match = code.match(/class\s+(@?\w+)/);
   return match ? match[1] : null;
 }

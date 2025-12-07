@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as assetOps from '@/lib/database/operations/slate-assets';
+import * as assetOps from '@/lib/database/operations/assets';
 
 export async function POST(
   request: NextRequest,

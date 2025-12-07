@@ -7,9 +7,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    turbopack: {
-      root: path.resolve(__dirname),
-    },
+    // turbopack removed - not supported in Next.js 14.2
   },
 }
 

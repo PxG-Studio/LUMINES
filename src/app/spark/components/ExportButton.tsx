@@ -25,7 +25,8 @@ export default function ExportButton({ code, scriptName }: ExportButtonProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Export failed");
+        const errorData = await response.json().catch(() => ({ error: "Export failed" }));
+        throw new Error(errorData.error || `Export failed with status ${response.status}`);
       }
 
       // Download the ZIP file
@@ -39,7 +40,8 @@ export default function ExportButton({ code, scriptName }: ExportButtonProps) {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setError("Failed to export. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Failed to export. Please try again.";
+      setError(errorMessage);
       console.error("Export error:", err);
     } finally {
       setIsExporting(false);

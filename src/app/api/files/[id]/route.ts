@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as fileOps from '@/lib/database/operations/slate-files';
+import * as fileOps from '@/lib/database/operations/files';
 
 export async function GET(
   request: NextRequest,

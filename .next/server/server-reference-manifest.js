@@ -1,1 +1,1 @@
-self.__RSC_SERVER_MANIFEST="{\"node\":{\"4d804d1ff79386d11671bbc4ab1ef0155e640718\":{\"workers\":{\"app/spark/page\":\"1401\"},\"layer\":{\"app/spark/page\":\"action-browser\"}},\"b61a356f98a4e62fdbc744b50bd8bc47825b3230\":{\"workers\":{\"app/spark/page\":\"1401\"},\"layer\":{\"app/spark/page\":\"action-browser\"}}},\"edge\":{},\"encryptionKey\":\"process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY\"}"
+self.__RSC_SERVER_MANIFEST="{\n  \"node\": {},\n  \"edge\": {},\n  \"encryptionKey\": \"process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY\"\n}"

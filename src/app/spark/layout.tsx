@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./styles/spark.css";
+import SparkLayoutClient from "./layout-client";
 
 export const metadata: Metadata = {
   title: "SPARK - Unity Script Generator",
@@ -11,5 +12,5 @@ export default function SparkLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="spark-container">{children}</div>;
+  return <SparkLayoutClient>{children}</SparkLayoutClient>;
 }

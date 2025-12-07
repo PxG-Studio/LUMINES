@@ -127,7 +127,7 @@ export default function WaypointPage() {
               >
                 <Download className="w-4 h-4" />
                 Export
-              </button>
+              </Button>
               <button 
                 onClick={() => {
                   // Share functionality

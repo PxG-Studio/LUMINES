@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`WireRenderer > matches snapshot 1`] = `
+<div>
+  <svg>
+    <g>
+      <path
+        d="M0,0 C50,0 50,100 100,100"
+        fill="none"
+        stroke="var(--wire-exec, #55aaff)"
+        stroke-width="3"
+        style="cursor: pointer;"
+      />
+      <path
+        d="M0,0 C50,0 50,100 100,100"
+        fill="none"
+        stroke="transparent"
+        stroke-width="10"
+        style="cursor: pointer;"
+      />
+    </g>
+  </svg>
+</div>
+`;

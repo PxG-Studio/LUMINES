@@ -24,63 +24,100 @@ export default function PreviewPanelRealtime({ sessionId, onFrameUpdate }: Previ
   const [preview, setPreview] = useState<PreviewState>({ status: "idle" });
 
   useEffect(() => {
-    const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_NATS_WS_URL || "ws://192.168.86.27:4222"
-    );
+    // Only connect if NATS URL is explicitly configured
+    const natsUrl = process.env.NEXT_PUBLIC_NATS_WS_URL;
+    if (!natsUrl) {
+      // NATS not configured - this is OK for MVP 1
+      setPreview({ status: "idle" });
+      return;
+    }
 
-    ws.onopen = () => {
-      // Subscribe to preview events for this session
-      ws.send(
-        JSON.stringify({
-          op: "SUB",
-          subject: `spark.preview.unity.*.${sessionId}`,
-          sid: `preview-${sessionId}`,
-        })
-      );
-    };
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let isMounted = true;
 
-    ws.onmessage = (evt) => {
+    const connect = () => {
       try {
-        const msg = JSON.parse(evt.data);
-        if (!msg.subject || !msg.data) return;
+        ws = new WebSocket(natsUrl);
 
-        const payload = JSON.parse(atob(msg.data));
+        ws.onopen = () => {
+          if (!isMounted) return;
+          // Subscribe to preview events for this session
+          ws?.send(
+            JSON.stringify({
+              op: "SUB",
+              subject: `spark.preview.unity.*.${sessionId}`,
+              sid: `preview-${sessionId}`,
+            })
+          );
+        };
 
-        if (msg.subject.includes("preview.unity.started")) {
-          setPreview({ status: "loading" });
-        } else if (msg.subject.includes("preview.unity.frame")) {
-          setPreview({
-            status: "ready",
-            frameRef: payload.frameRef,
-            format: payload.format || "url",
-          });
-          onFrameUpdate?.(payload.frameRef);
-        } else if (msg.subject.includes("preview.unity.failed")) {
-          setPreview({ status: "error", error: payload.error });
-        }
+        ws.onmessage = (evt) => {
+          if (!isMounted) return;
+          try {
+            const msg = JSON.parse(evt.data);
+            if (!msg.subject || !msg.data) return;
+
+            const payload = JSON.parse(atob(msg.data));
+
+            if (msg.subject.includes("preview.unity.started")) {
+              setPreview({ status: "loading" });
+            } else if (msg.subject.includes("preview.unity.frame")) {
+              setPreview({
+                status: "ready",
+                frameRef: payload.frameRef,
+                format: payload.format || "url",
+              });
+              onFrameUpdate?.(payload.frameRef);
+            } else if (msg.subject.includes("preview.unity.failed")) {
+              setPreview({ status: "error", error: payload.error });
+            }
+          } catch (error) {
+            // Silently handle parse errors
+          }
+        };
+
+        ws.onerror = (error) => {
+          // Silently handle errors - NATS is optional for MVP 1
+          if (isMounted) {
+            setPreview({ status: "idle" });
+          }
+        };
+
+        ws.onclose = () => {
+          // Don't log - NATS is optional
+          if (isMounted && reconnectTimeout === null) {
+            // Don't auto-reconnect - NATS is optional
+            setPreview({ status: "idle" });
+          }
+        };
       } catch (error) {
-        console.error("Preview event parse error:", error);
+        // Silently handle connection errors
+        if (isMounted) {
+          setPreview({ status: "idle" });
+        }
       }
     };
 
-    ws.onerror = (error) => {
-      console.error("NATS WebSocket error:", error);
-      setPreview({ status: "error", error: "Connection failed" });
-    };
-
-    ws.onclose = () => {
-      console.log("NATS WebSocket closed");
-    };
+    connect();
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(
-          JSON.stringify({
-            op: "UNSUB",
-            sid: `preview-${sessionId}`,
-          })
-        );
-        ws.close();
+      isMounted = false;
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        try {
+          ws.send(
+            JSON.stringify({
+              op: "UNSUB",
+              sid: `preview-${sessionId}`,
+            })
+          );
+          ws.close();
+        } catch (error) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, [sessionId, onFrameUpdate]);

@@ -55,7 +55,13 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "// SPARK validation scripts": "",
+    "validate:spark": "tsx spark/scripts/validate-mvp1.ts",
+    "validate:spark:build": "tsx spark/scripts/validate-build.ts",
+    "test:spark:manual": "tsx spark/scripts/test-manual.ts",
+    "test:spark:e2e": "tsx spark/scripts/test-e2e-automated.ts",
+    "verify:spark": "tsx spark/VERIFICATION_SCRIPT.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",

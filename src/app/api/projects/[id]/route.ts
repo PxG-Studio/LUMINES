@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as projectOps from '@/lib/database/operations/slate-projects';
+import * as projectOps from '@/lib/database/operations/projects';
 
 export async function GET(
   request: NextRequest,

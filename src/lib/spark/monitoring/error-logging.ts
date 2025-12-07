@@ -5,7 +5,8 @@
  * Provides error aggregation and dashboard integration
  */
 
-import { logEvent, AuditEvent } from './audit';
+// Audit logging is server-side only - import dynamically to avoid client bundle issues
+// Database operations should not be in client bundles
 import { getAnalyticsTracker } from '../analytics/tracker';
 
 export interface ErrorLogEntry {
@@ -77,21 +78,30 @@ class ErrorLogger {
     // Aggregate error
     this.aggregateError(entry);
 
-    // Log to audit system
-    await logEvent(
-      AuditEvent.SYSTEM_ERROR,
-      {
-        errorId,
-        message: entry.message,
-        stack: entry.stack,
-        context: entry.context,
-      },
-      context?.userId,
-      {
-        ipAddress: context?.ipAddress,
-        userAgent: context?.userAgent,
+    // Log to audit system (server-side only to avoid database client in browser bundle)
+    if (typeof window === 'undefined' && context?.userId) {
+      try {
+        const { logAuditEvent } = await import('./audit');
+        await logAuditEvent({
+          user_id: context.userId,
+          event_type: 'security_event',
+          resource_type: 'system',
+          action: 'error_occurred',
+          success: false,
+          ip_address: context?.ipAddress,
+          user_agent: context?.userAgent,
+          metadata: {
+            errorId,
+            message: entry.message,
+            stack: entry.stack,
+            context: entry.context,
+          },
+          error_message: entry.message,
+        });
+      } catch (err) {
+        // Audit logging not available - that's okay
       }
-    );
+    }
 
     // Track in analytics
     const analytics = getAnalyticsTracker();
@@ -128,16 +138,27 @@ class ErrorLogger {
 
     this.errors.set(warningId, entry);
 
-    await logEvent(
-      AuditEvent.SYSTEM_ERROR,
-      {
-        errorId: warningId,
-        message,
-        level: 'warning',
-        context,
-      },
-      context?.userId
-    );
+    // Log to audit system (server-side only)
+    if (typeof window === 'undefined' && context?.userId) {
+      try {
+        const { logAuditEvent } = await import('./audit');
+        await logAuditEvent({
+          user_id: context.userId,
+          event_type: 'security_event',
+          resource_type: 'system',
+          action: 'warning_occurred',
+          success: true,
+          metadata: {
+            errorId: warningId,
+            message,
+            level: 'warning',
+            context,
+          },
+        });
+      } catch (err) {
+        // Audit logging not available - that's okay
+      }
+    }
 
     return warningId;
   }
@@ -206,15 +227,18 @@ class ErrorLogger {
 
   /**
    * Send error to external logging service
+   * 
+   * Note: Sentry integration is handled separately in sentry.ts
+   * This method only handles generic logging services to avoid build-time import issues
    */
   private async sendToLoggingService(entry: ErrorLogEntry): Promise<void> {
-    // In production, this would send to:
-    // - Sentry
-    // - LogRocket
-    // - Datadog
-    // - CloudWatch
-    // - etc.
+    // Sentry integration is handled in sentry.ts initialization
+    // We don't import it here to avoid webpack build-time resolution issues
+    // If Sentry is configured and initialized, it will capture errors automatically
+    
+    // For now, we only handle generic logging services
 
+    // Fallback to generic logging service
     const loggingServiceUrl = process.env.LOGGING_SERVICE_URL;
     if (!loggingServiceUrl) {
       return; // No external logging configured

@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Tabs > matches snapshot 1`] = `
+<div>
+  <div
+    style="display: flex; background: var(--slate-panel, #16181d); border-bottom: 1px solid var(--slate-border, #26292f); overflow-x: auto; overflow-y: hidden;"
+  >
+    <div
+      style="padding: 8px 16px; background: transparent; border-right: 1px solid var(--slate-border, #26292f); color: var(--slate-text, #e4e7eb); cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 12px; min-width: 120px; border-top: 2px solid transparent; transition: background 0.2s;"
+    >
+      <span
+        style="flex: 1 1 0%; overflow: hidden; text-overflow: ellipsis;"
+      >
+        Untitled-1
+      </span>
+      <span
+        style="width: 6px; height: 6px; border-radius: 50%; background: var(--slate-text-muted, #9ba1aa);"
+      />
+      <button
+        aria-label="Close tab Untitled-1"
+        style="padding: 2px 4px; background: transparent; color: var(--slate-text-muted, #9ba1aa); cursor: pointer; border-radius: 2px; font-size: 14px; line-height: 1; transition: background 0.2s;"
+      >
+        <span
+          aria-hidden="true"
+        >
+          ×
+        </span>
+      </button>
+    </div>
+    <div
+      style="padding: 8px 16px; background: transparent; border-right: 1px solid var(--slate-border, #26292f); color: var(--slate-text, #e4e7eb); cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 12px; min-width: 120px; border-top: 2px solid transparent; transition: background 0.2s;"
+    >
+      <span
+        style="flex: 1 1 0%; overflow: hidden; text-overflow: ellipsis;"
+      >
+        file.json
+      </span>
+      <button
+        aria-label="Close tab file.json"
+        style="padding: 2px 4px; background: transparent; color: var(--slate-text-muted, #9ba1aa); cursor: pointer; border-radius: 2px; font-size: 14px; line-height: 1; transition: background 0.2s;"
+      >
+        <span
+          aria-hidden="true"
+        >
+          ×
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;

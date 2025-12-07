@@ -30,86 +30,113 @@ export default function UnityProgressTracker({
   const [operations, setOperations] = useState<Operation[]>([]);
 
   useEffect(() => {
-    const ws = new WebSocket(
-      process.env.NEXT_PUBLIC_NATS_WS_URL || "ws://192.168.86.27:4222"
-    );
+    // Only connect if NATS URL is explicitly configured
+    const natsUrl = process.env.NEXT_PUBLIC_NATS_WS_URL;
+    if (!natsUrl) {
+      // NATS not configured - this is OK for MVP 1
+      return;
+    }
 
-    ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          op: "SUB",
-          subject: `spark.runtime.unity.*.${sessionId}`,
-          sid: `unity-progress-${sessionId}`,
-        })
-      );
-      ws.send(
-        JSON.stringify({
-          op: "SUB",
-          subject: `spark.build.unity.*.${sessionId}`,
-          sid: `build-progress-${sessionId}`,
-        })
-      );
-    };
+    let ws: WebSocket | null = null;
+    let isMounted = true;
 
-    ws.onmessage = (evt) => {
-      try {
-        const msg = JSON.parse(evt.data);
-        if (!msg.subject || !msg.data) return;
+    try {
+      ws = new WebSocket(natsUrl);
 
-        const payload = JSON.parse(atob(msg.data));
-        const type = payload.type;
-
-        setOperations((prev) => {
-          const newOps = [...prev];
-
-          if (type?.includes(".started")) {
-            newOps.push({
-              id: `${type}-${Date.now()}`,
-              type: type.replace(".started", ""),
-              status: "started",
-              name: payload.name || payload.target,
-              timestamp: payload.timestamp,
-            });
-          } else if (type?.includes(".completed")) {
-            const idx = newOps.findIndex(
-              (op) =>
-                op.type === type.replace(".completed", "") && op.status === "started"
-            );
-            if (idx >= 0) {
-              newOps[idx] = { ...newOps[idx], status: "completed" };
-            }
-          } else if (type?.includes(".failed")) {
-            const idx = newOps.findIndex(
-              (op) =>
-                op.type === type.replace(".failed", "") && op.status === "started"
-            );
-            if (idx >= 0) {
-              newOps[idx] = { ...newOps[idx], status: "failed", error: payload.error };
-            }
-          }
-
-          return newOps.slice(-maxOperations);
-        });
-      } catch (error) {
-        console.error("Progress event parse error:", error);
-      }
-    };
-
-    return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(
+      ws.onopen = () => {
+        if (!isMounted) return;
+        ws?.send(
           JSON.stringify({
-            op: "UNSUB",
+            op: "SUB",
+            subject: `spark.runtime.unity.*.${sessionId}`,
             sid: `unity-progress-${sessionId}`,
           })
         );
-        ws.send(
+        ws?.send(
           JSON.stringify({
-            op: "UNSUB",
+            op: "SUB",
+            subject: `spark.build.unity.*.${sessionId}`,
             sid: `build-progress-${sessionId}`,
           })
         );
-        ws.close();
+      };
+
+      ws.onmessage = (evt) => {
+        if (!isMounted) return;
+        try {
+          const msg = JSON.parse(evt.data);
+          if (!msg.subject || !msg.data) return;
+
+          const payload = JSON.parse(atob(msg.data));
+          const type = payload.type;
+
+          setOperations((prev) => {
+            const newOps = [...prev];
+
+            if (type?.includes(".started")) {
+              newOps.push({
+                id: `${type}-${Date.now()}`,
+                type: type.replace(".started", ""),
+                status: "started",
+                name: payload.name || payload.target,
+                timestamp: payload.timestamp,
+              });
+            } else if (type?.includes(".completed")) {
+              const idx = newOps.findIndex(
+                (op) =>
+                  op.type === type.replace(".completed", "") && op.status === "started"
+              );
+              if (idx >= 0) {
+                newOps[idx] = { ...newOps[idx], status: "completed" };
+              }
+            } else if (type?.includes(".failed")) {
+              const idx = newOps.findIndex(
+                (op) =>
+                  op.type === type.replace(".failed", "") && op.status === "started"
+              );
+              if (idx >= 0) {
+                newOps[idx] = { ...newOps[idx], status: "failed", error: payload.error };
+              }
+            }
+
+            return newOps.slice(-maxOperations);
+          });
+        } catch (error) {
+          // Silently handle parse errors - NATS is optional
+        }
+      };
+
+      ws.onerror = () => {
+        // Silently handle errors - NATS is optional for MVP 1
+      };
+
+      ws.onclose = () => {
+        // Don't log - NATS is optional
+      };
+    } catch (error) {
+      // Silently handle connection errors
+    }
+
+    return () => {
+      isMounted = false;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        try {
+          ws.send(
+            JSON.stringify({
+              op: "UNSUB",
+              sid: `unity-progress-${sessionId}`,
+            })
+          );
+          ws.send(
+            JSON.stringify({
+              op: "UNSUB",
+              sid: `build-progress-${sessionId}`,
+            })
+          );
+          ws.close();
+        } catch (error) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, [sessionId, maxOperations]);

@@ -1,10 +1,10 @@
 "use server";
 
-import { validateCSharp } from "@/lib/unity/validator";
-import { generateWithClaude, ClaudeModel } from "@/lib/ai/claude-client";
-import { generateWithOpenAI, OpenAIModel } from "@/lib/ai/openai-client";
+import { validateCSharp } from "@/lib/spark/unity/validator";
+import { generateWithClaude, ClaudeModel } from "@/lib/spark/ai/claude-client";
+import { generateWithOpenAI, OpenAIModel } from "@/lib/spark/ai/openai-client";
 import { getUserPreferences, logGeneration, updateUserPreferences } from "@/lib/database/operations/spark";
-import { getCurrentUserId } from "@/lib/auth/user-context";
+import { getCurrentUserId } from "@/lib/spark/auth/user-context";
 
 export type AIProvider = "claude" | "openai";
 export type { ClaudeModel, OpenAIModel };

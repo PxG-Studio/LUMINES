@@ -60,52 +60,58 @@
 @layer utilities {
   /* Text Gradient Utilities */
   .text-gradient-landing {
-    @apply gradient-text from-landing-primary via-landing-secondary to-landing-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #F5B914, #47E0FF, #A64DFF);
   }
 
   .text-gradient-waypoint {
-    @apply gradient-text from-waypoint-primary via-waypoint-secondary to-waypoint-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #4C4BFF, #A64DFF, #A64DFF);
   }
 
   .text-gradient-spark {
-    @apply gradient-text from-spark-primary via-spark-secondary to-spark-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #F5B914, #FFD659, #FFD659);
   }
 
   .text-gradient-slate {
-    @apply gradient-text from-slate-primary via-slate-secondary to-slate-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #A64DFF, #47E0FF, #F5B914);
   }
 
   .text-gradient-ignis {
-    @apply gradient-text from-ignis-primary via-ignis-secondary to-ignis-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #FF6B35, #F5B914, #F5B914);
   }
 
   .text-gradient-ignition {
-    @apply gradient-text from-ignition-primary via-ignition-secondary to-ignition-accent;
+    @apply gradient-text;
+    background-image: linear-gradient(to right, #F5B914, #FFD659, #FFD659);
   }
 
   /* Background Gradient Utilities */
   .bg-gradient-landing {
-    @apply bg-gradient-to-br from-landing-primary via-landing-secondary to-landing-accent;
+    background-image: linear-gradient(to bottom right, #F5B914, #47E0FF, #A64DFF);
   }
 
   .bg-gradient-waypoint {
-    @apply bg-gradient-to-br from-waypoint-primary via-waypoint-secondary to-waypoint-accent;
+    background-image: linear-gradient(to bottom right, #4C4BFF, #A64DFF, #A64DFF);
   }
 
   .bg-gradient-spark {
-    @apply bg-gradient-to-br from-spark-primary via-spark-secondary to-spark-accent;
+    background-image: linear-gradient(to bottom right, #F5B914, #FFD659, #FFD659);
   }
 
   .bg-gradient-slate {
-    @apply bg-gradient-to-br from-slate-primary via-slate-secondary to-slate-accent;
+    background-image: linear-gradient(to bottom right, #A64DFF, #47E0FF, #F5B914);
   }
 
   .bg-gradient-ignis {
-    @apply bg-gradient-to-br from-ignis-primary via-ignis-secondary to-ignis-accent;
+    background-image: linear-gradient(to bottom right, #FF6B35, #F5B914, #F5B914);
   }
 
   .bg-gradient-ignition {
-    @apply bg-gradient-to-br from-ignition-primary via-ignition-secondary to-ignition-accent;
+    background-image: linear-gradient(to bottom right, #F5B914, #FFD659, #FFD659);
   }
 
   /* Glass Container */
