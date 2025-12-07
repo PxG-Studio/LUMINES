@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-pv
+  labels:
+    type: iscsi
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: iscsi-postgresql
+  iscsi:
+    targetPortal: 192.168.86.28:3260
+    iqn: iqn.2000-01.com.synology:postgresql-target  # Update with actual IQN
+    lun: 0
+    fsType: ext4
+    readOnly: false

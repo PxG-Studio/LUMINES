@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
   { name: 'Projects', label: 'Projects (Deploy)', path: '/projects', icon: Rocket, group: 'system' },
   
   // Home
-  { name: 'Landing', label: 'Landing', path: '/landing', icon: Home, group: 'home' },
+  { name: 'LUMEN', label: 'LUMEN', path: '/lumen', icon: Home, group: 'home' },
 ];
 
 export function Navigation() {
@@ -74,7 +74,7 @@ export function Navigation() {
       >
         {/* Logo */}
         <Link 
-          href="/landing" 
+          href="/lumen" 
           style={{
             display: 'flex',
             alignItems: 'center',

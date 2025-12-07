@@ -1,5 +1,6 @@
 /**
  * Vitest Configuration
+ * Supports both Next.js and Vite-based testing
  */
 
 import { defineConfig } from 'vitest/config';
@@ -11,20 +12,23 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/vitest.setup.ts'],
+    setupFiles: ['./src/test/setup.ts', './tests/vitest.setup.ts'].filter(Boolean),
     include: ['tests/**/*.test.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
     css: true,
-    include: ['tests/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
+        'src/test/',
         'tests/',
-        '**/*.config.*',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/*.stories.{ts,tsx}',
+        '**/*.config.{ts,js}',
         '**/dist/',
         '**/.storybook/',
-        '**/*.stories.{ts,tsx}',
+        '**/types.ts',
       ],
     },
   },

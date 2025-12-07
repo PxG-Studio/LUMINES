@@ -1,6 +1,6 @@
 /**
  * LandingLayout Component
- * Main layout for landing page with all sections
+ * Main layout for LUMEN landing page with all sections
  */
 
 'use client';

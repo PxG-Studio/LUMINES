@@ -57,7 +57,7 @@ export function GoogleSignInButton({
 
       const result = await signIn('google', {
         redirect: true,
-        callbackUrl: '/landing',
+        callbackUrl: '/lumen', // Redirect to LUMEN marketing page after successful login
       });
 
       if (result?.error) {

@@ -6,6 +6,9 @@ const nextConfig = {
   poweredByHeader: false, // Remove X-Powered-By header for security
   experimental: {
     appDir: true,
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   // Performance optimizations
   compiler: {
@@ -115,4 +118,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
