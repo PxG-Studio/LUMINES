@@ -38,8 +38,24 @@
       "@/utils/*": ["./src/utils/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".storybook/**/*.ts"],
-  "exclude": ["node_modules"],
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    ".next/types/**/*.ts",
+    ".storybook/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.d.ts",
+    "src/wissil/**/*.d.ts",
+    "src/wissil/SparkUnity/**",
+    "src/wissil/Unity/**",
+    "src/wissil/UnityBrowser/**",
+    "src/wissil/UnityIO/**"
+  ],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

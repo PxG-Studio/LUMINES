@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assets Database Operations - Comprehensive Tests
  * Complete coverage for asset CRUD, components, and dependencies

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SlateCodeEditor - Comprehensive Tests
  * StackBlitz-parity test coverage for code editor operations

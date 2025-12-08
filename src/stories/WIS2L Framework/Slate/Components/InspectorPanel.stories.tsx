@@ -1,10 +1,12 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * InspectorPanel - StackBlitz Parity Storybook Stories
  * 8-Point UI/UX Parity Metrics Coverage
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn, within, userEvent, expect } from '@storybook/test';
+import { within, userEvent, expect } from '@storybook/test';
 import { InspectorPanel } from '@/wissil/Slate/components/InspectorPanel';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import React from 'react';

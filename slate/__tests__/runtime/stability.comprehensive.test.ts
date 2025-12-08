@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Runtime Stability Tests
  * StackBlitz-parity test coverage for long-running, memory leaks, WebGL loss

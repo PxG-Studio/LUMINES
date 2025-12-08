@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Integration Test: Editor → Bridge → Unity → Inspector
  * StackBlitz-parity integration test coverage

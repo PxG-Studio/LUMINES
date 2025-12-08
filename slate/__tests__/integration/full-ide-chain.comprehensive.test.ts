@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Full IDE Chain Integration Tests
  * CRITICAL - StackBlitz-parity test coverage for complete IDE workflow

@@ -4,7 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn, within, userEvent, expect } from '@storybook/test';
+import { within, userEvent, expect } from '@storybook/test';
 import { SplitView } from '@/design-system/primitives/SplitView';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 
@@ -362,4 +362,5 @@ export const WithPanelIntegration: Story = {
     ],
   },
 };
+
 

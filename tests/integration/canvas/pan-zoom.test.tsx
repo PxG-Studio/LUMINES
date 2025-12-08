@@ -1,3 +1,4 @@
+import React from "react";
 import { describe, expect, test } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
 import { BPGraphCanvas } from "@/ignis/blueprint/canvas/BPGraphCanvas";
@@ -76,4 +77,5 @@ describe("Canvas Pan and Zoom Tests", () => {
     }
   });
 });
+
 

@@ -154,7 +154,7 @@ export function NodeRenderer({
             />
             <div
               style={{
-                fontSize: theme.typography.size.xs,
+                fontSize: theme.typography.size.sm,
                 color: theme.colors.text1,
                 flex: 1
               }}

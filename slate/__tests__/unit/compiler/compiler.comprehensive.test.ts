@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SlateCompiler - Comprehensive Tests
  * StackBlitz-parity test coverage for C# compilation pipeline

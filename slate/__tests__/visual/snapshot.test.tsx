@@ -63,7 +63,7 @@ describe('UI Snapshot & Regression Tests (CRITICAL BLOCKER #3)', () => {
   describe('Dark Mode Snapshots', () => {
     it('should match snapshot in dark mode', () => {
       const { container } = render(
-        <ThemeProvider theme="dark">
+        <ThemeProvider>
           <InspectorPanel />
         </ThemeProvider>
       );

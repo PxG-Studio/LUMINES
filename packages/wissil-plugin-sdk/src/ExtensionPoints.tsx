@@ -4,6 +4,7 @@
  * Type definitions and examples for plugin extension points
  */
 
+import React from 'react';
 import type { NodeDefinition } from '@wissil/kernel';
 
 // ============================================================================
@@ -135,8 +136,6 @@ export const CardBattlerTemplate: CustomTemplate = {
 // Extension Point 4: Inspector Panels
 // ============================================================================
 
-import React from 'react';
-
 export interface CustomInspector {
   componentType: string;
   InspectorComponent: React.ComponentType<{ object: any; onChange: (data: any) => void }>;
@@ -247,4 +246,5 @@ export const TextureCompressorHook: BuildHook = {
     context.log("Textures compressed successfully");
   }
 };
+
 

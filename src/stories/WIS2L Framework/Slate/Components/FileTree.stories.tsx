@@ -1,3 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from "vitest";
+import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
+import { useEditorState } from "@/state/editorState";
+
+vi.mock("../../../../src/hooks/useWissilFS", () => ({
+  useWissilFS: () => ({
+    tree: [],
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock("../../../../src/state/editorState", () => ({
+  useEditorState: () => ({
+    selectedFile: "/index.tsx",
+    setSelectedFile: vi.fn(),
+  }),
+}));
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * FileTree - StackBlitz Parity Storybook Stories
  * 8-Point UI/UX Parity Metrics Coverage

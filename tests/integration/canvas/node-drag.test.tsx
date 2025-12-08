@@ -1,3 +1,4 @@
+import React from "react";
 import { describe, expect, test } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
 import { NodeRenderer } from "@/ignis/blueprint/canvas/NodeRenderer";
@@ -84,4 +85,5 @@ describe("Node Drag Tests", () => {
     }
   });
 });
+
 

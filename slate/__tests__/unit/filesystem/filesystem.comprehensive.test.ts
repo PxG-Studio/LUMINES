@@ -311,8 +311,8 @@ describe('SlateFilesystem - Comprehensive Tests', () => {
       const tree = buildFileTree(files);
       
       expect(tree.length).toBeGreaterThan(0);
-      expect(tree.some(node => node.name === 'src')).toBe(true);
-      expect(tree.some(node => node.name === 'assets')).toBe(true);
+      expect(tree.some((node: any) => node.name === 'src')).toBe(true);
+      expect(tree.some((node: any) => node.name === 'assets')).toBe(true);
     });
 
     it('should handle deeply nested file structures', () => {
@@ -335,7 +335,7 @@ describe('SlateFilesystem - Comprehensive Tests', () => {
       ] as any[];
 
       const tree = buildFileTree(files);
-      const fileNode = tree.find(node => node.name === 'test.ts');
+      const fileNode = tree.find((node: any) => node.name === 'test.ts');
       expect(fileNode?.fileData?.type).toBe('typescript');
     });
   });

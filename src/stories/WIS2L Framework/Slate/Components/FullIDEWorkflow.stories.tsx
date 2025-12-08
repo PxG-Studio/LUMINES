@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Full IDE Workflow - StackBlitz Parity Integration Story
  * METRIC 8: Integration Coverage - Complete IDE lifecycle
@@ -145,4 +146,5 @@ export const BuildDeployWorkflow: Story = {
     await userEvent.click(deployButton);
   },
 };
+
 

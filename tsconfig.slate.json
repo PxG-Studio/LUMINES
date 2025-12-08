@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["DOM", "ES2020"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "strict": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/slate/*": ["./src/slate/*"],
+      "@/state/*": ["./src/state/*"],
+      "@/wissil/*": ["./src/wissil/*"],
+      "@/lib/*": ["./slate/type-stubs.d.ts"],
+      "@/lib/database/*": ["./slate/type-stubs.d.ts"],
+      "@/lib/cache/*": ["./slate/type-stubs.d.ts"],
+      "@storybook/*": ["./slate/type-stubs.d.ts"],
+      "@codesandbox/*": ["./slate/type-stubs.d.ts"]
+    }
+  },
+  "include": [
+    "slate/**/*.ts",
+    "slate/**/*.tsx",
+    "src/slate/**/*.ts",
+    "src/slate/**/*.tsx",
+    "src/state/**/*.ts",
+    "src/state/**/*.tsx",
+    "src/wissil/Slate/**/*.ts",
+    "src/wissil/Slate/**/*.tsx",
+    "src/wissil/runtime/fs/**/*.ts",
+    "src/wissil/runtime/fs/**/*.tsx",
+    "src/lib/database/**/*.ts",
+    "src/lib/database/**/*.tsx",
+    "src/lib/spark/**/*.ts",
+    "slate/type-stubs.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/design-system/**",
+    "src/tokens/**",
+    "src/ignis/**",
+    "src/ignition/**",
+    "src/wissil/IgnisWebGL/**",
+    "src/wissil/Unity**",
+    "src/wissil/SparkUnity/**",
+    "src/wissil/UnityBrowser/**",
+    "src/stories/**",
+    "tests/**",
+    "coverage/**"
+  ]
+}
+

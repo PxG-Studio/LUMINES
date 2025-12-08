@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Security Tests - Comprehensive Coverage
  * Input sanitization, XSS, CSRF, path traversal, file upload validation

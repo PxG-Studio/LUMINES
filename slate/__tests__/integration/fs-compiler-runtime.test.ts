@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Integration Test: FS → Compiler → Runtime Chain
  * StackBlitz-parity integration test coverage

@@ -4,9 +4,26 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { SlateFile } from '@/lib/database/types';
 import * as fileOps from '@/lib/database/operations/files';
 import { query, queryReplica } from '@/lib/database/client';
 import { FSCorruptionSimulator } from '../../utils/fs-corruption';
+
+// Type-safe fixture helper for SlateFile
+const fileFixture = (partial: Partial<SlateFile>): SlateFile => ({
+  id: 'file-default',
+  project_id: 'project-default',
+  path: 'default',
+  content: null,
+  type: null,
+  size: 0,
+  version: 1,
+  encoding: 'utf-8',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  deleted_at: null,
+  ...partial,
+});
 
 // Mock database client
 vi.mock('@/lib/database/client', () => ({
@@ -25,7 +42,7 @@ describe('Files Database Operations - Comprehensive Tests', () => {
 
   describe('createFile', () => {
     it('should create a file successfully', async () => {
-      const mockFile = {
+      const mockFile = fileFixture({
         id: '1',
         project_id: 'p1',
         path: 'test.ts',
@@ -33,11 +50,7 @@ describe('Files Database Operations - Comprehensive Tests', () => {
         type: 'typescript',
         size: 20,
         encoding: 'utf-8',
-        version: 1,
-        created_at: new Date(),
-        updated_at: new Date(),
-        deleted_at: null,
-      };
+      });
 
       vi.mocked(query).mockResolvedValue({
         rows: [mockFile],
@@ -60,13 +73,14 @@ describe('Files Database Operations - Comprehensive Tests', () => {
 
     it('should calculate file size correctly', async () => {
       const content = 'a'.repeat(1000);
-      const mockFile = {
+      const mockFile = fileFixture({
         id: '1',
         project_id: 'p1',
         path: 'large.ts',
         content,
         size: 1000,
-      };
+        encoding: 'utf-8',
+      });
 
       vi.mocked(query).mockResolvedValue({
         rows: [mockFile],
@@ -82,13 +96,14 @@ describe('Files Database Operations - Comprehensive Tests', () => {
     });
 
     it('should handle null content', async () => {
-      const mockFile = {
+      const mockFile = fileFixture({
         id: '1',
         project_id: 'p1',
         path: 'empty.ts',
         content: null,
         size: 0,
-      };
+        encoding: 'utf-8',
+      });
 
       vi.mocked(query).mockResolvedValue({
         rows: [mockFile],
@@ -104,12 +119,12 @@ describe('Files Database Operations - Comprehensive Tests', () => {
     });
 
     it('should handle default encoding', async () => {
-      const mockFile = {
+      const mockFile = fileFixture({
         id: '1',
         project_id: 'p1',
         path: 'test.ts',
         encoding: 'utf-8',
-      };
+      });
 
       vi.mocked(query).mockResolvedValue({
         rows: [mockFile],
@@ -427,37 +442,37 @@ describe('Files Database Operations - Comprehensive Tests', () => {
 
   describe('buildFileTree', () => {
     it('should build tree from flat file list', () => {
-      const files = [
-        { id: '1', path: 'src/file1.ts', project_id: 'p1' },
-        { id: '2', path: 'src/file2.ts', project_id: 'p1' },
-        { id: '3', path: 'assets/image.png', project_id: 'p1' },
-      ] as any[];
+      const files: SlateFile[] = [
+        fileFixture({ id: '1', path: 'src/file1.ts', project_id: 'p1', size: 1, version: 1 }),
+        fileFixture({ id: '2', path: 'src/file2.ts', project_id: 'p1', size: 1, version: 1 }),
+        fileFixture({ id: '3', path: 'assets/image.png', project_id: 'p1', size: 1, version: 1 }),
+      ];
 
       const tree = fileOps.buildFileTree(files);
 
       expect(tree.length).toBeGreaterThan(0);
-      const srcNode = tree.find(node => node.name === 'src');
+      const srcNode = tree.find((node: any) => node.name === 'src');
       expect(srcNode).toBeDefined();
       expect(srcNode?.type).toBe('folder');
       expect(srcNode?.children?.length).toBe(2);
     });
 
     it('should handle deeply nested paths', () => {
-      const files = [
-        { id: '1', path: 'a/b/c/d/e/file.ts', project_id: 'p1' },
-      ] as any[];
+      const files: SlateFile[] = [
+        fileFixture({ id: '1', path: 'a/b/c/d/e/file.ts', project_id: 'p1', size: 1, version: 1 }),
+      ];
 
       const tree = fileOps.buildFileTree(files);
       expect(tree.length).toBeGreaterThan(0);
     });
 
     it('should preserve file data in tree nodes', () => {
-      const files = [
-        { id: '1', path: 'test.ts', project_id: 'p1', type: 'typescript' },
-      ] as any[];
+      const files: SlateFile[] = [
+        fileFixture({ id: '1', path: 'test.ts', project_id: 'p1', type: 'typescript', size: 1, version: 1 }),
+      ];
 
       const tree = fileOps.buildFileTree(files);
-      const fileNode = tree.find(node => node.name === 'test.ts');
+      const fileNode = tree.find((node: any) => node.name === 'test.ts');
       expect(fileNode?.fileData).toBeDefined();
       expect(fileNode?.fileData?.type).toBe('typescript');
     });
@@ -468,13 +483,13 @@ describe('Files Database Operations - Comprehensive Tests', () => {
     });
 
     it('should generate unique folder IDs', () => {
-      const files = [
-        { id: '1', path: 'dir/file1.ts', project_id: 'p1' },
-        { id: '2', path: 'dir/file2.ts', project_id: 'p1' },
-      ] as any[];
+      const files: SlateFile[] = [
+        fileFixture({ id: '1', path: 'dir/file1.ts', project_id: 'p1', size: 1, version: 1 }),
+        fileFixture({ id: '2', path: 'dir/file2.ts', project_id: 'p1', size: 1, version: 1 }),
+      ];
 
       const tree = fileOps.buildFileTree(files);
-      const dirNode = tree.find(node => node.name === 'dir');
+      const dirNode = tree.find((node: any) => node.name === 'dir');
       expect(dirNode?.id).toBe('folder-dir');
     });
   });

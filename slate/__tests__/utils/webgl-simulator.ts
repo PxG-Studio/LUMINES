@@ -3,6 +3,8 @@
  * Simulates WebGL context loss scenarios for resilience testing
  */
 
+import { vi } from "vitest";
+
 export class WebGLSimulator {
   private contextLost = false;
   private contextRestored = false;

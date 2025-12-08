@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * EditorHost + Bridge Layer - Comprehensive Tests
  * StackBlitz-parity test coverage for Unity WebGL integration

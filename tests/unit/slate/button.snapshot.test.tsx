@@ -1,3 +1,4 @@
+import React from "react";
 import { render } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { Button } from "@/design-system/primitives/Button";
@@ -28,4 +29,5 @@ describe("Button Component Snapshots", () => {
     expect(container).toMatchSnapshot();
   });
 });
+
 
