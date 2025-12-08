@@ -17,3 +17,18 @@ export {
   mgetCached,
   msetCached,
 } from './strategies';
+
+export {
+  warmCache,
+  warmProjectCache,
+  warmOnStartup,
+  startCacheWarmingTask,
+} from './warming';
+
+export {
+  getCacheMetrics,
+  monitorCacheHealth,
+  startCacheMonitoring,
+} from './metrics';
+
+export type { CacheMetrics } from './metrics';
