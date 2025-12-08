@@ -1,9 +1,11 @@
 /**
  * UI State Management
- * Zustand store for general UI state
+ * Zustand store for general UI state with persistence
  */
 
 import { create } from 'zustand';
+import { createPersistence } from './persistence';
+import { createDevtools } from './devtools';
 
 export interface UIState {
   sidebarOpen: boolean;
@@ -20,21 +22,35 @@ export interface UIState {
   setTheme: (theme: 'dark' | 'light') => void;
 }
 
-export const useUIState = create<UIState>((set) => ({
-  sidebarOpen: true,
-  sidebarWidth: 250,
-  panelOpen: true,
-  panelHeight: 200,
-  theme: 'dark',
+export const useUIState = create<UIState>(
+  createDevtools({ name: 'UIState' })(
+    createPersistence<UIState>({
+      name: 'lumines-ui-state',
+      version: 1,
+      partialize: (state) => ({
+        sidebarOpen: state.sidebarOpen,
+        sidebarWidth: state.sidebarWidth,
+        panelOpen: state.panelOpen,
+        panelHeight: state.panelHeight,
+        theme: state.theme,
+      }),
+    })((set) => ({
+      sidebarOpen: true,
+      sidebarWidth: 250,
+      panelOpen: true,
+      panelHeight: 200,
+      theme: 'dark',
 
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  
-  setSidebarWidth: (width) => set({ sidebarWidth: width }),
-  
-  togglePanel: () => set((state) => ({ panelOpen: !state.panelOpen })),
-  
-  setPanelHeight: (height) => set({ panelHeight: height }),
-  
-  setTheme: (theme) => set({ theme }),
-}));
+      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+      
+      setSidebarWidth: (width) => set({ sidebarWidth: width }),
+      
+      togglePanel: () => set((state) => ({ panelOpen: !state.panelOpen })),
+      
+      setPanelHeight: (height) => set({ panelHeight: height }),
+      
+      setTheme: (theme) => set({ theme }),
+    }))
+  )
+);
 

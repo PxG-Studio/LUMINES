@@ -121,7 +121,34 @@ export const authConfig = {
         },
       },
     }),
-    // You can add nocturnaID provider here later if needed
+    // nocturnaID provider (optional - enable when ready)
+    ...(process.env.NOCTURNAID_CLIENT_ID && process.env.NOCTURNAID_CLIENT_SECRET
+      ? [
+          {
+            id: 'nocturna',
+            name: 'nocturnaID',
+            type: 'oauth' as const,
+            clientId: process.env.NOCTURNAID_CLIENT_ID,
+            clientSecret: process.env.NOCTURNAID_CLIENT_SECRET,
+            authorization: {
+              url: `${process.env.NOCTURNAID_URL || 'https://id.nocturna.io'}/oauth/authorize`,
+              params: {
+                scope: 'openid email profile roles',
+              },
+            },
+            token: `${process.env.NOCTURNAID_URL || 'https://id.nocturna.io'}/oauth/token`,
+            userinfo: `${process.env.NOCTURNAID_URL || 'https://id.nocturna.io'}/oauth/userinfo`,
+            profile(profile: any) {
+              return {
+                id: profile.sub,
+                email: profile.email,
+                name: profile.name,
+                image: profile.picture,
+              };
+            },
+          },
+        ]
+      : []),
   ],
   session: {
     strategy: 'jwt', // Use JWT instead of database sessions (compatible with existing JWT system)
