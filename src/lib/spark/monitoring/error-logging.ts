@@ -8,6 +8,8 @@
 // Audit logging is server-side only - import dynamically to avoid client bundle issues
 // Database operations should not be in client bundles
 import { getAnalyticsTracker } from '../analytics/tracker';
+import { trackError } from './error-tracker';
+import { incrementCounter, recordHistogram } from './metrics';
 
 export interface ErrorLogEntry {
   id: string;
@@ -102,6 +104,25 @@ class ErrorLogger {
         // Audit logging not available - that's okay
       }
     }
+
+    // Track error
+    trackError(
+      entry.message,
+      {
+        userId: context?.userId,
+        requestId: context?.requestId,
+        userAgent: context?.userAgent,
+        ipAddress: context?.ipAddress,
+        stack: entry.stack,
+      },
+      this.getSeverity(entry)
+    );
+
+    // Track metrics
+    incrementCounter('errors_total', 1, {
+      type: this.getErrorType(entry),
+      severity: this.getSeverity(entry),
+    });
 
     // Track in analytics
     const analytics = getAnalyticsTracker();

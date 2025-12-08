@@ -1,33 +1,28 @@
 /**
- * Prometheus Metrics Endpoint
- * GET /api/metrics
+ * Metrics Endpoint
+ * 
+ * Exposes metrics in Prometheus format for scraping
  */
 
 import { NextResponse } from 'next/server';
-import { metrics } from '@/lib/monitoring/metrics';
-import { applyStandardHeaders } from '@/lib/api/headers';
+import { getMetricsCollector } from '@/lib/spark/monitoring/metrics';
 
-/**
- * GET /api/metrics
- * Export metrics in Prometheus format
- */
 export async function GET() {
   try {
-    const prometheusMetrics = metrics.exportPrometheus();
-    
-    const response = NextResponse.text(prometheusMetrics, {
+    const collector = getMetricsCollector();
+    const prometheusFormat = collector.exportPrometheus();
+
+    return new NextResponse(prometheusFormat, {
+      status: 200,
       headers: {
         'Content-Type': 'text/plain; version=0.0.4',
       },
     });
-    
-    return applyStandardHeaders(response, { noCache: true });
   } catch (error) {
-    console.error('Error exporting metrics:', error);
+    console.error('Failed to export metrics:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to export metrics' },
       { status: 500 }
     );
   }
 }
-

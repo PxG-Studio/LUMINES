@@ -1,12 +1,12 @@
 /**
  * Rate Limiting Middleware
- * Production-ready rate limiting with Redis backend
+ * Production-ready rate limiting with in-memory fallback
+ * 
+ * NOTE: This implementation uses in-memory storage to avoid Redis dependency.
+ * For distributed rate limiting with Redis, see rate-limiter-redis.ts
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Redis } from 'ioredis';
-import { getRedisClient } from '../cache/client';
-import { logger } from '../monitoring/logger';
 
 interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
@@ -31,24 +31,14 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 };
 
 /**
- * Rate limiter class
+ * Rate limiter class (in-memory implementation)
  */
 export class RateLimiter {
-  private redis: Redis | null = null;
+  private memoryStore: Map<string, { count: number; reset: number; requests: Array<{ timestamp: number; success: boolean }> }> = new Map();
   private config: RateLimitConfig;
 
   constructor(config: Partial<RateLimitConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
-    this.initRedis();
-  }
-
-  private async initRedis() {
-    try {
-      this.redis = await getRedisClient();
-    } catch (error) {
-      logger.warn('Redis not available for rate limiting, using in-memory fallback', { error });
-      this.redis = null;
-    }
   }
 
   /**
@@ -69,7 +59,7 @@ export class RateLimiter {
   }
 
   /**
-   * Check rate limit
+   * Check rate limit (in-memory implementation)
    */
   async check(req: NextRequest): Promise<RateLimitResult & { allowed: boolean }> {
     const key = this.getKey(req);
@@ -77,62 +67,8 @@ export class RateLimiter {
     const now = Math.floor(Date.now() / 1000);
     const reset = now + windowSeconds;
 
-    if (this.redis) {
-      // Use Redis for distributed rate limiting
-      return this.checkRedis(key, windowSeconds, reset);
-    } else {
-      // Fallback to in-memory (single instance only)
-      return this.checkMemory(key, windowSeconds, reset);
-    }
+    return this.checkMemory(key, windowSeconds, reset);
   }
-
-  private async checkRedis(
-    key: string,
-    windowSeconds: number,
-    reset: number
-  ): Promise<RateLimitResult & { allowed: boolean }> {
-    if (!this.redis) {
-      throw new Error('Redis not initialized');
-    }
-
-    const now = Math.floor(Date.now() / 1000);
-    const windowStart = now - windowSeconds;
-
-    // Use Redis sorted set for sliding window
-    const pipeline = this.redis.pipeline();
-    
-    // Remove expired entries
-    pipeline.zremrangebyscore(key, 0, windowStart);
-    
-    // Count current requests
-    pipeline.zcard(key);
-    
-    // Add current request
-    pipeline.zadd(key, now, `${now}-${Math.random()}`);
-    
-    // Set expiration
-    pipeline.expire(key, windowSeconds);
-    
-    const results = await pipeline.exec();
-    
-    if (!results) {
-      // Fallback to memory if Redis fails
-      return this.checkMemory(key, windowSeconds, reset);
-    }
-
-    const currentCount = (results[1]?.[1] as number) || 0;
-    const allowed = currentCount < this.config.maxRequests;
-
-    return {
-      limit: this.config.maxRequests,
-      remaining: Math.max(0, this.config.maxRequests - currentCount - 1),
-      reset,
-      allowed,
-      retryAfter: allowed ? undefined : windowSeconds,
-    };
-  }
-
-  private memoryStore: Map<string, { count: number; reset: number }> = new Map();
 
   private checkMemory(
     key: string,
@@ -140,11 +76,16 @@ export class RateLimiter {
     reset: number
   ): RateLimitResult & { allowed: boolean } {
     const now = Math.floor(Date.now() / 1000);
+    const windowStart = now - windowSeconds;
     const stored = this.memoryStore.get(key);
 
     if (!stored || stored.reset < now) {
       // New window
-      this.memoryStore.set(key, { count: 1, reset });
+      this.memoryStore.set(key, {
+        count: 1,
+        reset,
+        requests: [{ timestamp: now, success: true }],
+      });
       return {
         limit: this.config.maxRequests,
         remaining: this.config.maxRequests - 1,
@@ -153,9 +94,23 @@ export class RateLimiter {
       };
     }
 
+    // Filter requests within window
+    let requests = stored.requests.filter((r: { timestamp: number; success: boolean }) => r.timestamp > windowStart);
+
+    // Filter by success/failure if configured
+    if (this.config.skipSuccessfulRequests) {
+      requests = requests.filter((r: { timestamp: number; success: boolean }) => !r.success);
+    }
+    if (this.config.skipFailedRequests) {
+      requests = requests.filter((r: { timestamp: number; success: boolean }) => r.success);
+    }
+
     // Existing window
-    const newCount = stored.count + 1;
-    this.memoryStore.set(key, { count: newCount, reset: stored.reset });
+    const newCount = requests.length + 1;
+    stored.requests.push({ timestamp: now, success: true });
+    stored.count = newCount;
+    stored.requests = stored.requests.filter((r: { timestamp: number; success: boolean }) => r.timestamp > windowStart);
+    this.memoryStore.set(key, stored);
     const allowed = newCount <= this.config.maxRequests;
 
     return {
@@ -174,12 +129,6 @@ export class RateLimiter {
     const result = await this.check(req);
 
     if (!result.allowed) {
-      logger.warn('Rate limit exceeded', {
-        key: this.getKey(req),
-        limit: result.limit,
-        remaining: result.remaining,
-      });
-
       return NextResponse.json(
         {
           error: 'Too Many Requests',
@@ -240,5 +189,3 @@ export const rateLimiters = {
     },
   }),
 };
-
-

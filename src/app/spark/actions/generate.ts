@@ -5,6 +5,10 @@ import { generateWithClaude, ClaudeModel } from "@/lib/spark/ai/claude-client";
 import { generateWithOpenAI, OpenAIModel } from "@/lib/spark/ai/openai-client";
 import { getUserPreferences, logGeneration, updateUserPreferences } from "@/lib/database/operations/spark";
 import { getCurrentUserId } from "@/lib/spark/auth/user-context";
+import { sanitizeInput, validatePrompt } from "@/lib/spark/security/input-sanitizer";
+import { withCircuitBreaker } from "@/lib/spark/security/circuit-breaker";
+import { incrementCounter, recordHistogram } from "@/lib/spark/monitoring/metrics";
+import { getAICache } from "@/lib/spark/ai/cache";
 
 export type AIProvider = "claude" | "openai";
 export type { ClaudeModel, OpenAIModel };
@@ -36,6 +40,29 @@ export async function generateUnityScript(
   let model: string = "";
   let tokensUsed: number = 0;
 
+  // Sanitize and validate input
+  const sanitizationResult = sanitizeInput(prompt);
+  if (sanitizationResult.blocked) {
+    return {
+      success: false,
+      error: sanitizationResult.reason || "Input contains potentially malicious content",
+    };
+  }
+
+  const validationResult = validatePrompt(sanitizationResult.sanitized);
+  if (!validationResult.valid) {
+    return {
+      success: false,
+      error: validationResult.error || "Invalid prompt",
+    };
+  }
+
+  // Use sanitized prompt
+  const sanitizedPrompt = sanitizationResult.sanitized;
+  if (sanitizationResult.warnings.length > 0) {
+    console.warn("Input sanitization warnings:", sanitizationResult.warnings);
+  }
+
   try {
     let userPrefs = null;
     try {
@@ -62,22 +89,62 @@ export async function generateUnityScript(
 
     let result: GenerateResult;
 
+    // Check cache first
+    const cache = getAICache();
+    const cachedResult = cache.get<GenerateResult>(sanitizedPrompt, provider, model);
+
+    if (cachedResult && cachedResult.success) {
+      // Return cached result
+      incrementCounter('spark_cache_hits_total', 1, { provider, model });
+      return cachedResult;
+    }
+
+    incrementCounter('spark_cache_misses_total', 1, { provider, model });
+
+    // Use circuit breaker to protect against cascading failures
     if (provider === "openai") {
-      result = await generateWithOpenAI(prompt, model as OpenAIModel);
+      result = await withCircuitBreaker('openai', async () => {
+        return await generateWithOpenAI(sanitizedPrompt, model as OpenAIModel);
+      });
     } else {
-      result = await generateWithClaude(prompt, model as ClaudeModel);
+      result = await withCircuitBreaker('claude', async () => {
+        return await generateWithClaude(sanitizedPrompt, model as ClaudeModel);
+      });
+    }
+
+    // Cache successful results
+    if (result.success && result.code) {
+      cache.set(sanitizedPrompt, provider, model, result, 3600000); // 1 hour TTL
     }
 
     const generationTimeMs = Date.now() - startTime;
     const success = result.success && !!result.code;
     tokensUsed = result.tokensUsed || 0;
 
+    // Track metrics
+    incrementCounter('spark_generation_total', 1, {
+      provider,
+      model,
+      success: success ? 'true' : 'false',
+    });
+    recordHistogram('spark_generation_duration_ms', generationTimeMs, {
+      provider,
+      model,
+    });
+    if (tokensUsed > 0) {
+      incrementCounter('spark_tokens_total', tokensUsed, {
+        provider,
+        model,
+        type: 'generation',
+      });
+    }
+
     try {
       await logGeneration({
         userId,
         provider,
         model,
-        prompt,
+        prompt: sanitizedPrompt, // Log sanitized prompt
         generatedCode: result.code,
         scriptName: result.scriptName,
         success,
@@ -103,7 +170,7 @@ export async function generateUnityScript(
           userId,
           provider,
           model,
-          prompt,
+          prompt: sanitizedPrompt,
           generatedCode: result.code,
           scriptName: result.scriptName,
           success: false,
@@ -131,7 +198,7 @@ export async function generateUnityScript(
         userId,
         provider,
         model,
-        prompt,
+        prompt: sanitizedPrompt,
         success: false,
         errorMessage,
         tokensUsed,
@@ -160,7 +227,7 @@ export async function updateUserPrefs(
   try {
     const uid = userId || getCurrentUserId();
 
-    const prefs: any = {};
+    const prefs: Record<string, string> = {};
     if (preferences.provider) {
       prefs.ai_provider = preferences.provider;
     }

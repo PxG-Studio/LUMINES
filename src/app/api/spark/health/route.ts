@@ -6,6 +6,9 @@
  */
 
 import { NextResponse } from 'next/server';
+import { getCircuitBreaker } from '@/lib/spark/security/circuit-breaker';
+import { getMetricsCollector } from '@/lib/spark/monitoring/metrics';
+import { getErrorTracker } from '@/lib/spark/monitoring/error-tracker';
 
 export async function GET() {
   const checks = {
@@ -20,6 +23,16 @@ export async function GET() {
         status: 'unknown' as string,
       },
       memory: 'unknown' as string,
+      circuitBreakers: {
+        claude: 'unknown' as string,
+        openai: 'unknown' as string,
+      },
+      metrics: {
+        available: false,
+      },
+      errorTracking: {
+        available: false,
+      },
     },
   };
 
@@ -41,11 +54,47 @@ export async function GET() {
 
   if (memoryUsageMB > memoryLimitMB * 0.9) {
     checks.checks.memory = 'warning';
+    checks.status = 'degraded';
   } else {
     checks.checks.memory = 'healthy';
   }
 
-  const statusCode = checks.status === 'healthy' ? 200 : 503;
+  // Check circuit breakers
+  try {
+    const claudeBreaker = getCircuitBreaker('claude');
+    const openaiBreaker = getCircuitBreaker('openai');
+    checks.checks.circuitBreakers.claude = claudeBreaker.getState().state;
+    checks.checks.circuitBreakers.openai = openaiBreaker.getState().state;
+
+    if (claudeBreaker.getState().state === 'open' && openaiBreaker.getState().state === 'open') {
+      checks.status = 'unhealthy';
+    }
+  } catch (error) {
+    checks.checks.circuitBreakers.claude = 'error';
+    checks.checks.circuitBreakers.openai = 'error';
+  }
+
+  // Check metrics collector
+  try {
+    const metrics = getMetricsCollector();
+    checks.checks.metrics.available = true;
+  } catch (error) {
+    checks.checks.metrics.available = false;
+  }
+
+  // Check error tracker
+  try {
+    const tracker = getErrorTracker();
+    const stats = tracker.getStatistics();
+    checks.checks.errorTracking.available = true;
+    if (stats.bySeverity.critical > 10) {
+      checks.status = 'unhealthy';
+    }
+  } catch (error) {
+    checks.checks.errorTracking.available = false;
+  }
+
+  const statusCode = checks.status === 'healthy' ? 200 : checks.status === 'degraded' ? 200 : 503;
 
   return NextResponse.json(checks, { status: statusCode });
 }
