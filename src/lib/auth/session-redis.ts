@@ -102,22 +102,30 @@ export async function deleteSession(sessionId: string): Promise<void> {
 
 /**
  * Get all active sessions for a user
+ * Note: This uses SCAN which is non-blocking but may take longer for large datasets
  */
 export async function getUserSessions(userId: string): Promise<SessionData[]> {
   try {
     const pattern = `${SESSION_PREFIX}*`;
-    const keys = await redis.keys(pattern);
     const sessions: SessionData[] = [];
+    let cursor = '0';
 
-    for (const key of keys) {
-      const data = await redis.get(key);
-      if (data) {
-        const session = JSON.parse(data);
-        if (session.user.id === userId) {
-          sessions.push(session);
+    // Use SCAN instead of KEYS for production safety
+    do {
+      const result = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+      cursor = result[0];
+      const keys = result[1];
+
+      for (const key of keys) {
+        const data = await redis.get(key);
+        if (data) {
+          const session = JSON.parse(data);
+          if (session.user.id === userId) {
+            sessions.push(session);
+          }
         }
       }
-    }
+    } while (cursor !== '0');
 
     return sessions;
   } catch (error) {

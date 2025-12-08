@@ -94,7 +94,7 @@ export async function warmOnStartup(): Promise<void> {
 /**
  * Background cache warming task
  */
-export function startCacheWarmingTask(intervalMs: number = 300000): NodeJS.Timer {
+export function startCacheWarmingTask(intervalMs: number = 300000): NodeJS.Timeout {
   logger.info('Starting background cache warming task', { intervalMs });
   
   return setInterval(async () => {

@@ -125,7 +125,7 @@ export async function monitorCacheHealth(): Promise<{
 /**
  * Start periodic cache health monitoring
  */
-export function startCacheMonitoring(intervalMs: number = 60000): NodeJS.Timer {
+export function startCacheMonitoring(intervalMs: number = 60000): NodeJS.Timeout {
   logger.info('Starting cache health monitoring', { intervalMs });
 
   return setInterval(async () => {

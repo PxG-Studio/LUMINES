@@ -42,7 +42,11 @@ export function threeWayMerge(base: string, local: string, remote: string): Merg
       i++; j++; k++;
     } else {
       result.hasConflicts = true;
-      mergedLines.push('<<<<<<< LOCAL', localLine, '=======', remoteLine, '>>>>>>> REMOTE');
+      mergedLines.push('<<<<<<< LOCAL');
+      mergedLines.push(localLine);
+      mergedLines.push('=======');
+      mergedLines.push(remoteLine);
+      mergedLines.push('>>>>>>> REMOTE');
       i++; j++; k++;
     }
   }

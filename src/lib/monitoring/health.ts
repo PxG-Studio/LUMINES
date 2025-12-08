@@ -99,7 +99,7 @@ export async function runHealthChecks(): Promise<HealthStatus> {
 /**
  * Start periodic health checks
  */
-export function startHealthMonitoring(intervalMs: number = 60000): NodeJS.Timer {
+export function startHealthMonitoring(intervalMs: number = 60000): NodeJS.Timeout {
   logger.info('Starting health monitoring', { intervalMs });
 
   return setInterval(async () => {
