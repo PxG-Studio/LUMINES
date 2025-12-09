@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
 
-describe.skip('Integration: FS → Compiler → Runtime Chain', () => {
+describe('Integration: FS → Compiler → Runtime Chain', () => {
   beforeEach(() => {
     useWissilFS.getState().clear();
   });
@@ -76,7 +76,10 @@ describe.skip('Integration: FS → Compiler → Runtime Chain', () => {
         }, 100);
       });
       
-      const compilePromise = compileFile('Assets/Test.cs');
+      const compilePromise = (async () => {
+        await writePromise;
+        return compileFile('Assets/Test.cs');
+      })();
       
       await writePromise;
       const compileResult = await compilePromise;

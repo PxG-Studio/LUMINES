@@ -3,8 +3,8 @@
  * Defaults keep existing deterministic mocks.
  */
 export const integrationFlags = {
-  useSparkFS: false,
-  useSparkCompiler: false,
+  useSparkFS: true,
+  useSparkCompiler: true,
   useSparkBuildDb: false,
   useSparkRuntime: false,
 };

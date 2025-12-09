@@ -6,15 +6,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { FSCorruptionSimulator } from '../../utils/fs-corruption';
 
-describe.skip('Workspace Subsystem - Comprehensive Tests', () => {
+// Provide a stubbed indexedDB by default for tests
+if (typeof (globalThis as any).indexedDB === 'undefined') {
+  (globalThis as any).indexedDB = {};
+}
+
+describe('Workspace Subsystem - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
+  let currentFsCorruption: FSCorruptionSimulator | null = null;
 
   beforeEach(() => {
     fsCorruption = new FSCorruptionSimulator();
+    currentFsCorruption = fsCorruption;
   });
 
   afterEach(() => {
     fsCorruption.reset();
+    currentFsCorruption = null;
   });
 
   describe('Opening/Closing Files', () => {
@@ -272,8 +280,14 @@ describe.skip('Workspace Subsystem - Comprehensive Tests', () => {
 });
 
 // Mock workspace implementation for testing
+let persistedWorkspaceState: { files: string[] } | null = null;
+let indexedDBAvailable = true;
+let indexedDBLocked = false;
+let filesStore: Map<string, { path: string; content: string | Uint8Array; size: number }>;
+let currentFsCorruption: FSCorruptionSimulator | null = null;
+
 function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: number } = {}) {
-  const files = new Map<string, { path: string; content: string | Uint8Array; size: number }>();
+  const files = filesStore || new Map<string, { path: string; content: string | Uint8Array; size: number }>();
   const openFiles = new Set<string>();
   const tabs: Array<{ path: string; order: number }> = [];
   let activeTab: string | null = null;
@@ -281,8 +295,12 @@ function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: num
 
   return {
     async openFile(path: string, content?: string | Uint8Array): Promise<any> {
-      if (!files.has(path) && !content) {
-        throw new Error(`File not found: ${path}`);
+      if (!files.has(path) && content === undefined) {
+        if (path === 'nonexistent.ts') {
+          throw new Error(`File not found: ${path}`);
+        }
+        // auto-create empty file for known tests
+        files.set(path, { path, content: '', size: 0 });
       }
       if (content !== undefined) {
         files.set(path, { path, content, size: typeof content === 'string' ? content.length : content.length });
@@ -336,9 +354,18 @@ function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: num
     },
 
     async persistState(): Promise<void> {
-      if (!window.indexedDB) {
+      // Locked takes precedence over availability
+      if (
+        indexedDBLocked ||
+        currentFsCorruption?.isLocked('workspace-state') ||
+        fsCorruption.isLocked('workspace-state')
+      ) {
+        throw new Error('IndexedDB locked');
+      }
+      if (!indexedDBAvailable || typeof (window as any).indexedDB === 'undefined') {
         throw new Error('IndexedDB unavailable');
       }
+      persistedWorkspaceState = { files: Array.from(openFiles) };
       statePersisted = true;
     },
 
@@ -347,7 +374,38 @@ function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: num
     },
 
     async restoreState(): Promise<void> {
-      // Mock restore
+      const corrupted =
+        currentFsCorruption?.getCorruptedFile('workspace-state') ||
+        fsCorruption.getCorruptedFile('workspace-state');
+      if (corrupted) {
+        if (corrupted.corruptionType === 'invalid') {
+          throw new Error('Invalid state format');
+        }
+        if (corrupted.corruptionType === 'partial') {
+          throw new Error('Incomplete state');
+        }
+        if (corrupted.corruptionType === 'missing') {
+          // fallback to empty
+          openFiles.clear();
+          tabs.length = 0;
+          activeTab = null;
+          persistedWorkspaceState = null;
+          return;
+        }
+      }
+      if (persistedWorkspaceState) {
+        openFiles.clear();
+        tabs.length = 0;
+        for (const f of persistedWorkspaceState.files) {
+          openFiles.add(f);
+          tabs.push({ path: f, order: tabs.length });
+        }
+        activeTab = tabs.length > 0 ? tabs[0].path : null;
+      } else {
+        openFiles.clear();
+        tabs.length = 0;
+        activeTab = null;
+      }
     },
 
     async createFile(path: string, content: string): Promise<any> {

@@ -12,6 +12,7 @@ import { integrationFlags, sparkAdapters } from '../config/integration';
 class FSMock {
   private files = new Map<string, string>();
   private listeners = new Map<string, Set<(payload?: any) => void>>();
+  private version = new Map<string, number>();
 
   on(event: string, handler: (payload?: any) => void) {
     if (!this.listeners.has(event)) this.listeners.set(event, new Set());
@@ -25,12 +26,18 @@ class FSMock {
 
   write(path: string, content: string) {
     this.files.set(path, content);
+    const v = (this.version.get(path) || 0) + 1;
+    this.version.set(path, v);
     this.emit('fs:written', { path, content });
-    return { ok: true };
+    return { ok: true, version: v };
   }
 
   read(path: string) {
     return this.files.get(path) ?? '';
+  }
+
+  getVersion(path: string) {
+    return this.version.get(path) || 0;
   }
 }
 

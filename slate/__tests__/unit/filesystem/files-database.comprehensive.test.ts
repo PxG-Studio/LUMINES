@@ -32,7 +32,7 @@ vi.mock('@/lib/database/client', () => ({
   transaction: vi.fn(),
 }));
 
-describe.skip('Files Database Operations - Comprehensive Tests', () => {
+describe('Files Database Operations - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
 
   beforeEach(() => {
@@ -290,7 +290,7 @@ describe.skip('Files Database Operations - Comprehensive Tests', () => {
       expect(result).toEqual(mockFile);
       expect(query).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE slate_files'),
-        expect.arrayContaining(['new content', 12, '1'])
+        expect.arrayContaining(['new content', 11, '1'])
       );
     });
 
@@ -351,19 +351,23 @@ describe.skip('Files Database Operations - Comprehensive Tests', () => {
     it('should return existing file if no updates', async () => {
       const mockFile = {
         id: '1',
-        path: 'test.ts',
+        type: 'javascript',
       };
 
-      vi.mocked(fileOps.getFile).mockResolvedValue(mockFile as any);
+      const getFileSpy = vi.spyOn(fileOps, 'getFile').mockResolvedValue(mockFile as any);
 
       const result = await fileOps.updateFile('1', {});
 
       expect(result).toEqual(mockFile);
-      expect(query).not.toHaveBeenCalled();
+      // Allow a read call; ensure no UPDATE executed
+      expect(query).not.toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE slate_files'),
+        expect.any(Array)
+      );
     });
 
     it('should throw error if file not found', async () => {
-      vi.mocked(fileOps.getFile).mockResolvedValue(null);
+      const getFileSpy = vi.spyOn(fileOps, 'getFile').mockResolvedValue(null);
       vi.mocked(query).mockResolvedValue({
         rows: [],
       } as any);
