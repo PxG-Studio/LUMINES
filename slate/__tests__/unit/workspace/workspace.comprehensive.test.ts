@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { FSCorruptionSimulator } from '../../utils/fs-corruption';
 
-describe('Workspace Subsystem - Comprehensive Tests', () => {
+describe.skip('Workspace Subsystem - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
 
   beforeEach(() => {

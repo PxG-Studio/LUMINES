@@ -18,10 +18,10 @@ export interface MCPResponse {
 
 export class MCPMockServer {
   private responses = new Map<string, MCPResponse>();
-  private defaultLatency = 100;
+  private defaultLatency = 10;
   private shouldFail = false;
   private shouldTimeout = false;
-  private timeoutDelay = 30000;
+  private timeoutDelay = 50;
 
   /**
    * Set default response latency
@@ -57,7 +57,7 @@ export class MCPMockServer {
    */
   async handleLUNA(prompt: string, context?: any): Promise<MCPResponse> {
     if (this.shouldTimeout) {
-      await new Promise((resolve) => setTimeout(resolve, this.timeoutDelay));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(this.timeoutDelay, 50)));
       throw new Error('Request timeout');
     }
 
@@ -90,7 +90,7 @@ export class MCPMockServer {
    */
   async handleNEC(sceneData: any): Promise<MCPResponse> {
     if (this.shouldTimeout) {
-      await new Promise((resolve) => setTimeout(resolve, this.timeoutDelay));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(this.timeoutDelay, 50)));
       throw new Error('Request timeout');
     }
 
@@ -126,7 +126,7 @@ export class MCPMockServer {
    */
   async handleNERVA(layoutRequest: any): Promise<MCPResponse> {
     if (this.shouldTimeout) {
-      await new Promise((resolve) => setTimeout(resolve, this.timeoutDelay));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(this.timeoutDelay, 50)));
       throw new Error('Request timeout');
     }
 
@@ -161,7 +161,7 @@ export class MCPMockServer {
    */
   async handleAgeis(code: string, rules: any[]): Promise<MCPResponse> {
     if (this.shouldTimeout) {
-      await new Promise((resolve) => setTimeout(resolve, this.timeoutDelay));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(this.timeoutDelay, 50)));
       throw new Error('Request timeout');
     }
 

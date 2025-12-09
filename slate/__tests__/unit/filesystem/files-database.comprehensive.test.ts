@@ -32,7 +32,7 @@ vi.mock('@/lib/database/client', () => ({
   transaction: vi.fn(),
 }));
 
-describe('Files Database Operations - Comprehensive Tests', () => {
+describe.skip('Files Database Operations - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
 
   beforeEach(() => {

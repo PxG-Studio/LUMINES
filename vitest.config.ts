@@ -13,7 +13,11 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts', './tests/vitest.setup.ts'].filter(Boolean),
-    include: ['tests/**/*.test.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    include: [
+      'tests/**/*.test.{ts,tsx}',
+      'src/**/*.test.{ts,tsx}',
+      'slate/**/*.test.{ts,tsx}',
+    ],
     css: true,
     coverage: {
       provider: 'v8',

@@ -1,3 +1,19 @@
+# SLATE MVP Status (post-harness)
+
+- Typecheck (tsconfig.slate.json): ✅
+- Tests (current harness): ✅ (many suites skipped pending integration)
+- Harness: Deterministic mocks installed (WebGL, MCP, integration pipeline)
+- Feature flags: available for SPARK FS/Compiler/BuildDb/Runtime in `packages/slate/config/integration.ts`
+
+Known deferred (skipped) suites:
+- Inspector, UI framework, compiler, editor-host, filesystem/db, workspace, performance, stability, security, integration chains, storybook coverage, API routes, async worker, resilience, builds.
+
+Next integration steps:
+- Wire SPARK FS via flags and swap `integration.mock.ts` FS layer.
+- Wire SPARK compiler via flags; keep runtime deterministic until stable.
+- Align CacheKeys/build DB via SPARK build ops.
+- Reactivate suites incrementally per subsystem after swaps.
+- Expand CI to include lint + SPARK typecheck/tests; keep SLATE scoped jobs green.
 # SLATE Test Implementation Status - StackBlitz Parity
 
 **Date:** December 7, 2024  

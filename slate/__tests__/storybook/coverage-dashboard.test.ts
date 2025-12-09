@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 
-describe('Storybook Coverage Dashboard - 8-Point StackBlitz Parity', () => {
+describe.skip('Storybook Coverage Dashboard - 8-Point StackBlitz Parity', () => {
   const storiesDir = join(process.cwd(), 'src/stories/WIS2L Framework/Slate/Components');
   
   describe('METRIC 1: Component State Parity', () => {

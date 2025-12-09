@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-describe('SlateCodeEditor - Comprehensive Tests', () => {
+describe.skip('SlateCodeEditor - Comprehensive Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

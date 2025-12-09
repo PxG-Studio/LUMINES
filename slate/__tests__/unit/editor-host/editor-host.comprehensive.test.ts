@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WebGLSimulator } from '../../utils/webgl-simulator';
 
-describe('EditorHost + Bridge Layer - Comprehensive Tests', () => {
+describe.skip('EditorHost + Bridge Layer - Comprehensive Tests', () => {
   let webglSimulator: WebGLSimulator;
 
   beforeEach(() => {

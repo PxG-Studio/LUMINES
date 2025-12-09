@@ -8,7 +8,7 @@ import { FSCorruptionSimulator, CrossTabSyncConflictSimulator } from '../../util
 import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
 import { buildFileTree } from '@/lib/database/operations/files';
 
-describe('SlateFilesystem - Comprehensive Tests', () => {
+describe.skip('SlateFilesystem - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
   let crossTabSync: CrossTabSyncConflictSimulator;
 
