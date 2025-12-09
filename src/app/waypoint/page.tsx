@@ -127,8 +127,9 @@ export default function WaypointPage() {
               >
                 <Download className="w-4 h-4" />
                 Export
-              </button>
-              <button 
+              </Button>
+              <Button
+                variant="default"
                 onClick={() => {
                   // Share functionality
                   if (navigator.share) {
@@ -146,7 +147,7 @@ export default function WaypointPage() {
               >
                 <Share2 className="w-4 h-4" />
                 Share
-              </button>
+              </Button>
             </div>
           </div>
         </section>
