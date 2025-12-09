@@ -11,18 +11,21 @@ if (typeof (globalThis as any).indexedDB === 'undefined') {
   (globalThis as any).indexedDB = {};
 }
 
+// Global variable for mock workspace to access
+let globalCurrentFsCorruption: FSCorruptionSimulator | null = null;
+
 describe('Workspace Subsystem - Comprehensive Tests', () => {
   let fsCorruption: FSCorruptionSimulator;
-  let currentFsCorruption: FSCorruptionSimulator | null = null;
 
   beforeEach(() => {
     fsCorruption = new FSCorruptionSimulator();
-    currentFsCorruption = fsCorruption;
+    globalCurrentFsCorruption = fsCorruption;
   });
 
   afterEach(() => {
     fsCorruption.reset();
-    currentFsCorruption = null;
+    globalCurrentFsCorruption = null;
+    persistedWorkspaceState = null; // Reset persisted state between tests
   });
 
   describe('Opening/Closing Files', () => {
@@ -283,11 +286,10 @@ describe('Workspace Subsystem - Comprehensive Tests', () => {
 let persistedWorkspaceState: { files: string[] } | null = null;
 let indexedDBAvailable = true;
 let indexedDBLocked = false;
-let filesStore: Map<string, { path: string; content: string | Uint8Array; size: number }>;
-let currentFsCorruption: FSCorruptionSimulator | null = null;
+let filesStore: Map<string, { path: string; content: string | Uint8Array; size: number }> | undefined = undefined;
 
 function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: number } = {}) {
-  const files = filesStore || new Map<string, { path: string; content: string | Uint8Array; size: number }>();
+  const files = filesStore ?? new Map<string, { path: string; content: string | Uint8Array; size: number }>();
   const openFiles = new Set<string>();
   const tabs: Array<{ path: string; order: number }> = [];
   let activeTab: string | null = null;
@@ -357,8 +359,7 @@ function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: num
       // Locked takes precedence over availability
       if (
         indexedDBLocked ||
-        currentFsCorruption?.isLocked('workspace-state') ||
-        fsCorruption.isLocked('workspace-state')
+        globalCurrentFsCorruption?.isLocked('workspace-state')
       ) {
         throw new Error('IndexedDB locked');
       }
@@ -375,8 +376,7 @@ function createMockWorkspace(options: { maxOpenFiles?: number; maxFileSize?: num
 
     async restoreState(): Promise<void> {
       const corrupted =
-        currentFsCorruption?.getCorruptedFile('workspace-state') ||
-        fsCorruption.getCorruptedFile('workspace-state');
+        globalCurrentFsCorruption?.getCorruptedFile('workspace-state');
       if (corrupted) {
         if (corrupted.corruptionType === 'invalid') {
           throw new Error('Invalid state format');
