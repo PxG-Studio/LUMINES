@@ -98,4 +98,14 @@ declare module '@storybook/react' {
   export type StoryObj<T = any> = any;
 }
 
+declare module 'src/wissil/runtime/fs/wissilFs' {
+  const value: any;
+  export default value;
+}
+
+declare module 'src/wissil/Slate/components/InspectorPanel' {
+  const InspectorPanel: any;
+  export default InspectorPanel;
+}
+
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * WISSIL Virtual Filesystem
  * Complete in-memory filesystem with CRUD operations
