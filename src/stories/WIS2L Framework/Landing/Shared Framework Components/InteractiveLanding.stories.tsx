@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { action } from 'storybook/actions';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
+import { action } from '@storybook/addon-actions';
+import { expect, within, userEvent, waitFor } from '@storybook/test';
 import React from 'react';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import { SimpleNav } from '@/wissil/Landing/SimpleNav';

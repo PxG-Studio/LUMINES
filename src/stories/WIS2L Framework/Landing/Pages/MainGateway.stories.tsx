@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
-import { fn } from 'storybook/test';
+import { expect, within, userEvent, waitFor, fn } from '@storybook/test';
 import LandingPage from '@/app/lumen/page';
 import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
 import { LandingLayout } from '@/wissil/Landing/LandingLayout';

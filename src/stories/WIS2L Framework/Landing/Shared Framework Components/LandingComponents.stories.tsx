@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { expect, within, userEvent, waitFor, fn } from "storybook/test";
+import { expect, within, userEvent, waitFor, fn } from "@storybook/test";
 import { LandingLayout } from "@/wissil/Landing/LandingLayout";
 import { ThemeProvider } from "@/design-system/themes/ThemeProvider";
 

@@ -5,7 +5,7 @@ import SparkGeneratorPage from '@/app/spark/generator/page';
 import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
 
 const meta = {
-  title: 'Lumenforge.io Design System/WIS2L Framework/Spark/Pages/Workbench',
+  title: 'Lumenforge.io Design System/WIS2L Framework/Spark/Pages/Spark Experience',
   id: 'wis2l-spark-workbench',
   component: SparkPage,
   parameters: {
