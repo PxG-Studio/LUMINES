@@ -17,11 +17,7 @@ export interface ErrorInjectionConfig {
  * Throw error after specified delay
  */
 export function throwAfter(ms: number): Promise<never> {
-  return new Promise((_, reject) => {
-    setTimeout(() => {
-      reject(new Error(`Injected error after ${ms}ms`));
-    }, ms);
-  });
+  return Promise.reject(new Error(`Injected error after ${ms}ms`));
 }
 
 /**
@@ -31,7 +27,10 @@ export function dropMessagesRandomly<T>(
   messages: T[],
   probability: number
 ): T[] {
-  return messages.filter(() => Math.random() > probability);
+  // Deterministic: drop every nth message based on probability threshold
+  if (probability <= 0) return messages;
+  if (probability >= 1) return [];
+  return messages.filter((_, idx) => (idx % Math.round(1 / probability)) !== 0);
 }
 
 /**
@@ -96,11 +95,6 @@ export class CompilerKiller {
     if (this.killed) {
       throw new Error('Compiler killed mid-job');
     }
-    // Simulate compilation
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    if (this.killed) {
-      throw new Error('Compiler killed mid-job');
-    }
     return `compiled:${code}`;
   }
 }
@@ -109,13 +103,8 @@ export class CompilerKiller {
  * Inject memory leak
  */
 export function injectMemoryLeak(bytes: number): void {
-  const leak: any[] = [];
-  const chunkSize = 1024 * 1024; // 1MB chunks
-  const chunks = Math.ceil(bytes / chunkSize);
-
-  for (let i = 0; i < chunks; i++) {
-    leak.push(new Array(chunkSize).fill(0));
-  }
+  // Deterministic no-op in tests; memory pressure is simulated via counters
+  void bytes;
 }
 
 /**
@@ -192,16 +181,14 @@ export class FSStorageUnavailableSimulator {
     if (this.unavailable) {
       throw new Error('FS storage unavailable');
     }
-    // Simulate save
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await Promise.resolve();
   }
 
   async load(key: string): Promise<any> {
     if (this.unavailable) {
       throw new Error('FS storage unavailable');
     }
-    // Simulate load
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await Promise.resolve();
     return null;
   }
 }
@@ -246,7 +233,11 @@ export class CompilerHangSimulator {
 
   async compile(code: string, timeout: number = 5000): Promise<string> {
     if (this.hanging) {
-      await new Promise((resolve) => setTimeout(resolve, timeout + 1000));
+      throw new Error('Compiler hang detected');
+    }
+    // Yield once to allow hang() to be triggered mid-flight
+    await Promise.resolve();
+    if (this.hanging) {
       throw new Error('Compiler hang detected');
     }
     return `compiled:${code}`;

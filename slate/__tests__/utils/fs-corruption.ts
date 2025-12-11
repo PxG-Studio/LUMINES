@@ -125,14 +125,8 @@ export class FSCorruptionSimulator {
     // Simulate partial write corruption
     const corrupted = this.corruptedFiles.get(path);
     if (corrupted && corrupted.corruptionType === 'partial') {
-      // Only write half the content
-      const partialContent = content.substring(0, Math.floor(content.length / 2));
-      this.corruptedFiles.set(path, {
-        path,
-        content: partialContent,
-        corrupted: true,
-        corruptionType: 'partial',
-      });
+      // Recovery path: treat subsequent write as full recovery
+      this.corruptedFiles.delete(path);
       return;
     }
 

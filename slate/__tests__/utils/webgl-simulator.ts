@@ -16,6 +16,8 @@ export class WebGLSimulator {
   private defaultLatency = 0;
   private messageQueue: Array<{ type: string; data: any }> = [];
   private currentRequestToken = 0;
+  private contextLostListeners = new Set<() => void>();
+  private contextRestoreListeners = new Set<() => void>();
 
   // ---- Timing helpers (fake clock) ----
   private static patchNow(ms: number) {
@@ -128,11 +130,13 @@ export class WebGLSimulator {
   simulateContextLoss(): void {
     this.contextLost = true;
     this.contextRestored = false;
+    this.contextLostListeners.forEach((fn) => fn());
   }
 
   simulateContextRestore(): void {
     this.contextLost = false;
     this.contextRestored = true;
+    this.contextRestoreListeners.forEach((fn) => fn());
   }
 
   isContextLost(): boolean {
@@ -141,6 +145,19 @@ export class WebGLSimulator {
 
   isContextRestored(): boolean {
     return this.contextRestored;
+  }
+
+  onContextLost(handler: () => void) {
+    this.contextLostListeners.add(handler);
+  }
+
+  onContextRestore(handler: () => void) {
+    this.contextRestoreListeners.add(handler);
+  }
+
+  createMockContext(_canvas: HTMLCanvasElement): any | null {
+    if (this.contextLost) return null;
+    return { dummy: true };
   }
 
   // ---- Reset ----
