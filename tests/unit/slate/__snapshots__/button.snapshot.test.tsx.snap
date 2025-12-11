@@ -24,6 +24,7 @@ exports[`Button Component Snapshots > Button renders disabled state 1`] = `
 exports[`Button Component Snapshots > Button renders loading state 1`] = `
 <div>
   <button
+    data-loading="true"
     style="padding: 8px 12px; border-radius: 8px; background: var(--nv-bg-1); color: var(--nv-text-0); border: 1px solid var(--nv-border); font-family: Inter, system-ui, sans-serif; font-size: 14px; cursor: pointer; transition: background 0.15s ease;"
   >
     Loading
