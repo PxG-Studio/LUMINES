@@ -281,8 +281,12 @@ describe('Projects API Route - Comprehensive Tests', () => {
         body: 'invalid json',
       });
 
-      // Next.js will handle JSON parsing, but we should test error handling
-      await expect(POST(request)).rejects.toThrow();
+      // Next.js request.json() will throw, which gets caught and returns 500
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(500);
+      expect(data.error).toBe('Failed to create project');
     });
 
     it('should handle empty body', async () => {
