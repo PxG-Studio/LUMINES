@@ -4,7 +4,7 @@ const path = require('path');
 /** @type {import('@storybook/nextjs').StorybookConfig} */
 module.exports = {
   stories: [
-    '../src/wissil/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
+    '../packages/wis2l/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
     '../src/stories/WIS2L Framework/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
     '../src/stories/WIS2L Framework/**/*.mdx',
     '../src/stories/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
@@ -32,7 +32,7 @@ module.exports = {
       '@/components': path.resolve(__dirname, '../src/components'),
       '@/tokens': path.resolve(__dirname, '../src/tokens'),
       '@/styles': path.resolve(__dirname, '../src/styles'),
-      '@/wissil': path.resolve(__dirname, '../src/wissil'),
+      '@/wissil': path.resolve(__dirname, '../packages/wis2l'),
       '@/story-components': path.resolve(__dirname, '../src/story-components'),
       '@/design-system': path.resolve(__dirname, '../src/design-system'),
       '@/theme': path.resolve(__dirname, '../src/theme'),

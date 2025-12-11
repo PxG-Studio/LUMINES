@@ -14,7 +14,7 @@ import { FileTree } from '../filesystem/FileTree';
 import { TabManager } from '../tabs/TabManager';
 import { MonacoEditor } from './MonacoEditor';
 import { useEditorStore } from './editorStore';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import { RuntimeContainer } from '../runtime/RuntimeContainer';
 import { SplitPane } from '../shell/SplitPane';
 import { GitPanel } from '../git/GitPanel';

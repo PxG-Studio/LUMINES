@@ -6,7 +6,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { generateUnityScript } from '@/app/spark/actions/generate';
+// Import from shared wrapper that re-exports from Spark app
+import { generateUnityScript } from '@/lib/spark/actions/generate-wrapper';
 import { optionalAPIKey } from '@/lib/spark/auth/api-key-auth';
 import { userRateLimitMiddleware, recordUserRequest } from '@/lib/spark/rate-limiting/user-limiter';
 import { logRequest, logError } from '@/lib/spark/monitoring/request-logger';

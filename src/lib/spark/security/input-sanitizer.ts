@@ -27,7 +27,7 @@ const PROMPT_INJECTION_PATTERNS = [
   /pretend\s+(to\s+be|that\s+you)/i,
   
   // Token manipulation
-  /\[SYSTEM\]|\[INST\]|\[/ASSISTANT\]/i,
+  /\[SYSTEM\]|\[INST\]|\[\/ASSISTANT\]/i,
   /<\|system\|>|<\|user\|>|<\|assistant\|>/i,
   
   // Encoding attempts

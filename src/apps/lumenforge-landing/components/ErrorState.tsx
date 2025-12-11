@@ -45,9 +45,6 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   onRetry,
   onDismiss,
 }) => {
-  // EC-LAND-821: Show error
-  if (!error && !message) return null;
-
   // EC-LAND-825: Localized message
   const displayMessage = React.useMemo(() => {
     if (localizedMessage) return localizedMessage;
@@ -76,6 +73,9 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
     if (!contextual) return undefined;
     return variant === 'full' ? 'Please try again or contact support if the problem persists.' : undefined;
   }, [contextual, variant]);
+
+  // EC-LAND-821: Show error
+  if (!error && !message) return null;
 
   return (
     <div className={variantClasses[variant]} {...accessibilityProps}>

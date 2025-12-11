@@ -37,11 +37,6 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
     return Math.max(1, Math.min(1000, speed || 20));
   }, [speed]);
 
-  // EC-259: Handle empty content
-  if (!content || content.length === 0) {
-    return null;
-  }
-
   // EC-007: Set mounted flag
   useEffect(() => {
     isMountedRef.current = true;
@@ -92,6 +87,11 @@ export const StreamingText: React.FC<StreamingTextProps> = ({
 
     return () => clearTimeout(timeout);
   }, [currentIndex, content, validSpeed, pauseOnPunctuation, onComplete]);
+
+  // EC-259: Handle empty content
+  if (!content || content.length === 0) {
+    return null;
+  }
 
   return (
     <span className={`inline ${className}`} aria-live="polite" aria-atomic="true">
