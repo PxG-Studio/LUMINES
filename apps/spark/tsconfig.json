@@ -13,7 +13,7 @@
       "@/design-system/*": [
         "../../src/design-system/*"
       ],
-      "@/wissil/*": [
+      "@/wis2l/*": [
         "../../packages/wis2l/*"
       ],
       "@/wis2l/*": [
