@@ -1,0 +1,42 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*",
+        "../../src/*"
+      ],
+      "@/components/*": [
+        "../../src/components/*"
+      ],
+      "@/design-system/*": [
+        "../../src/design-system/*"
+      ],
+      "@/wissil/*": [
+        "../../packages/wis2l/*"
+      ],
+      "@/wis2l/*": [
+        "../../packages/wis2l/*"
+      ],
+      "@/state/*": [
+        "../../src/state/*"
+      ],
+      "@/hooks/*": [
+        "../../src/hooks/*"
+      ],
+      "@/utils/*": [
+        "../../src/utils/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

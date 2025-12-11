@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { expect, within, userEvent, waitFor, fn } from '@storybook/test';
 import LandingPage from '@/app/lumen/page';
 import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
-import { LandingLayout } from '@/wissil/Landing/LandingLayout';
-import { SimpleNav } from '@/wissil/Landing/SimpleNav';
-import { HeroSection } from '@/wissil/Landing/HeroSection';
+import { LandingLayout } from '@/wis2l/Landing/LandingLayout';
+import { SimpleNav } from '@/wis2l/Landing/SimpleNav';
+import { HeroSection } from '@/wis2l/Landing/HeroSection';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 
 const meta = {

@@ -1,4 +1,4 @@
-import { Pool, PoolConfig, QueryResult, PoolClient } from 'pg';
+import { Pool, PoolConfig, QueryResult, PoolClient, QueryResultRow } from 'pg';
 
 let primaryPool: Pool | null = null;
 let replicaPool: Pool | null = null;
@@ -68,7 +68,7 @@ export function getReplicaPool(): Pool | null {
   return replicaPool;
 }
 
-export async function query<T = any>(
+export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> {
@@ -90,7 +90,7 @@ export async function query<T = any>(
   }
 }
 
-export async function queryReplica<T = any>(
+export async function queryReplica<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> {
@@ -126,6 +126,14 @@ export async function transaction<T>(
     client.release();
   }
 }
+
+export const db = {
+  query,
+  queryReplica,
+  transaction,
+  getPrimaryPool,
+  getReplicaPool,
+};
 
 export async function closeConnections(): Promise<void> {
   if (primaryPool) {

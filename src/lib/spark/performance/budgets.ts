@@ -217,9 +217,9 @@ class PerformanceBudgetMonitor {
   getSummary(): {
     budgets: PerformanceBudget[];
     violations: BudgetViolation[];
-    metrics: Record<string, ReturnType<typeof this.getMetricStats>>;
+    metrics: Record<string, ReturnType<PerformanceBudgetMonitor['getMetricStats']>>;
   } {
-    const metrics: Record<string, ReturnType<typeof this.getMetricStats>> = {};
+    const metrics: Record<string, ReturnType<PerformanceBudgetMonitor['getMetricStats']>> = {};
     for (const metric of ['bundle_size', 'generation_time', 'api_response_time', 'page_load_time'] as const) {
       const stats = this.getMetricStats(metric);
       if (stats) {

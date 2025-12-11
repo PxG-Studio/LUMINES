@@ -41,21 +41,21 @@ Move-StoryFile "src/design-system/primitives/SplitView.stories.tsx" "src/stories
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - LANDING ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/landing/landing.stories.tsx" "src/stories/WISSIL Framework/Landing/Pages/MainGateway.stories.tsx"
 Move-StoryFile "src/app/landing/landing.mdx" "src/stories/WISSIL Framework/Landing/Documentation/Landing.mdx"
-Move-StoryFile "src/wissil/Landing/LandingComponents.stories.tsx" "src/stories/WISSIL Framework/Landing/Shared Framework Components/LandingComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Landing/LandingComponents.stories.tsx" "src/stories/WISSIL Framework/Landing/Shared Framework Components/LandingComponents.stories.tsx"
 
 # WISSIL FRAMEWORK - SLATE
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - SLATE ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/slate/slate.stories.tsx" "src/stories/WISSIL Framework/Slate/Pages/WorkspaceIdentity.stories.tsx"
 Move-StoryFile "src/app/slate/slate.mdx" "src/stories/WISSIL Framework/Slate/Documentation/Slate.mdx"
-Move-StoryFile "src/wissil/Slate/SlateComponents.stories.tsx" "src/stories/WISSIL Framework/Slate/Shared Framework Components/SlateComponents.stories.tsx"
-Move-StoryFile "src/wissil/Slate/FullSlate.stories.tsx" "src/stories/WISSIL Framework/Slate/Pages/FullSlateIDE.stories.tsx"
-Move-StoryFile "src/wissil/Slate/components/InspectorTree.stories.tsx" "src/stories/WISSIL Framework/Slate/Shared Framework Components/InspectorTree.stories.tsx"
+Move-StoryFile "packages/wis2l/Slate/SlateComponents.stories.tsx" "src/stories/WISSIL Framework/Slate/Shared Framework Components/SlateComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Slate/FullSlate.stories.tsx" "src/stories/WISSIL Framework/Slate/Pages/FullSlateIDE.stories.tsx"
+Move-StoryFile "packages/wis2l/Slate/components/InspectorTree.stories.tsx" "src/stories/WISSIL Framework/Slate/Shared Framework Components/InspectorTree.stories.tsx"
 
 # WISSIL FRAMEWORK - IGNITION
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - IGNITION ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/ignition/ignition.stories.tsx" "src/stories/WISSIL Framework/Ignition/Pages/ProjectBootstrap.stories.tsx"
 Move-StoryFile "src/app/ignition/ignition.mdx" "src/stories/WISSIL Framework/Ignition/Documentation/Ignition.mdx"
-Move-StoryFile "src/wissil/Ignition/IgnitionComponents.stories.tsx" "src/stories/WISSIL Framework/Ignition/Shared Framework Components/IgnitionComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Ignition/IgnitionComponents.stories.tsx" "src/stories/WISSIL Framework/Ignition/Shared Framework Components/IgnitionComponents.stories.tsx"
 Move-StoryFile "src/stories/IgnitionRuntime/Events/OnStart.stories.tsx" "src/stories/WISSIL Framework/Ignition/Runtime/Events/OnStart.stories.tsx"
 Move-StoryFile "src/stories/IgnitionRuntime/Events/OnUpdate.stories.tsx" "src/stories/WISSIL Framework/Ignition/Runtime/Events/OnUpdate.stories.tsx"
 Move-StoryFile "src/stories/IgnitionRuntime/Events/OnCardPlayed.stories.tsx" "src/stories/WISSIL Framework/Ignition/Runtime/Events/OnCardPlayed.stories.tsx"
@@ -64,14 +64,14 @@ Move-StoryFile "src/stories/IgnitionRuntime/Events/OnCardPlayed.stories.tsx" "sr
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - SPARK ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/spark/spark.stories.tsx" "src/stories/WISSIL Framework/Spark/Pages/IDEExperience.stories.tsx"
 Move-StoryFile "src/app/spark/spark.mdx" "src/stories/WISSIL Framework/Spark/Documentation/Spark.mdx"
-Move-StoryFile "src/wissil/Spark/SparkComponents.stories.tsx" "src/stories/WISSIL Framework/Spark/Shared Framework Components/SparkComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Spark/SparkComponents.stories.tsx" "src/stories/WISSIL Framework/Spark/Shared Framework Components/SparkComponents.stories.tsx"
 Move-StoryFile "src/stories/Spark/TemplatePreview/CardGameTemplate.stories.tsx" "src/stories/WISSIL Framework/Spark/Templates/CardGameTemplate.stories.tsx"
 
 # WISSIL FRAMEWORK - IGNIS
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - IGNIS ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/ignis/ignis.stories.tsx" "src/stories/WISSIL Framework/Ignis/Pages/APIBackend.stories.tsx"
 Move-StoryFile "src/app/ignis/ignis.mdx" "src/stories/WISSIL Framework/Ignis/Documentation/Ignis.mdx"
-Move-StoryFile "src/wissil/Ignis/IgnisComponents.stories.tsx" "src/stories/WISSIL Framework/Ignis/Shared Framework Components/IgnisComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Ignis/IgnisComponents.stories.tsx" "src/stories/WISSIL Framework/Ignis/Shared Framework Components/IgnisComponents.stories.tsx"
 Move-StoryFile "src/stories/ignis/BPGraphCanvas.stories.tsx" "src/stories/WISSIL Framework/Ignis/Blueprint Editor/Canvas/BPGraphCanvas.stories.tsx"
 Move-StoryFile "src/stories/ignis/NodePalette.stories.tsx" "src/stories/WISSIL Framework/Ignis/Blueprint Editor/Palette/NodePalette.stories.tsx"
 Move-StoryFile "src/stories/ignis/NodeRenderer.stories.tsx" "src/stories/WISSIL Framework/Ignis/Nodes/NodeRenderer.stories.tsx"
@@ -88,7 +88,7 @@ if (Test-Path "src/stories/ignis/Nodes/NodeRenderer.stories.tsx") {
 Write-Host "`n=== MOVING WISSIL FRAMEWORK - WAYPOINT ===" -ForegroundColor Cyan
 Move-StoryFile "src/app/waypoint/waypoint.stories.tsx" "src/stories/WISSIL Framework/Waypoint/Pages/UnityVisualScripting.stories.tsx"
 Move-StoryFile "src/app/waypoint/waypoint.mdx" "src/stories/WISSIL Framework/Waypoint/Documentation/Waypoint.mdx"
-Move-StoryFile "src/wissil/Waypoint/WaypointComponents.stories.tsx" "src/stories/WISSIL Framework/Waypoint/Shared Framework Components/WaypointComponents.stories.tsx"
+Move-StoryFile "packages/wis2l/Waypoint/WaypointComponents.stories.tsx" "src/stories/WISSIL Framework/Waypoint/Shared Framework Components/WaypointComponents.stories.tsx"
 Move-StoryFile "src/stories/Waypoint/AIExplain/AIExplain.stories.tsx" "src/stories/WISSIL Framework/Waypoint/AI Explain/AIExplain.stories.tsx"
 Move-StoryFile "src/stories/Waypoint/AISuggestions/Suggestions.stories.tsx" "src/stories/WISSIL Framework/Waypoint/AI Suggestions/AISuggestions.stories.tsx"
 
