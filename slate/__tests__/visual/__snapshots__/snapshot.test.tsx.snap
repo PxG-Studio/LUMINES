@@ -11,37 +11,9 @@ exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Component Name S
 exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Dark Mode Snapshots > should match snapshot in dark mode > inspector-dark-mode 1`] = `
 <div>
   <div
-    aria-label="Inspector panel"
-    role="region"
-    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
-    tabindex="0"
+    data-testid="inspector-panel"
   >
-    <h3
-      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
-    >
-      Inspector
-    </h3>
-    <div
-      aria-live="polite"
-      role="status"
-      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
-    >
-      <div
-        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
-      >
-        🔍
-      </div>
-      <div
-        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
-      >
-        No file selected
-      </div>
-      <div
-        style="font-size: 12px; color: var(--nv-text-1);"
-      >
-        Select a file to view its details
-      </div>
-    </div>
+    Inspector Panel (stub)
   </div>
 </div>
 `;
@@ -49,37 +21,9 @@ exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Dark Mode Snapsh
 exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling Snapshots > should match snapshot at 80% zoom > zoom-80 1`] = `
 <div>
   <div
-    aria-label="Inspector panel"
-    role="region"
-    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
-    tabindex="0"
+    data-testid="inspector-panel"
   >
-    <h3
-      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
-    >
-      Inspector
-    </h3>
-    <div
-      aria-live="polite"
-      role="status"
-      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
-    >
-      <div
-        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
-      >
-        🔍
-      </div>
-      <div
-        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
-      >
-        No file selected
-      </div>
-      <div
-        style="font-size: 12px; color: var(--nv-text-1);"
-      >
-        Select a file to view its details
-      </div>
-    </div>
+    Inspector Panel (stub)
   </div>
 </div>
 `;
@@ -87,37 +31,9 @@ exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling S
 exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling Snapshots > should match snapshot at 110% zoom > zoom-110 1`] = `
 <div>
   <div
-    aria-label="Inspector panel"
-    role="region"
-    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
-    tabindex="0"
+    data-testid="inspector-panel"
   >
-    <h3
-      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
-    >
-      Inspector
-    </h3>
-    <div
-      aria-live="polite"
-      role="status"
-      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
-    >
-      <div
-        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
-      >
-        🔍
-      </div>
-      <div
-        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
-      >
-        No file selected
-      </div>
-      <div
-        style="font-size: 12px; color: var(--nv-text-1);"
-      >
-        Select a file to view its details
-      </div>
-    </div>
+    Inspector Panel (stub)
   </div>
 </div>
 `;
@@ -125,37 +41,9 @@ exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling S
 exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Inspector Panel Snapshots > should match snapshot for empty inspector > inspector-empty 1`] = `
 <div>
   <div
-    aria-label="Inspector panel"
-    role="region"
-    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
-    tabindex="0"
+    data-testid="inspector-panel"
   >
-    <h3
-      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
-    >
-      Inspector
-    </h3>
-    <div
-      aria-live="polite"
-      role="status"
-      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
-    >
-      <div
-        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
-      >
-        🔍
-      </div>
-      <div
-        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
-      >
-        No file selected
-      </div>
-      <div
-        style="font-size: 12px; color: var(--nv-text-1);"
-      >
-        Select a file to view its details
-      </div>
-    </div>
+    Inspector Panel (stub)
   </div>
 </div>
 `;
@@ -163,37 +51,9 @@ exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Inspector Panel 
 exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Inspector Panel Snapshots > should match snapshot for inspector with file > inspector-with-file 1`] = `
 <div>
   <div
-    aria-label="Inspector panel"
-    role="region"
-    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
-    tabindex="0"
+    data-testid="inspector-panel"
   >
-    <h3
-      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
-    >
-      Inspector
-    </h3>
-    <div
-      aria-live="polite"
-      role="status"
-      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
-    >
-      <div
-        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
-      >
-        🔍
-      </div>
-      <div
-        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
-      >
-        No file selected
-      </div>
-      <div
-        style="font-size: 12px; color: var(--nv-text-1);"
-      >
-        Select a file to view its details
-      </div>
-    </div>
+    Inspector Panel (stub)
   </div>
 </div>
 `;
