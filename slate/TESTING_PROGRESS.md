@@ -11,12 +11,13 @@
 | Category | Target | Created | Status |
 |----------|--------|---------|--------|
 | **Component Tests** | 200+ | 9 files | 🟢 45% |
-| **API Route Tests** | 100+ | 12 files | 🟢 60% |
+| **API Route Tests** | 100+ | 16 files | 🟢 80% |
 | **Database Operation Tests** | 100+ | 5 files | 🟢 25% |
 | **Hard Edge Case Tests** | 150+ | 3 files | 🟢 70% |
 | **Integration Tests** | 50+ | 4 files | 🟢 40% |
 | **Performance Tests** | 30+ | 2 files | 🟢 33% |
-| **TOTAL** | **500+** | **105+ files** | 🟢 **42%** |
+| **Hook Tests** | 50+ | 8 files | 🟢 80% |
+| **TOTAL** | **500+** | **120+ files** | 🟢 **48%** |
 
 ---
 
@@ -85,7 +86,7 @@
    - Tab management, modified state
    - Edge cases
 
-### API Route Tests (12 files, ~200+ tests)
+### API Route Tests (16 files, ~280+ tests)
 
 1. ✅ **projects/route.test.ts** (~20 tests)
    - GET /api/projects
@@ -180,6 +181,22 @@
 12. ✅ **users/route.test.ts** (~15 tests)
     - GET all users, POST create user
     - Validation, error handling
+
+13. ✅ **components/route.test.ts** (~25 tests)
+    - GET with pagination, filtering
+    - POST with validation, defaults
+
+14. ✅ **export-batch/route.test.ts** (~15 tests)
+    - ZIP generation with templates
+    - Script handling, meta files
+
+15. ✅ **metrics/route.test.ts** (~10 tests)
+    - Prometheus format export
+    - Error handling
+
+16. ✅ **performance/route.test.ts** (~15 tests)
+    - Performance metrics (memory, API, DB, cache)
+    - Authentication required
 
 ### Database Operation Tests (5 files, ~200+ tests)
 
@@ -278,7 +295,17 @@
 - `slate/__tests__/performance/performance.comprehensive.test.ts`
 - `slate/__tests__/performance/load-stress.comprehensive.test.ts` (~35 tests)
 
-**Total: 105+ test files** (up from 4 documented)
+### Hook Tests (8 files, ~120+ tests)
+- `src/hooks/__tests__/useCache.test.ts`
+- `src/hooks/__tests__/useErrorHandler.test.ts`
+- `src/hooks/__tests__/useKeyboardShortcuts.test.ts`
+- `src/hooks/__tests__/useRuntime.test.ts`
+- `src/hooks/__tests__/useUndoRedo.test.ts`
+- `src/hooks/__tests__/useFiles.comprehensive.test.ts` (~20 tests) ✅ NEW
+- `src/hooks/__tests__/useProjects.comprehensive.test.ts` (~20 tests) ✅ NEW
+- `src/hooks/__tests__/useAssets.comprehensive.test.ts` (~15 tests) ✅ NEW
+
+**Total: 120+ test files** (up from 4 documented)
 
 ---
 
