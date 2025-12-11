@@ -1,4 +1,7 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - packages/**
+  - apps/**
+  - slate
+  - src
+  - tests
 

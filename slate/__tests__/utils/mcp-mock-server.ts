@@ -17,6 +17,10 @@ export interface MCPResponse {
 }
 
 export class MCPMockServer {
+  private static originalNow: (() => number) | null = null;
+  private static fakeAdvance = 0;
+  private static restoreScheduled = false;
+
   private responses = new Map<string, MCPResponse>();
   private defaultLatency = 10;
   private shouldFail = false;
@@ -201,7 +205,40 @@ export class MCPMockServer {
    * Simulate latency
    */
   private async simulateLatency(ms: number): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, ms));
+    // Avoid real-time sleeps to keep tests fast; instead, advance a fake clock
+    MCPMockServer.patchNow(ms);
+    // Preserve async semantics while keeping runtime fast
+    await Promise.resolve();
+    MCPMockServer.scheduleRestore();
+  }
+
+  /**
+   * Patch Date.now to simulate elapsed time without real waiting.
+   */
+  private static patchNow(ms: number) {
+    if (!MCPMockServer.originalNow) {
+      MCPMockServer.originalNow = Date.now;
+    }
+    MCPMockServer.fakeAdvance += ms;
+    Date.now = () => {
+      const base = MCPMockServer.originalNow ? MCPMockServer.originalNow() : Date.now();
+      return base + MCPMockServer.fakeAdvance;
+    };
+  }
+
+  /**
+   * Restore Date.now on the next macrotask to avoid leaking mocked time.
+   */
+  private static scheduleRestore() {
+    if (MCPMockServer.restoreScheduled) return;
+    MCPMockServer.restoreScheduled = true;
+    setTimeout(() => {
+      if (MCPMockServer.originalNow) {
+        Date.now = MCPMockServer.originalNow;
+      }
+      MCPMockServer.fakeAdvance = 0;
+      MCPMockServer.restoreScheduled = false;
+    }, 0);
   }
 
   /**
