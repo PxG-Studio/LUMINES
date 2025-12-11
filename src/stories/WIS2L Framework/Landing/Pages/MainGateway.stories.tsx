@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
-import { fn } from 'storybook/test';
-import LandingPage from '@/app/landing/page';
+import { expect, within, userEvent, waitFor, fn } from '@storybook/test';
+import LandingPage from '@/app/lumen/page';
 import { WIS2LLayout } from '@/components/wissil/WIS2LLayout';
-import { LandingLayout } from '@/wissil/Landing/LandingLayout';
-import { SimpleNav } from '@/wissil/Landing/SimpleNav';
-import { HeroSection } from '@/wissil/Landing/HeroSection';
+import { LandingLayout } from '@/wis2l/Landing/LandingLayout';
+import { SimpleNav } from '@/wis2l/Landing/SimpleNav';
+import { HeroSection } from '@/wis2l/Landing/HeroSection';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 
 const meta = {
@@ -40,7 +39,7 @@ const meta = {
     docs: {
       description: {
         component: `
-# LANDING - Production Landing Page
+# LUMEN - Production Landing Page
 
 The main marketing landing page for LumenForge.io ecosystem.
 
@@ -110,7 +109,7 @@ export const Default: Story = {
       // Verify navigation elements exist - get ALL links
       const navLinks = canvas.getAllByRole('link');
       expect(navLinks.length).toBeGreaterThan(0);
-      const logoLink = navLinks.find(link => link.getAttribute('href') === '/landing' || link.textContent?.includes('Lumenforge.io'));
+      const logoLink = navLinks.find(link => link.getAttribute('href') === '/lumen' || link.textContent?.includes('Lumenforge.io'));
       expect(logoLink).toBeInTheDocument();
       expect(logoLink).toBeVisible();
 
@@ -214,7 +213,7 @@ export const Default: Story = {
       expect(navLinks.length).toBeGreaterThan(0);
       
       const logoLink = navLinks.find(link => 
-        link.getAttribute('href') === '/landing' || 
+        link.getAttribute('href') === '/lumen' || 
         link.textContent?.includes('Lumenforge.io')
       );
       expect(logoLink).toBeInTheDocument();
@@ -613,7 +612,7 @@ export const Mobile: Story = {
       // Simulate touch/click on logo
       const navLinks = canvas.getAllByRole('link');
       const logoLink = navLinks.find(link => 
-        link.getAttribute('href') === '/landing' || 
+        link.getAttribute('href') === '/lumen' || 
         link.textContent?.includes('Lumenforge.io')
       );
       if (logoLink) {
@@ -762,7 +761,7 @@ export const WideScreen: Story = {
       // Start from logo link
       const navLinks = canvas.getAllByRole('link');
       const logoLink = navLinks.find(link => 
-        link.getAttribute('href') === '/landing' || 
+        link.getAttribute('href') === '/lumen' || 
         link.textContent?.includes('Lumenforge.io')
       );
       if (logoLink) {

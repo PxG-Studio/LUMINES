@@ -3,8 +3,8 @@
  * Zustand store for Slate editor state
  */
 
+import type { SandpackFiles } from "@codesandbox/sandpack-react";
 import { create } from 'zustand';
-import { SandpackFiles } from '@codesandbox/sandpack-react';
 
 export interface EditorFile {
   path: string;
@@ -61,11 +61,12 @@ export const useEditorState = create<EditorState>((set) => ({
   setFiles: (files) => {
     const editorFiles: Record<string, EditorFile> = {};
     
-    Object.entries(files).forEach(([path, file]) => {
+    Object.entries(files as Record<string, any>).forEach(([path, file]) => {
       const content = typeof file === 'string' ? file : ('code' in file ? file.code : '');
+      const safeContent = typeof content === 'string' ? content : '';
       editorFiles[path] = {
         path,
-        content,
+        content: safeContent,
         isDirty: false,
       };
     });

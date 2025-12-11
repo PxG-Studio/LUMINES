@@ -1,0 +1,80 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FileTree > matches snapshot 1`] = `
+<div>
+  <div
+    style="width: 100%; height: 100%; background: var(--slate-panel, #16181d); overflow: auto; padding: 8px;"
+  >
+    <div>
+      <div
+        style="padding: 4px 8px 4px 8px; cursor: pointer; color: var(--slate-text, #e4e7eb); display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono, monospace); transition: background 0.2s;"
+      >
+        <span
+          style="font-size: 14px;"
+        >
+          📂
+        </span>
+        <span>
+          Blueprints
+        </span>
+      </div>
+      <div>
+        <div
+          style="padding: 4px 8px 4px 24px; cursor: pointer; color: var(--slate-text, #e4e7eb); display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono, monospace); transition: background 0.2s;"
+        >
+          <span
+            style="font-size: 14px;"
+          >
+            📄
+          </span>
+          <span>
+            TurnSystem.json
+          </span>
+        </div>
+      </div>
+      <div>
+        <div
+          style="padding: 4px 8px 4px 24px; cursor: pointer; color: var(--slate-text, #e4e7eb); display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono, monospace); transition: background 0.2s;"
+        >
+          <span
+            style="font-size: 14px;"
+          >
+            📄
+          </span>
+          <span>
+            CardLogic.json
+          </span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div
+        style="padding: 4px 8px 4px 8px; cursor: pointer; color: var(--slate-text, #e4e7eb); display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono, monospace); transition: background 0.2s;"
+      >
+        <span
+          style="font-size: 14px;"
+        >
+          📁
+        </span>
+        <span>
+          Templates
+        </span>
+      </div>
+    </div>
+    <div>
+      <div
+        style="padding: 4px 8px 4px 8px; cursor: pointer; color: var(--slate-text, #e4e7eb); display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: var(--font-mono, monospace); transition: background 0.2s;"
+      >
+        <span
+          style="font-size: 14px;"
+        >
+          📁
+        </span>
+        <span>
+          Assets
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

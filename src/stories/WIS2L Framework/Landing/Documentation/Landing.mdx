@@ -6,9 +6,9 @@ import { Meta } from '@storybook/addon-docs/blocks';
   name="Landing WIS2L Docs"
 />
 
-# LANDING - Main Gateway
+# LUMEN - Main Gateway
 
-The **LANDING** subsystem is the primary entry point into the WISSIL ecosystem and the marketing surface for **Lumenforge.io**.
+The **LUMEN** subsystem is the primary entry point into the WISSIL ecosystem and the marketing surface for **Lumenforge.io**.
 It introduces the value of the platform, then routes users into the individual subsystems (SLATE, SPARK, IGNITION, IGNIS, WAYPOINT).
 
 The current hero copy is:
@@ -18,7 +18,7 @@ The current hero copy is:
 
 ## Purpose
 
-LANDING provides a unified interface for:
+LUMEN provides a unified interface for:
 - **Product Story**: Explain what Lumenforge.io is and why it exists
 - **Navigation Hub**: Route into SPARK, SLATE, IGNITION, IGNIS, WAYPOINT
 - **Conversion Surface**: Capture signups, free trials, and demo requests
@@ -79,7 +79,7 @@ LandingLayout
 
 ### Color Palette
 
-The LANDING subsystem uses the following SLATE tokens:
+The LUMEN subsystem uses the following SLATE tokens:
 
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -166,7 +166,7 @@ flow: Cloudflare Zero Trust → nocturnaID → JWT
 ### Storybook & Agents
 
 - Storybook exposes multiple views of the landing experience:
-  - `WIS2L Framework/Landing/Pages/Main Gateway` – Next.js-based landing page (`src/app/landing/page.tsx` → `LandingLayout`).
+  - `WIS2L Framework/Landing/Pages/Main Gateway` – Next.js-based landing page (`src/app/lumen/page.tsx` → `LandingLayout`).
   - `WIS2L Framework/Landing/Shared Framework Components/Interactive Landing` – Minimal interactive shell (Nav + Hero + Features + Footer).
   - `WIS2L Framework/Landing/Shared Framework Components/LandingComponents` – Full `LandingLayout` with all sections.
   - `Lumenforge.io / Landing / Pages / ProductionLanding` – The Vite app from `src/apps/lumenforge-landing/App.tsx` rendered inside Storybook.
@@ -176,7 +176,7 @@ flow: Cloudflare Zero Trust → nocturnaID → JWT
 
 ```mermaid
 graph TD
-  A[User arrives at LANDING] --> B{Authenticated?}
+  A[User arrives at LUMEN] --> B{Authenticated?}
   B -->|No| C[Redirect to nocturnaID]
   C --> D[Login/Register]
   D --> E[JWT Token]

@@ -25,7 +25,7 @@ const Demo404: React.FC = () => {
         </h2>
         <p className="text-white/70 text-lg mb-8">
           The LumenForge.io demo experience is still being crafted in the forge.
-          Soon you'll witness the full power of AI-powered creative development in action!
+          Soon you&apos;ll witness the full power of AI-powered creative development in action!
         </p>
 
         <div className="space-y-4">

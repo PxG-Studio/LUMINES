@@ -26,6 +26,7 @@ export const WIS2LLayout: React.FC<WIS2LLayoutProps> = ({
 }) => {
   const systemColors = slateTokens.colors[system];
   const isPrimary = 'primary' in systemColors;
+  const gradient = 'gradient' in systemColors ? systemColors.gradient : undefined;
 
   return (
     <div
@@ -38,7 +39,7 @@ export const WIS2LLayout: React.FC<WIS2LLayoutProps> = ({
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            background: isPrimary ? systemColors.gradient : 'transparent',
+            background: isPrimary && gradient ? gradient : 'transparent',
           }}
         />
 
@@ -68,7 +69,7 @@ export const WIS2LLayout: React.FC<WIS2LLayoutProps> = ({
                 <h1
                   className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 gradient-text"
                   style={{
-                    backgroundImage: isPrimary ? systemColors.gradient : 'linear-gradient(90deg, #fff, #fff)',
+                    backgroundImage: isPrimary && gradient ? gradient : 'linear-gradient(90deg, #fff, #fff)',
                   }}
                 >
                   {title}

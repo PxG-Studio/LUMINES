@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AppShell > matches snapshot 1`] = `
+<div>
+  <div
+    style="display: flex; height: 100vh; background: var(--slate-bg, #0f1115); font-family: var(--font-primary, system-ui); overflow: hidden;"
+  >
+    <div
+      style="flex: 1 1 0%; display: flex; flex-direction: column; overflow: hidden;"
+    >
+      <div
+        style="flex: 1 1 0%; display: flex; overflow: hidden;"
+      >
+        <div
+          style="flex: 1 1 0%; position: relative; overflow: hidden;"
+        >
+          <div>
+            Test Content
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

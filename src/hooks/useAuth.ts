@@ -2,6 +2,7 @@
 
 /**
  * Custom hook for accessing NextAuth session
+ * Lumines version - Next.js compatible
  */
 import { useSession } from 'next-auth/react';
 
@@ -18,4 +19,3 @@ export function useAuth() {
     roles: (session as any)?.roles || [],
   };
 }
-

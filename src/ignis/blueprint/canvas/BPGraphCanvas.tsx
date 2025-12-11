@@ -327,7 +327,7 @@ export function BPGraphCanvas({ graphId, className, style }: BPGraphCanvasProps)
               onDrag={handleNodeDrag}
               onDragEnd={handleNodeDragEnd}
               onSocketClick={handleSocketClick}
-              onNodeClick={(nodeId, e) => {
+              onNodeClick={(nodeId, e: React.MouseEvent<Element>) => {
                 if (e.shiftKey) {
                   selectNode(nodeId, true);
                 } else {

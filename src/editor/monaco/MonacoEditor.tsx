@@ -10,7 +10,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Editor, { OnChange, OnMount } from '@monaco-editor/react';
 import type { editor } from 'monaco-editor';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import { useEditorStore } from './editorStore';
 import { SearchReplace } from './SearchReplace';
 import { formatCode, formatSelection } from './CodeFormatter';

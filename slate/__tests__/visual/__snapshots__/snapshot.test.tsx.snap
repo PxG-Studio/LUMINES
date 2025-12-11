@@ -1,0 +1,382 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Component Name Snapshots > should match snapshot with very long component names > component-long-name 1`] = `
+<div>
+  <div>
+    VeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLengthVeryLongComponentNameThatExceedsNormalLength
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Dark Mode Snapshots > should match snapshot in dark mode > inspector-dark-mode 1`] = `
+<div>
+  <div
+    aria-label="Inspector panel"
+    role="region"
+    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
+    tabindex="0"
+  >
+    <h3
+      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
+    >
+      Inspector
+    </h3>
+    <div
+      aria-live="polite"
+      role="status"
+      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
+    >
+      <div
+        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
+      >
+        🔍
+      </div>
+      <div
+        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
+      >
+        No file selected
+      </div>
+      <div
+        style="font-size: 12px; color: var(--nv-text-1);"
+      >
+        Select a file to view its details
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling Snapshots > should match snapshot at 80% zoom > zoom-80 1`] = `
+<div>
+  <div
+    aria-label="Inspector panel"
+    role="region"
+    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
+    tabindex="0"
+  >
+    <h3
+      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
+    >
+      Inspector
+    </h3>
+    <div
+      aria-live="polite"
+      role="status"
+      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
+    >
+      <div
+        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
+      >
+        🔍
+      </div>
+      <div
+        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
+      >
+        No file selected
+      </div>
+      <div
+        style="font-size: 12px; color: var(--nv-text-1);"
+      >
+        Select a file to view its details
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Gluten Scaling Snapshots > should match snapshot at 110% zoom > zoom-110 1`] = `
+<div>
+  <div
+    aria-label="Inspector panel"
+    role="region"
+    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
+    tabindex="0"
+  >
+    <h3
+      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
+    >
+      Inspector
+    </h3>
+    <div
+      aria-live="polite"
+      role="status"
+      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
+    >
+      <div
+        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
+      >
+        🔍
+      </div>
+      <div
+        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
+      >
+        No file selected
+      </div>
+      <div
+        style="font-size: 12px; color: var(--nv-text-1);"
+      >
+        Select a file to view its details
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Inspector Panel Snapshots > should match snapshot for empty inspector > inspector-empty 1`] = `
+<div>
+  <div
+    aria-label="Inspector panel"
+    role="region"
+    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
+    tabindex="0"
+  >
+    <h3
+      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
+    >
+      Inspector
+    </h3>
+    <div
+      aria-live="polite"
+      role="status"
+      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
+    >
+      <div
+        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
+      >
+        🔍
+      </div>
+      <div
+        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
+      >
+        No file selected
+      </div>
+      <div
+        style="font-size: 12px; color: var(--nv-text-1);"
+      >
+        Select a file to view its details
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Inspector Panel Snapshots > should match snapshot for inspector with file > inspector-with-file 1`] = `
+<div>
+  <div
+    aria-label="Inspector panel"
+    role="region"
+    style="height: 100%; width: 100%; background: var(--nv-bg-1); padding: 12px; border-right: 1px solid var(--nv-border); color: var(--nv-text-1); font-size: 12px; overflow-y: auto;"
+    tabindex="0"
+  >
+    <h3
+      style="margin: 0px 0px 8px 0px; font-size: 14px; color: var(--nv-text-0); font-weight: 600;"
+    >
+      Inspector
+    </h3>
+    <div
+      aria-live="polite"
+      role="status"
+      style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; padding: 24px; text-align: center;"
+    >
+      <div
+        style="font-size: 32px; margin-bottom: 12px; opacity: 0.3; color: var(--nv-text-2);"
+      >
+        🔍
+      </div>
+      <div
+        style="font-size: 14px; color: var(--nv-text-1); font-weight: 500; margin-bottom: 4px;"
+      >
+        No file selected
+      </div>
+      <div
+        style="font-size: 12px; color: var(--nv-text-1);"
+      >
+        Select a file to view its details
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Layout Stability Snapshots > should match snapshot for desktop viewport > layout-desktop 1`] = `
+<div>
+  <div
+    style="display: flex; flex-direction: row; height: 100%; width: 100%;"
+  >
+    <div
+      style="flex: 0 0 auto; width: 300px; height: 100%; overflow: hidden;"
+    >
+      <div>
+        Panel 1
+      </div>
+    </div>
+    <div
+      aria-label="Resize panels horizontally"
+      aria-orientation="vertical"
+      aria-valuemax="800"
+      aria-valuemin="120"
+      aria-valuenow="300"
+      role="separator"
+      style="background: var(--nv-border); cursor: col-resize; width: 4px; height: 100%; transition: background 0.15s ease; outline: none;"
+      tabindex="0"
+    />
+    <div
+      style="flex: 1 1 0%; overflow: hidden;"
+    >
+      <div>
+        Panel 2
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Layout Stability Snapshots > should match snapshot for mobile viewport > layout-mobile 1`] = `
+<div>
+  <div
+    style="display: flex; flex-direction: row; height: 100%; width: 100%;"
+  >
+    <div
+      style="flex: 0 0 auto; width: 300px; height: 100%; overflow: hidden;"
+    >
+      <div>
+        Panel 1
+      </div>
+    </div>
+    <div
+      aria-label="Resize panels horizontally"
+      aria-orientation="vertical"
+      aria-valuemax="800"
+      aria-valuemin="120"
+      aria-valuenow="300"
+      role="separator"
+      style="background: var(--nv-border); cursor: col-resize; width: 4px; height: 100%; transition: background 0.15s ease; outline: none;"
+      tabindex="0"
+    />
+    <div
+      style="flex: 1 1 0%; overflow: hidden;"
+    >
+      <div>
+        Panel 2
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Layout Stability Snapshots > should match snapshot for tablet viewport > layout-tablet 1`] = `
+<div>
+  <div
+    style="display: flex; flex-direction: row; height: 100%; width: 100%;"
+  >
+    <div
+      style="flex: 0 0 auto; width: 300px; height: 100%; overflow: hidden;"
+    >
+      <div>
+        Panel 1
+      </div>
+    </div>
+    <div
+      aria-label="Resize panels horizontally"
+      aria-orientation="vertical"
+      aria-valuemax="800"
+      aria-valuemin="120"
+      aria-valuenow="300"
+      role="separator"
+      style="background: var(--nv-border); cursor: col-resize; width: 4px; height: 100%; transition: background 0.15s ease; outline: none;"
+      tabindex="0"
+    />
+    <div
+      style="flex: 1 1 0%; overflow: hidden;"
+    >
+      <div>
+        Panel 2
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > SplitView Snapshots > should match snapshot for horizontal split > splitview-horizontal 1`] = `
+<div>
+  <div
+    style="display: flex; flex-direction: column; height: 100%; width: 100%;"
+  >
+    <div
+      style="flex: 0 0 auto; width: 100%; height: 200px; overflow: hidden;"
+    >
+      <div>
+        Top Panel
+      </div>
+    </div>
+    <div
+      aria-label="Resize panels vertically"
+      aria-orientation="horizontal"
+      aria-valuemax="800"
+      aria-valuemin="120"
+      aria-valuenow="200"
+      role="separator"
+      style="background: var(--nv-border); cursor: row-resize; width: 100%; height: 4px; transition: background 0.15s ease; outline: none;"
+      tabindex="0"
+    />
+    <div
+      style="flex: 1 1 0%; overflow: hidden;"
+    >
+      <div>
+        Bottom Panel
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > SplitView Snapshots > should match snapshot for vertical split > splitview-vertical 1`] = `
+<div>
+  <div
+    style="display: flex; flex-direction: row; height: 100%; width: 100%;"
+  >
+    <div
+      style="flex: 0 0 auto; width: 300px; height: 100%; overflow: hidden;"
+    >
+      <div>
+        Left Panel
+      </div>
+    </div>
+    <div
+      aria-label="Resize panels horizontally"
+      aria-orientation="vertical"
+      aria-valuemax="800"
+      aria-valuemin="120"
+      aria-valuenow="300"
+      role="separator"
+      style="background: var(--nv-border); cursor: col-resize; width: 4px; height: 100%; transition: background 0.15s ease; outline: none;"
+      tabindex="0"
+    />
+    <div
+      style="flex: 1 1 0%; overflow: hidden;"
+    >
+      <div>
+        Right Panel
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Text Overflow Snapshots > should match snapshot with long text > text-overflow-long 1`] = `
+<div>
+  <div
+    style="width: 200px;"
+  >
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  </div>
+</div>
+`;
+
+exports[`UI Snapshot & Regression Tests (CRITICAL BLOCKER #3) > Text Overflow Snapshots > should match snapshot with non-ASCII text > text-non-ascii 1`] = `
+<div>
+  <div>
+    测试文件 日本語 русский العربية
+  </div>
+</div>
+`;

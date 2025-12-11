@@ -8,7 +8,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import simpleGit, { SimpleGit, StatusResult } from 'simple-git';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 
 export interface GitStatus {
   current: string | null;

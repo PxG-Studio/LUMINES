@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc
+  labels:
+    app: postgresql-replica
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: iscsi-postgresql
+  resources:
+    requests:
+      storage: 100Gi

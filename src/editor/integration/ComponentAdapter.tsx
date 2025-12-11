@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import { slateTokens } from '@/tokens/slate.tokens';
 
 /**
@@ -59,12 +59,12 @@ export function createWissilComponent<P extends object>(
   const { useFS = true, useSlate = true } = options || {};
   
   return function WissilComponent(props: P) {
-    const fs = useFS ? useWissilFS() : null;
+    const fs = useWissilFS();
     
     // Adapt props if needed
     const adaptedProps = {
       ...props,
-      ...(useFS && fs ? { fs } : {}),
+      ...(useFS ? { fs } : {}),
     };
     
     return <Component {...adaptedProps} />;

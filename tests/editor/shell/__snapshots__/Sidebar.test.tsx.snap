@@ -1,0 +1,71 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sidebar > matches snapshot 1`] = `
+<div>
+  <div
+    style="width: 250px; height: 100%; background: var(--slate-panel, #16181d); border-right: 1px solid var(--slate-border, #26292f); display: flex; flex-direction: column; transition: width 0.2s ease; overflow: hidden;"
+  >
+    <div
+      style="padding: 12px; border-bottom: 1px solid var(--slate-border, #26292f);"
+    >
+      <button
+        style="width: 100%; padding: 8px; background: var(--slate-accent, #3f8cff); border-radius: 4px; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
+      >
+        ←
+      </button>
+    </div>
+    <div
+      style="flex: 1 1 0%; overflow-y: auto; padding: 8px;"
+    >
+      <div
+        style="padding: 8px 12px; color: var(--slate-text, #e4e7eb); cursor: pointer; border-radius: 4px; margin-bottom: 4px; background: transparent; display: flex; align-items: center; gap: 8px; font-size: 13px; transition: background 0.2s;"
+      >
+        <span>
+          📁
+        </span>
+        <span
+          style="flex: 1 1 0%;"
+        >
+          Files
+        </span>
+      </div>
+      <div
+        style="padding: 8px 12px; color: var(--slate-text, #e4e7eb); cursor: pointer; border-radius: 4px; margin-bottom: 4px; background: transparent; display: flex; align-items: center; gap: 8px; font-size: 13px; transition: background 0.2s;"
+      >
+        <span>
+          🔍
+        </span>
+        <span
+          style="flex: 1 1 0%;"
+        >
+          Search
+        </span>
+      </div>
+      <div
+        style="padding: 8px 12px; color: var(--slate-text, #e4e7eb); cursor: pointer; border-radius: 4px; margin-bottom: 4px; background: transparent; display: flex; align-items: center; gap: 8px; font-size: 13px; transition: background 0.2s;"
+      >
+        <span>
+          📦
+        </span>
+        <span
+          style="flex: 1 1 0%;"
+        >
+          Source Control
+        </span>
+      </div>
+      <div
+        style="padding: 8px 12px; color: var(--slate-text, #e4e7eb); cursor: pointer; border-radius: 4px; margin-bottom: 4px; background: transparent; display: flex; align-items: center; gap: 8px; font-size: 13px; transition: background 0.2s;"
+      >
+        <span>
+          🧩
+        </span>
+        <span
+          style="flex: 1 1 0%;"
+        >
+          Extensions
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

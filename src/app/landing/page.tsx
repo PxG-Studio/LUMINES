@@ -1,19 +1,12 @@
 'use client';
 
-import React from 'react';
-import { LandingLayout } from '@/wissil/Landing/LandingLayout';
+import { redirect } from 'next/navigation';
 
 /**
- * LANDING - Production Landing Page
- *
- * The main marketing landing page for WISSIL IDE
- * Bolt.new / StackBlitz-style clean design
- *
- * Domain: lumenforge.io, www.lumenforge.io
- * Network: Helios Control (192.168.86.114)
- * Port: 3000
- * Auth: Public facing, nocturnaID integration via Cloudflare Zero Trust
+ * Alias route for legacy docs linking to /landing.
+ * Redirects to the canonical marketing page at /lumen to avoid 404 drift.
  */
-export default function LandingPage() {
-  return <LandingLayout />;
+export default function LandingAliasPage() {
+  redirect('/lumen');
 }
+

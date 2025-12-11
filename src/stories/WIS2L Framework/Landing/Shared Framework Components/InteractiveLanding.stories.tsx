@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { action } from 'storybook/actions';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
+import { action } from '@storybook/addon-actions';
+import { expect, within, userEvent, waitFor } from '@storybook/test';
 import React from 'react';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
-import { SimpleNav } from '@/wissil/Landing/SimpleNav';
-import { HeroSection } from '@/wissil/Landing/HeroSection';
-import { FeatureGrid } from '@/wissil/Landing/FeatureGrid';
-import { Footer } from '@/wissil/Landing/Footer';
+import { SimpleNav } from '@/wis2l/Landing/SimpleNav';
+import { HeroSection } from '@/wis2l/Landing/HeroSection';
+import { FeatureGrid } from '@/wis2l/Landing/FeatureGrid';
+import { Footer } from '@/wis2l/Landing/Footer';
 
 type InteractiveLandingLayoutProps = {
   onNavigation?: (href: string, label: string) => void;

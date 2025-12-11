@@ -1,6 +1,7 @@
 /**
  * Redis Cache Client
  * Redis connection using ioredis with abstraction layer
+ * Lumines version - Next.js compatible
  */
 
 import Redis from 'ioredis';

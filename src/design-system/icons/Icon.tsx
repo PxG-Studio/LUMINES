@@ -9,7 +9,7 @@ import React from "react";
 
 export interface IconProps {
   size?: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;
 }
