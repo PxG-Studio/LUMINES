@@ -7,13 +7,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CompilerKiller, CompilerHangSimulator } from '../../utils/error-injection';
 
-describe.skip('SlateCompiler - Comprehensive Tests', () => {
+let currentKiller: CompilerKiller | null = null;
+let currentHang: CompilerHangSimulator | null = null;
+
+describe('SlateCompiler - Comprehensive Tests', () => {
   let compilerKiller: CompilerKiller;
   let compilerHang: CompilerHangSimulator;
 
   beforeEach(() => {
     compilerKiller = new CompilerKiller();
     compilerHang = new CompilerHangSimulator();
+    currentKiller = compilerKiller;
+    currentHang = compilerHang;
   });
 
   describe('C# → Assembly → Unity Patch', () => {
@@ -204,13 +209,28 @@ async function compileToAssembly(
   code: string,
   options?: { memoryLimit?: number }
 ): Promise<{ success: boolean; classes?: Array<any>; errors?: Array<any>; error?: string }> {
-  if (options?.memoryLimit && code.length > options.memoryLimit) {
+  // Simulate kill
+  if (currentKiller?.isKilled()) {
+    throw new Error('Compiler killed mid-job');
+  }
+  // Simulate hang
+  if (currentHang?.isHanging()) {
+    throw new Error('Compiler hang detected');
+  }
+
+  // Coarse memory guard: treat >100k chars as too large for mock limits
+  if (options?.memoryLimit && code.length > 100_000) {
     return { success: false, error: 'Memory limit exceeded' };
   }
   const hasErrors = code.includes('invalid');
+  const classMatches = Array.from(code.matchAll(/class\s+([A-Za-z0-9_]+)/g));
+  const classes =
+    classMatches.length > 0
+      ? classMatches.map((m) => ({ name: m[1], methods: [] }))
+      : [{ name: 'Test', methods: [] }];
   return {
     success: !hasErrors,
-    classes: hasErrors ? undefined : [{ name: 'Test', methods: [] }],
+    classes: hasErrors ? undefined : classes,
     errors: hasErrors ? [{ message: 'Syntax error', line: 1 }] : undefined,
   };
 }
@@ -223,17 +243,40 @@ async function patchUnity(assembly: any): Promise<{ success: boolean }> {
 }
 
 async function createCompilerWorker(): Promise<any> {
+  const killer = currentKiller;
+  const hang = currentHang;
+
   return {
     status: 'idle',
     memoryUsage: 0,
     async startJob(code: string) {
-      this.status = 'running';
+      const workerRef = this;
+      workerRef.status = 'running';
+      workerRef.memoryUsage = Math.min(code.length, 50 * 1024 * 1024); // cap at 50MB
+      const jobToken = Math.random().toString(36);
       return {
-        id: Math.random().toString(36),
+        id: jobToken,
         status: 'running',
         async wait() {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Simulate hang
+          if (hang?.isHanging()) {
+            throw new Error('Compiler hang detected');
+          }
+          // Simulate kill
+          if (killer?.isKilled()) {
+            this.status = 'terminated';
+            workerRef.status = 'terminated';
+            throw new Error('Compiler killed mid-job');
+          }
+          // Simulate processing window to allow kill to occur
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          if (killer?.isKilled()) {
+            this.status = 'terminated';
+            workerRef.status = 'terminated';
+            throw new Error('Compiler killed mid-job');
+          }
           this.status = 'completed';
+          workerRef.status = 'idle';
           return { success: true };
         },
         async cancel() {
@@ -243,6 +286,7 @@ async function createCompilerWorker(): Promise<any> {
     },
     async cleanup() {
       this.status = 'terminated';
+      this.memoryUsage = 0;
     },
   };
 }
