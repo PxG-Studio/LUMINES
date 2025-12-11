@@ -342,7 +342,7 @@ describe('EditorPanel', () => {
     });
 
     it('handles tab with no path', () => {
-      const noPat = [
+      const noPathTabs = [
         { id: 'tab-1', name: 'Untitled', path: '' },
       ];
 
@@ -357,7 +357,7 @@ describe('EditorPanel', () => {
     });
 
     it('handles multiple tabs with same name', () => {
-      const sameName = [
+      const sameNameTabs = [
         { id: 'tab-1', name: 'Test.cs', path: 'src/Test.cs' },
         { id: 'tab-2', name: 'Test.cs', path: 'assets/Test.cs' },
       ];

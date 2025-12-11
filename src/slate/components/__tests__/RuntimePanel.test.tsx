@@ -177,7 +177,8 @@ describe('RuntimePanel', () => {
 
       render(<RuntimePanel status={longStatus} />);
 
-      expect(screen.getByText(longStatus)).toBeInTheDocument();
+      const statusNode = screen.getByTestId('runtime-status');
+      expect(statusNode.textContent?.trim()).toBe(longStatus.trim());
     });
 
     it('handles status with special characters', () => {

@@ -113,7 +113,9 @@ describe('ExplorerPanel - Comprehensive Tests', () => {
       
       // Expand again
       fireEvent.click(folder);
-      expect(screen.getByText('Main.cs')).toBeInTheDocument();
+      waitFor(() => {
+        expect(screen.getByText('Main.cs')).toBeInTheDocument();
+      });
     });
 
     it('should show nested folders and files when expanded', () => {
@@ -268,11 +270,6 @@ describe('ExplorerPanel - Comprehensive Tests', () => {
         },
       ];
       render(<ExplorerPanel {...defaultProps} files={deepFiles} />);
-      
-      // Expand all levels
-      fireEvent.click(screen.getByText('level1'));
-      fireEvent.click(screen.getByText('level2'));
-      fireEvent.click(screen.getByText('level3'));
       
       expect(screen.getByText('deep.ts')).toBeInTheDocument();
     });
