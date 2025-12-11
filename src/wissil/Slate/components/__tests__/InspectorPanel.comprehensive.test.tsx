@@ -129,7 +129,11 @@ describe('InspectorPanel - Comprehensive Tests', () => {
         />
       );
 
-      expect(screen.getByText('src')).toBeInTheDocument();
+      // Check that folder name appears (use getAllByText since name and path are same)
+      const srcElements = screen.getAllByText('src');
+      expect(srcElements.length).toBeGreaterThan(0);
+      // Verify it's rendered as a folder (check for folder type)
+      expect(screen.getByText(/folder/i)).toBeInTheDocument();
     });
 
     it('displays folder type', () => {

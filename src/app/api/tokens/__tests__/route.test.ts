@@ -101,7 +101,7 @@ describe('Tokens API Route - Comprehensive Tests', () => {
 
       expect(response.status).toBe(200);
       expect(data.data).toEqual(mockTokens);
-      expect(data.total).toBe(2);
+      expect(data.pagination.total).toBe(2);
     });
 
     it('should handle pagination', async () => {
@@ -119,8 +119,8 @@ describe('Tokens API Route - Comprehensive Tests', () => {
 
       expect(response.status).toBe(200);
       expect(data.data).toEqual(mockTokens);
-      expect(data.page).toBe(1);
-      expect(data.limit).toBe(5);
+      expect(data.pagination.page).toBe(1);
+      expect(data.pagination.limit).toBe(5);
     });
 
     it('should handle filtering', async () => {

@@ -65,6 +65,14 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting project:', error);
+    
+    if (error instanceof Error && error.message === 'Project not found') {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to delete project' },
       { status: 500 }

@@ -11,6 +11,7 @@ export const CacheKeys = {
   assetComponents: (assetId: string) => `slate:asset:${assetId}:components`,
 
   runtimeSession: (sessionId: string) => `slate:runtime:${sessionId}`,
+  runtimeSessionList: (projectId: string) => `slate:runtime:sessions:${projectId}`,
   runtimeStatus: (projectId: string) => `slate:runtime:status:${projectId}`,
 
   editorTabs: (userId: string, projectId: string) => `slate:editor:tabs:${userId}:${projectId}`,
@@ -31,6 +32,7 @@ export const CacheTTL = {
   projectAssets: 1800,
   assetComponents: 1800,
   runtimeSession: 300,
+  runtimeSessionList: 300,
   runtimeStatus: 60,
   editorTabs: 1800,
   userSession: 86400,

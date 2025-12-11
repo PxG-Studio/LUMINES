@@ -140,7 +140,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
         name: 'Test Project',
       };
 
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(query).mockResolvedValue({
         rows: [mockProject],
       } as any);
@@ -155,7 +158,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
     });
 
     it('should return null if project not found', async () => {
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(query).mockResolvedValue({
         rows: [],
       } as any);
@@ -166,7 +172,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
     });
 
     it('should exclude deleted projects', async () => {
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(query).mockResolvedValue({
         rows: [],
       } as any);
@@ -201,7 +210,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
         { id: '1', user_id: 'user1', name: 'Project 1' },
       ];
 
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(queryReplica).mockResolvedValue({
         rows: mockProjects,
       } as any);
@@ -216,7 +228,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
     });
 
     it('should order by updated_at DESC', async () => {
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(queryReplica).mockResolvedValue({
         rows: [],
       } as any);
@@ -230,7 +245,10 @@ describe('Projects Operations - Comprehensive Tests', () => {
     });
 
     it('should exclude deleted projects', async () => {
-      vi.mocked(getCached).mockResolvedValue(null);
+      vi.mocked(getCached).mockImplementation(async (key, fetcher) => {
+        // Simulate cache miss - call the fetcher
+        return await fetcher();
+      });
       vi.mocked(queryReplica).mockResolvedValue({
         rows: [],
       } as any);
@@ -350,7 +368,8 @@ describe('Projects Operations - Comprehensive Tests', () => {
         name: 'Test',
       };
 
-      vi.mocked(projectOps.getProject).mockResolvedValue(mockProject as any);
+      // Mock getCached to return the project (simulating cache hit)
+      vi.mocked(getCached).mockResolvedValue(mockProject as any);
 
       const result = await projectOps.updateProject('1', {});
 
@@ -377,7 +396,8 @@ describe('Projects Operations - Comprehensive Tests', () => {
         name: 'Test',
       };
 
-      vi.mocked(projectOps.getProject).mockResolvedValue(mockProject as any);
+      // Mock getCached to return the project (simulating cache hit)
+      vi.mocked(getCached).mockResolvedValue(mockProject as any);
       vi.mocked(query).mockResolvedValue({
         rows: [],
       } as any);
@@ -393,7 +413,8 @@ describe('Projects Operations - Comprehensive Tests', () => {
     });
 
     it('should publish delete event even if project not found', async () => {
-      vi.mocked(projectOps.getProject).mockResolvedValue(null);
+      // Mock getCached to return null (project not found)
+      vi.mocked(getCached).mockResolvedValue(null);
       vi.mocked(query).mockResolvedValue({
         rows: [],
       } as any);

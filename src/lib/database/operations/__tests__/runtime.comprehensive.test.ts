@@ -15,6 +15,17 @@ vi.mock('../../../cache/strategies', () => ({
   setCached: vi.fn(),
 }));
 
+vi.mock('../../../cache/keys', () => ({
+  CacheKeys: {
+    runtimeSession: (id: string) => `slate:runtime:${id}`,
+    runtimeSessionList: (projectId: string) => `slate:runtime:sessions:${projectId}`,
+  },
+  CacheTTL: {
+    runtimeSession: 300,
+    runtimeSessionList: 300,
+  },
+}));
+
 vi.mock('../../../messaging/events', () => ({
   publishRuntimeEvent: vi.fn(),
 }));
@@ -199,9 +210,8 @@ describe('Runtime Database Operations - Comprehensive Tests', () => {
         container_id: 'container-123',
       };
 
-      vi.mocked(query)
-        .mockResolvedValueOnce({ rows: [{ id: '1' }] } as any)
-        .mockResolvedValueOnce({ rows: [updatedSession] } as any);
+      vi.mocked(query).mockResolvedValue({ rows: [updatedSession] } as any);
+      vi.mocked(setCached).mockResolvedValue(undefined);
 
       const result = await runtimeOps.updateRuntimeSession('1', {
         status: 'running',
@@ -239,9 +249,8 @@ describe('Runtime Database Operations - Comprehensive Tests', () => {
         stopped_at: stoppedAt,
       };
 
-      vi.mocked(query)
-        .mockResolvedValueOnce({ rows: [{ id: '1' }] } as any)
-        .mockResolvedValueOnce({ rows: [updatedSession] } as any);
+      vi.mocked(query).mockResolvedValue({ rows: [updatedSession] } as any);
+      vi.mocked(setCached).mockResolvedValue(undefined);
 
       const result = await runtimeOps.updateRuntimeSession('1', {
         stopped_at: stoppedAt,
@@ -270,6 +279,7 @@ describe('Runtime Database Operations - Comprehensive Tests', () => {
 
     it('throws error when session not found', async () => {
       vi.mocked(query).mockResolvedValue({ rows: [] } as any);
+      vi.mocked(setCached).mockResolvedValue(undefined);
 
       await expect(
         runtimeOps.updateRuntimeSession('nonexistent', { status: 'running' })
