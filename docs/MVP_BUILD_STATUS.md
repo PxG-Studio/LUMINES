@@ -21,23 +21,19 @@
 - **Routes**: All pages generate correctly
 - **Output**: Static pages generated successfully
 
-## ⚠️ Known Limitations (Non-Blocking)
+## ✅ Spark & Slate Validation
 
-### 4. **Spark** ⚠️
-- **Status**: Core build compiles successfully
-- **Issue**: Error page prerender fails due to Next.js 14.2.0 styled-jsx limitation
-- **Root Cause**: Next.js wraps error pages in root layout (ThemeProvider/styled-jsx) during static generation, causing `useContext` null error
-- **Impact**: Error pages work perfectly at runtime; only static export fails
-- **Workaround**: Error pages are generated dynamically at runtime
-- **Production Ready**: ✅ Yes (error pages work at runtime)
+### 4. **Spark** ✅
+- **Status**: Full build + static generation succeeds (`pnpm --filter @lumenforge/spark-app build`)
+- **Fix**: Hoisted shared workspace dependencies (`pg`, `@anthropic-ai/sdk`, `openai`) so shared `src/lib` modules resolve during type-checking and prerender.
+- **Verification**: `.next/static/chunks/app/error-*.js` emitted without errors; 404/error routes included in static output.
+- **Production Ready**: ✅ Yes (static + runtime paths covered)
 
-### 5. **Slate** ⚠️
-- **Status**: Core build compiles successfully
-- **Issue**: Same Next.js styled-jsx limitation as Spark
-- **Root Cause**: Next.js wraps error pages in root layout during static generation
-- **Impact**: Error pages work perfectly at runtime; only static export fails
-- **Workaround**: Error pages are generated dynamically at runtime
-- **Production Ready**: ✅ Yes (error pages work at runtime)
+### 5. **Slate** ✅
+- **Status**: Full build + static generation succeeds (`pnpm --filter @lumenforge/slate-app build`)
+- **Fix**: Hoisted shared UI dependencies (`@codesandbox/sandpack-react`, `tailwind-merge`) to the workspace root so global `src` imports compile cleanly.
+- **Verification**: `next build` completes with static `_not-found` output and no runtime-only fallbacks.
+- **Production Ready**: ✅ Yes
 
 ## Configuration Fixes Applied
 
@@ -77,10 +73,10 @@
 - **Status**: Critical warnings addressed
 
 ### Error Page Prerender
-- ⚠️ Spark and Slate error pages fail during static generation
-- **Status**: Documented limitation
-- **Impact**: Error pages work at runtime
-- **Future Fix**: May require Next.js upgrade or styled-jsx configuration changes
+- ✅ Spark and Slate error pages now prerender successfully
+- **Status**: Verified via `pnpm --filter @lumenforge/{spark-app,slate-app} build`
+- **Impact**: Static exports include error + 404 routes
+- **Action**: Monitor in CI as part of standard build
 
 ## Production Readiness Summary
 
@@ -89,23 +85,20 @@
 | Lumen | ✅ Success | ✅ Works | ✅ Works | ✅ Yes |
 | Ignis | ✅ Success | ✅ Works | ✅ Works | ✅ Yes |
 | Waypoint | ✅ Success | ✅ Works | ✅ Works | ✅ Yes |
-| Spark | ⚠️ Partial | ✅ Works | ⚠️ Error pages runtime | ✅ Yes* |
-| Slate | ⚠️ Partial | ✅ Works | ⚠️ Error pages runtime | ✅ Yes* |
-
-*Error pages work at runtime; only static export of error pages fails
+| Spark | ✅ Success | ✅ Works | ✅ Works | ✅ Yes |
+| Slate | ✅ Success | ✅ Works | ✅ Works | ✅ Yes |
 
 ## Next Steps
 
 1. **Deploy Lumen, Ignis, Waypoint** - Fully production ready
-2. **Deploy Spark, Slate** - Production ready (error pages work at runtime)
+2. **Deploy Spark, Slate** - Static + runtime error/404 now included
 3. **Address lint warnings** - Incremental improvements
-4. **Monitor error page behavior** - Verify runtime error handling works correctly
+4. **Monitor error pages** - Standard production validation only
 
 ## Notes
 
 - All core functionality builds and works correctly
-- Error pages are functional at runtime
-- Static export limitation is a Next.js 14.2.0 + styled-jsx known issue
+- Error pages render in both static output and runtime
 - All path aliases are correctly configured and working
 - TypeScript compilation passes for all apps
 

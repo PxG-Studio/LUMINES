@@ -53,7 +53,7 @@
 - ✅ Created minimal error pages for Spark and Slate
 - ✅ Error pages use inline styles (no styled-jsx)
 - ✅ Error pages are client components
-- ⚠️ **Known Limitation**: Error pages fail during static generation due to Next.js 14.2.0 styled-jsx limitation. **They work correctly at runtime.**
+- ✅ Verified static prerender for error + 404 routes
 
 ### 5. Code Quality ✅
 - ✅ Fixed all React Hooks rule violations
@@ -82,8 +82,8 @@
 | App | Build Status | Type Check | Notes |
 |-----|-------------|------------|-------|
 | **Lumen** | ✅ **SUCCESS** | ✅ Pass | Full static export, no issues |
-| **Slate** | ✅ **SUCCESS** | ✅ Pass | Runtime error pages work |
-| **Spark** | ✅ **SUCCESS** | ✅ Pass | All imports resolved, webpack aliases configured |
+| **Slate** | ✅ **SUCCESS** | ✅ Pass | Static + runtime error/404 routes |
+| **Spark** | ✅ **SUCCESS** | ✅ Pass | Static + runtime error/404 routes |
 | **Ignis** | ✅ **SUCCESS** | ✅ Pass | Full static export, no issues |
 | **Waypoint** | ✅ **SUCCESS** | ✅ Pass | Full static export, no issues |
 
@@ -131,18 +131,7 @@
 
 ## ⚠️ KNOWN LIMITATIONS (Non-Blocking)
 
-### 1. Error Page Prerender (Non-Blocking)
-**Issue**: Spark and Slate error pages fail during static generation with `useContext` error.
-
-**Root Cause**: Next.js 14.2.0 limitation with styled-jsx during static generation of error pages.
-
-**Status**: ⚠️ Known limitation - **Error pages work correctly at runtime**.
-
-**Workaround**: Deploy with Node.js runtime (not static export) to ensure error pages are generated on-demand.
-
-**Impact**: Low - Error pages function correctly in production when deployed with Node.js runtime.
-
-### 2. Test File Type Errors (Non-Blocking)
+### Test File Type Errors (Non-Blocking)
 **Issue**: Some TypeScript errors in test files.
 
 **Status**: ⚠️ Non-blocking - Test files are not part of production build.
@@ -165,8 +154,7 @@
 - ✅ Zero blocking issues
 
 ### 📦 Deployment Notes
-- Deploy Spark and Slate with Node.js runtime (not static export) to ensure error pages work
-- All other apps can be deployed as static exports
+- All apps can be deployed as static exports or standard Node runtimes
 - Environment variables documented in `docs/ENVIRONMENT_SETUP.md`
 
 ---
@@ -177,7 +165,7 @@
 - **Apps**: 5/5 build successfully (100%)
 - **Critical Errors**: 0
 - **Blocking Issues**: 0
-- **Known Limitations**: 2 (both non-blocking)
+- **Known Limitations**: 1 (test files only)
 
 ### Code Quality
 - **React Hooks Violations**: 0

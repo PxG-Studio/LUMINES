@@ -23,7 +23,7 @@ npm run dev
 npm run build
 ```
 
-Note: Error pages are generated dynamically at runtime due to Next.js 14.2.0 styled-jsx limitation. This is non-blocking and error pages work correctly at runtime.
+Error and 404 pages now prerender during `next build`, so static deployments can include the full error surface without fallbacks.
 
 ## Dependencies
 

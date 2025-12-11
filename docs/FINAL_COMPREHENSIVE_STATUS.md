@@ -22,7 +22,7 @@
 - ✅ Created minimal error pages for Spark and Slate
 - ✅ Error pages use inline styles (no styled-jsx)
 - ✅ Error pages are client components
-- ⚠️ **Known Issue**: Error pages still fail during static generation due to Next.js 14.2.0 limitation with styled-jsx. They work correctly at runtime.
+- ✅ Static prerender succeeds after workspace dependency hoisting (Dec 2025)
 
 ### 5. Code Quality
 - ✅ Fixed all React Hooks rule violations
@@ -68,11 +68,9 @@
 **Status**: ✅ Fixed - Changed to CommonJS syntax (`module.exports`)
 
 ### 4. Error Page Prerender
-**Issue**: Spark and Slate error pages fail during static generation with `useContext` error.
+**Issue**: Spark and Slate error pages previously failed during static generation with `useContext` error.
 
-**Root Cause**: Next.js 14.2.0 limitation with styled-jsx during static generation of error pages.
-
-**Status**: ⚠️ Known limitation - Error pages work correctly at runtime. For production, deploy with Node.js runtime (not static export).
+**Resolution**: Shared dependencies (`pg`, `@anthropic-ai/sdk`, `openai`, `@codesandbox/sandpack-react`, `tailwind-merge`) were hoisted to the workspace root, enabling `next build` to prerender the error and 404 routes successfully.
 
 ## 📋 Remaining Tasks
 

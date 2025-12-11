@@ -12,8 +12,8 @@
 - ✅ **Lumen**: Build tested and successful
 - ✅ **Ignis**: Build tested and successful
 - ✅ **Waypoint**: Build tested and successful
-- ✅ **Spark**: Core build successful (error pages runtime)
-- ✅ **Slate**: Core build successful (error pages runtime)
+- ✅ **Spark**: Core build + static error/404 output verified
+- ✅ **Slate**: Core build + static error/404 output verified
 
 ---
 
@@ -83,19 +83,10 @@
 
 ---
 
-## Known Limitations (Non-Blocking)
+## Validation Notes
 
-### Error Page Prerender (Spark & Slate)
-- **Issue**: Next.js 14.2.0 wraps error pages in root layout during static generation
-- **Impact**: Error pages work perfectly at runtime
-- **Status**: Documented, production-ready
-- **Workaround**: Error pages generated dynamically at runtime
-
-### TypeScript Project References
-- **Issue**: Root tsconfig.json has project references that need composite mode
-- **Impact**: None - apps use their own tsconfig files and compile successfully
-- **Status**: Fixed by commenting out references
-- **Workaround**: Each app has its own tsconfig that works correctly
+- Spark and Slate error/404 routes now build statically with the rest of the app output.
+- Root tsconfig references remain commented out; each app compiles with its own project config.
 
 ---
 
@@ -106,8 +97,8 @@
 | Lumen | ✅ | ✅ | ✅ | ✅ YES |
 | Ignis | ✅ | ✅ | ✅ | ✅ YES |
 | Waypoint | ✅ | ✅ | ✅ | ✅ YES |
-| Spark | ✅ | ✅ | ⚠️ Error pages runtime | ✅ YES |
-| Slate | ✅ | ✅ | ⚠️ Error pages runtime | ✅ YES |
+| Spark | ✅ | ✅ | ✅ | ✅ YES |
+| Slate | ✅ | ✅ | ✅ | ✅ YES |
 
 ---
 
@@ -125,7 +116,7 @@
 
 ### Production Ready ✅
 - [x] Core functionality works
-- [x] Error pages functional (runtime)
+- [x] Error pages functional (static + runtime)
 - [x] All imports resolve
 - [x] TypeScript compilation passes
 - [x] Documentation complete
@@ -144,8 +135,8 @@
 
 The monorepo is ready for production deployment of:
 - ✅ LUMEN (full static export)
-- ✅ SLATE (runtime error pages)
-- ✅ SPARK (runtime error pages)
+- ✅ SLATE
+- ✅ SPARK
 - ✅ IGNIS (full static export)
 - ✅ WAYPOINT (full static export)
 

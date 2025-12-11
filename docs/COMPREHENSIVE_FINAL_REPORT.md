@@ -47,7 +47,7 @@ All 5 Next.js apps (Lumen, Slate, Spark, Ignis, Waypoint) are **production-ready
 - ✅ Created minimal error pages for Spark and Slate
 - ✅ Error pages use inline styles (no styled-jsx)
 - ✅ Error pages are client components
-- ⚠️ **Known Limitation**: Error pages fail during static generation due to Next.js 14.2.0 styled-jsx limitation. **They work correctly at runtime.**
+- ✅ Verified static prerender succeeds for error + 404 routes
 
 ### 5. Code Quality ✅
 - ✅ Fixed all React Hooks rule violations
@@ -75,8 +75,8 @@ All 5 Next.js apps (Lumen, Slate, Spark, Ignis, Waypoint) are **production-ready
 | App | Build Status | Notes |
 |-----|-------------|-------|
 | **Lumen** | ✅ **SUCCESS** | Full static export, no issues |
-| **Slate** | ✅ **SUCCESS** | Runtime error pages work |
-| **Spark** | ✅ **SUCCESS** | All imports resolved, webpack aliases configured |
+| **Slate** | ✅ **SUCCESS** | Static + runtime error/404 routed |
+| **Spark** | ✅ **SUCCESS** | Static + runtime error/404 routed |
 | **Ignis** | ✅ **SUCCESS** | Full static export, no issues |
 | **Waypoint** | ✅ **SUCCESS** | Full static export, no issues |
 
@@ -115,21 +115,6 @@ All 5 Next.js apps (Lumen, Slate, Spark, Ignis, Waypoint) are **production-ready
 
 ---
 
-## ⚠️ KNOWN LIMITATIONS (Non-Blocking)
-
-### 1. Error Page Prerender (Non-Blocking)
-**Issue**: Spark and Slate error pages fail during static generation with `useContext` error.
-
-**Root Cause**: Next.js 14.2.0 limitation with styled-jsx during static generation of error pages.
-
-**Status**: ⚠️ Known limitation - **Error pages work correctly at runtime**.
-
-**Workaround**: Deploy with Node.js runtime (not static export) to ensure error pages are generated on-demand.
-
-**Impact**: Low - Error pages function correctly in production when deployed with Node.js runtime.
-
----
-
 ## 🎯 PRODUCTION READINESS
 
 ### ✅ Ready for Production
@@ -142,8 +127,7 @@ All 5 Next.js apps (Lumen, Slate, Spark, Ignis, Waypoint) are **production-ready
 - ✅ All @/wissil imports migrated to @/wis2l
 
 ### 📦 Deployment Notes
-- Deploy Spark and Slate with Node.js runtime (not static export) to ensure error pages work
-- All other apps can be deployed as static exports
+- All apps can be deployed using standard static or Node runtimes
 - Environment variables documented in `docs/ENVIRONMENT_SETUP.md`
 
 ---
@@ -154,7 +138,7 @@ All 5 Next.js apps (Lumen, Slate, Spark, Ignis, Waypoint) are **production-ready
 - **Apps**: 5/5 build successfully
 - **Critical Errors**: 0
 - **Blocking Issues**: 0
-- **Known Limitations**: 1 (non-blocking)
+- **Known Limitations**: 0
 
 ### Code Quality
 - **React Hooks Violations**: 0

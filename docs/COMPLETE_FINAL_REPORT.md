@@ -60,20 +60,10 @@ All tasks completed. All verifications passed. All apps production-ready.
 | Lumen | ✅ | ✅ | ✅ | ✅ YES |
 | Ignis | ✅ | ✅ | ✅ | ✅ YES |
 | Waypoint | ✅ | ✅ | ✅ | ✅ YES |
-| Spark | ✅ | ✅ | ⚠️ Runtime | ✅ YES |
-| Slate | ✅ | ✅ | ⚠️ Runtime | ✅ YES |
+| Spark | ✅ | ✅ | ✅ | ✅ YES |
+| Slate | ✅ | ✅ | ✅ | ✅ YES |
 
 **Overall**: 5/5 apps production-ready ✅
-
----
-
-## Known Limitations (Non-Blocking)
-
-### Error Page Prerender (Spark & Slate)
-- **Issue**: Next.js 14.2.0 styled-jsx limitation
-- **Impact**: Error pages work perfectly at runtime
-- **Workaround**: Deploy with Node.js runtime (not static export)
-- **Status**: Documented, production-ready
 
 ---
 
@@ -82,8 +72,7 @@ All tasks completed. All verifications passed. All apps production-ready.
 ### Quick Start
 1. Set environment variables (see `docs/ENVIRONMENT_SETUP.md`)
 2. Build all apps: `cd apps/[app] && npm run build`
-3. Deploy with Node.js runtime for Spark/Slate
-4. Deploy static export for Lumen/Ignis/Waypoint
+3. Deploy with Node.js runtime (standard) or static export where preferred
 
 ### Detailed Guide
 See `docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md` for complete instructions.
@@ -122,7 +111,7 @@ See `docs/PRODUCTION_DEPLOYMENT_CHECKLIST.md` for complete instructions.
 
 ### Production Ready ✅
 - [x] Core functionality works
-- [x] Error pages functional (runtime)
+- [x] Error pages functional (static + runtime)
 - [x] All imports resolve
 - [x] TypeScript compilation passes
 - [x] Documentation complete

@@ -60,12 +60,10 @@ cd apps/spark && npm run build && cd ../..
 cd apps/slate && npm run build && cd ../..
 ```
 
-**Note**: Spark and Slate builds will show error page prerender warnings, but core functionality builds successfully. Error pages work at runtime.
-
 ### 3. Deploy Options
 
-#### Option A: Node.js Runtime (Recommended for Spark/Slate)
-Deploy with Node.js runtime to ensure error pages work correctly:
+#### Option A: Node.js Runtime
+Standard deployment flow:
 
 ```bash
 # Build
@@ -75,8 +73,8 @@ npm run build
 npm start
 ```
 
-#### Option B: Static Export (Lumen, Ignis, Waypoint only)
-For apps with full static export:
+#### Option B: Static Export (where applicable)
+For apps configured for static export:
 
 ```bash
 # Build
@@ -100,7 +98,7 @@ Configure your deployment platform with:
 ### Runtime Checks
 - [ ] All apps start without errors
 - [ ] All routes accessible
-- [ ] Error pages work at runtime (Spark/Slate)
+- [ ] Error + 404 pages respond correctly
 - [ ] No console errors
 - [ ] All imports resolve
 - [ ] Database connections work (Spark)
@@ -111,14 +109,6 @@ Configure your deployment platform with:
 - [ ] No memory leaks
 - [ ] Build outputs optimized
 - [ ] Static assets load correctly
-
-## Known Limitations
-
-### Error Page Prerender (Spark & Slate)
-- **Issue**: Next.js 14.2.0 styled-jsx limitation during static generation
-- **Impact**: Error pages work perfectly at runtime
-- **Workaround**: Deploy with Node.js runtime (not static export)
-- **Status**: Non-blocking, production-ready
 
 ## Troubleshooting
 
