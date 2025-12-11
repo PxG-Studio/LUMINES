@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Folder, File, ChevronRight, ChevronDown, Search, Upload as UploadIcon } from 'lucide-react';
 import { lumenForgeColors, transitions } from '../../design-system/tokens';
 
@@ -52,8 +52,38 @@ export const ExplorerPanel: React.FC<ExplorerPanelProps> = ({
   selectedPath,
   onShowAssetManager,
 }) => {
-  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(new Set(['src', 'Assets']));
+  const allFolderPaths = useMemo(() => {
+    const collect = (nodes: FileNode[], acc: string[] = []) => {
+      nodes.forEach((node) => {
+        if (node.type === 'folder') {
+          acc.push(node.path);
+          if (node.children) collect(node.children, acc);
+        }
+      });
+      return acc;
+    };
+    return new Set(collect(files));
+  }, [files]);
+
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(allFolderPaths);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredFiles = useMemo(() => {
+    if (!searchTerm.trim()) return files;
+    const term = searchTerm.toLowerCase();
+    const filterNodes = (nodes: FileNode[]): FileNode[] =>
+      nodes
+        .map((node) => {
+          const children = node.children ? filterNodes(node.children) : [];
+          const matches = node.name.toLowerCase().includes(term);
+          if (matches || children.length > 0) {
+            return { ...node, children };
+          }
+          return null;
+        })
+        .filter(Boolean) as FileNode[];
+    return filterNodes(files);
+  }, [files, searchTerm]);
 
   const toggleExpand = (path: string) => {
     setExpandedPaths((prev) => {
@@ -71,10 +101,6 @@ export const ExplorerPanel: React.FC<ExplorerPanelProps> = ({
     const isExpanded = expandedPaths.has(node.path);
     const isSelected = selectedPath === node.path;
     const isFolder = node.type === 'folder';
-
-    if (searchTerm && !node.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return null;
-    }
 
     return (
       <div>
@@ -135,7 +161,7 @@ export const ExplorerPanel: React.FC<ExplorerPanelProps> = ({
           </span>
         </div>
 
-        {isFolder && isExpanded && node.children && (
+        {isFolder && isExpanded && node.children && node.children.length > 0 && (
           <div>
             {node.children.map((child) => (
               <FileTreeNode key={child.path} node={child} depth={depth + 1} />
@@ -239,9 +265,11 @@ export const ExplorerPanel: React.FC<ExplorerPanelProps> = ({
         role="tree"
         aria-label="file explorer"
       >
-        {files.map((node) => (
-          <FileTreeNode key={node.path} node={node} depth={0} />
-        ))}
+        {filteredFiles.length === 0 ? (
+          <div style={{ padding: '0.75rem', color: lumenForgeColors.text.tertiary }}>No files</div>
+        ) : (
+          filteredFiles.map((node) => <FileTreeNode key={node.path} node={node} depth={0} />)
+        )}
       </div>
 
       <div

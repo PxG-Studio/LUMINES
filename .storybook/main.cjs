@@ -12,10 +12,12 @@ module.exports = {
     '../src/stories/Editor/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)',
   ],
   addons: [
+    '@storybook/addon-essentials',
     '@storybook/addon-links',
     '@storybook/addon-a11y',
     '@storybook/addon-docs',
     '@storybook/addon-actions',
+    '@storybook/addon-interactions',
   ],
   framework: {
     name: '@storybook/nextjs',

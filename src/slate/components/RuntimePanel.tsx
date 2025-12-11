@@ -72,9 +72,24 @@ export const RuntimePanel: React.FC<RuntimePanelProps> = ({
                 style={{
                   color: lumenForgeColors.text.secondary,
                   fontSize: '0.75rem',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
                 }}
               >
-                {status}
+                <pre
+                  data-testid="runtime-status"
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    background: 'transparent',
+                    border: 'none',
+                    fontFamily: 'inherit',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {status}
+                </pre>
               </p>
             </div>
           </div>
