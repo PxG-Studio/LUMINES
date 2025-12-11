@@ -7,7 +7,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { within, userEvent, expect } from '@storybook/test';
-import { InspectorPanel } from '@/wissil/Slate/components/InspectorPanel';
+import { InspectorPanel } from '@/wis2l/Slate/components/InspectorPanel';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import React from 'react';
 

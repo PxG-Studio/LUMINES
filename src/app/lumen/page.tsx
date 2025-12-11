@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LandingLayout } from '@/wissil/Landing/LandingLayout';
+import { LandingLayout } from '@/wis2l/Landing/LandingLayout';
 import type { Metadata } from 'next';
 
 /**

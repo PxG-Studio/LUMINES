@@ -45,7 +45,7 @@ export const OfflineIndicator: React.FC = () => {
         >
           <WifiOff className="w-5 h-5" aria-hidden="true" />
           <span className="text-sm font-medium">
-            You're currently offline. Some features may be unavailable.
+            You&apos;re currently offline. Some features may be unavailable.
           </span>
         </motion.div>
       )}

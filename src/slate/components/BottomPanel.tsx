@@ -41,16 +41,16 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({ logs = mockLogs, onCle
               }}
             >
               <div style={{ marginBottom: '0.5rem' }}>
-                <span style={{ color: lumenForgeColors.accent.secondary }}>{'>'}</span> SLATE Console
+                <span style={{ color: lumenForgeColors.accent.secondary }}>&gt;</span> SLATE Console
                 v1.0
               </div>
               <div style={{ marginBottom: '0.5rem' }}>
                 <span style={{ color: lumenForgeColors.text.tertiary }}>
-                  Type 'help' for available commands
+                  Type &apos;help&apos; for available commands
                 </span>
               </div>
               <div>
-                <span style={{ color: lumenForgeColors.accent.secondary }}>{'>'}</span>
+                <span style={{ color: lumenForgeColors.accent.secondary }}>&gt;</span>
                 <span
                   style={{
                     marginLeft: '0.5rem',

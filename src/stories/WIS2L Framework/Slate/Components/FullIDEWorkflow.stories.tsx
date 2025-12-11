@@ -6,7 +6,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn, within, userEvent, expect, waitFor } from '@storybook/test';
-import { SlateLayout } from '@/wissil/Slate/SlateLayout';
+import { SlateLayout } from '@/wis2l/Slate/SlateLayout';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import React from 'react';
 

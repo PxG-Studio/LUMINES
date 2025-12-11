@@ -342,7 +342,7 @@ export const ExplorerPanelConnected: React.FC<ExplorerPanelConnectedProps> = ({
           </p>
         ) : fileTree.length === 0 ? (
           <p style={{ padding: '1rem', color: lumenForgeColors.text.secondary, textAlign: 'center' }}>
-            No files in this project. Click "New File" to create one.
+            No files in this project. Click &quot;New File&quot; to create one.
           </p>
         ) : (
           fileTree.map((node) => <TreeNode key={node.path} node={node} depth={0} />)

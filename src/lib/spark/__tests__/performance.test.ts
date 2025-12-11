@@ -152,7 +152,7 @@ describe('SPARK Performance Tests', () => {
       
       const operations = Array(100).fill(null).map(async (_, i) => {
         cache.set(`prompt${i}`, 'claude', 'claude-3', `result${i}`);
-        return cache.get(`prompt${i}`, 'claude', 'claude-3`);
+        return cache.get(`prompt${i}`, 'claude', 'claude-3');
       });
       
       const results = await Promise.all(operations);

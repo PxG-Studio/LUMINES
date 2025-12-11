@@ -44,9 +44,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
   icon,
 }) => {
-  // EC-LAND-811: Show empty state
-  if (!show) return null;
-
   // EC-LAND-815: Localized message
   const displayMessage = React.useMemo(() => {
     return localizedMessage || message;
@@ -57,6 +54,9 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     if (!contextual) return displayMessage;
     return `${displayMessage} Try refreshing or adjusting your filters.`;
   }, [contextual, displayMessage]);
+
+  // EC-LAND-811: Show empty state
+  if (!show) return null;
 
   // EC-LAND-814: Accessible
   const accessibilityProps = {

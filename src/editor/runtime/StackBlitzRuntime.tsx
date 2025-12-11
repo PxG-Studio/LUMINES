@@ -9,7 +9,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import type { WebContainer } from '@webcontainer/api';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 
 export interface StackBlitzRuntimeProps {
   onReady?: (container: WebContainer) => void;

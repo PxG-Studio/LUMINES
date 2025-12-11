@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from "vitest";
-import { useWissilFS } from "@/wissil/runtime/fs/wissilFs";
+import { useWissilFS } from "@/wis2l/runtime/fs/wissilFs";
 import { useEditorState } from "@/state/editorState";
 
 vi.mock("../../../../src/hooks/useWissilFS", () => ({
@@ -24,7 +24,7 @@ vi.mock("../../../../src/state/editorState", () => ({
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn, within, userEvent, expect } from '@storybook/test';
-import { FileTree } from '@/wissil/Slate/components/FileTree';
+import { FileTree } from '@/wis2l/Slate/components/FileTree';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import React from 'react';
 

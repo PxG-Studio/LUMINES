@@ -5,12 +5,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { IDEShell } from '@/wissil/ide-shell/IDEShell';
-import { IDERibbon } from '@/wissil/ide-shell/IDERibbon';
+import { IDEShell } from '@/wis2l/ide-shell/IDEShell';
+import { IDERibbon } from '@/wis2l/ide-shell/IDERibbon';
 import { BPGraphCanvas } from '@/ignis/blueprint/canvas/BPGraphCanvas';
 import { NodePalette } from '@/ignis/blueprint/palette/NodePalette';
 import { BlueprintInspector } from '@/ignis/inspector/BlueprintInspector';
-import { RuntimeConsole } from '@/wissil/runtime/console/RuntimeConsole';
+import { RuntimeConsole } from '@/wis2l/runtime/console/RuntimeConsole';
 import { useBPGraphStore } from '@/ignis/blueprint/store/BPGraphStore';
 
 export default {
