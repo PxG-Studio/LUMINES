@@ -7,11 +7,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WebGLSimulator } from '../utils/webgl-simulator';
 
-describe.skip('Integration: Editor → Bridge → Unity → Inspector', () => {
+describe('Integration: Editor → Bridge → Unity → Inspector', () => {
   let webglSimulator: WebGLSimulator;
 
   beforeEach(() => {
     webglSimulator = new WebGLSimulator();
+    vi.restoreAllMocks();
+    // Deterministic fetch mock fallback
+    if (!vi.isMockFunction(global.fetch as any)) {
+      // @ts-ignore
+      global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => ({ ok: true }) }));
+    }
+    (globalThis as any).__webglSimulator = webglSimulator;
   });
 
   describe('Complete Chain: Editor Change → Bridge → Unity → Inspector', () => {
@@ -154,6 +161,13 @@ describe.skip('Integration: Editor → Bridge → Unity → Inspector', () => {
 
 // Mock implementations
 async function sendToBridge(change: { path: string; content: string }): Promise<any> {
+  const res = await fetch('/bridge', {
+    method: 'POST',
+    body: JSON.stringify(change),
+  } as any);
+  if (!res.ok) {
+    throw new Error('Bridge error');
+  }
   return {
     type: 'file_update',
     path: change.path,
@@ -165,14 +179,17 @@ async function sendToUnity(
   message: any,
   options?: { timeout?: number }
 ): Promise<{ success: boolean; data?: any }> {
-  if (options?.timeout) {
-    await new Promise(resolve => setTimeout(resolve, options.timeout + 100));
-    throw new Error('Timeout');
+  const simulator = (globalThis as any).__webglSimulator as WebGLSimulator | undefined;
+  const sim = simulator || new WebGLSimulator();
+  const latency = sim.getLatency() || 0;
+  if (options?.timeout !== undefined) {
+    return sim.sendWithCancel(latency, options.timeout).then(() => ({
+      success: true,
+      data: { objects: [] },
+    }));
   }
-  return {
-    success: true,
-    data: { objects: [] },
-  };
+  await sim.wait(latency);
+  return { success: true, data: { objects: [] } };
 }
 
 async function updateInspector(response: { success: boolean; data?: any }): Promise<any> {
