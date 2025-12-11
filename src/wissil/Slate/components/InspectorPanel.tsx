@@ -152,8 +152,16 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedItem }) 
     );
   }
 
+  // Extract extension from filename only, not the full path
+  // This prevents incorrectly treating directory names as extensions
+  // For example: "src/file" should return '', not "file"
   const fileExtension = selectedItem.type === 'file' 
-    ? selectedItem.path.split('.').pop()?.toLowerCase() || ''
+    ? (() => {
+        const parts = selectedItem.name.split('.');
+        // Only return extension if there's actually a dot in the filename
+        // (i.e., don't return the entire filename as the extension)
+        return parts.length > 1 ? parts.pop()?.toLowerCase() || '' : '';
+      })()
     : '';
 
   return (
