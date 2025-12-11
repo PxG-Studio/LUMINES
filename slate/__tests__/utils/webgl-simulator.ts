@@ -1,175 +1,158 @@
 /**
- * WebGL Context Loss Simulator
- * Simulates WebGL context loss scenarios for resilience testing
+ * Deterministic WebGL simulator for SLATE editor-host tests.
+ * Provides handshake, message queue, context loss/restore, and
+ * deterministic timing without real delays.
  */
-
-import { vi } from "vitest";
-
 export class WebGLSimulator {
+  private static originalNow: (() => number) | null = null;
+  private static fakeAdvance = 0;
+  private static restoreScheduled = false;
+
+  private connected = false;
   private contextLost = false;
   private contextRestored = false;
-  private listeners: Array<() => void> = [];
-  private restoreListeners: Array<() => void> = [];
-
-  /**
-   * Simulate WebGL context loss
-   */
-  simulateContextLoss(): void {
-    this.contextLost = true;
-    this.contextRestored = false;
-    this.listeners.forEach((listener) => listener());
-  }
-
-  /**
-   * Simulate WebGL context restoration
-   */
-  simulateContextRestore(): void {
-    this.contextLost = false;
-    this.contextRestored = true;
-    this.restoreListeners.forEach((listener) => listener());
-  }
-
-  /**
-   * Check if context is lost
-   */
-  isContextLost(): boolean {
-    return this.contextLost;
-  }
-
-  /**
-   * Check if context is restored
-   */
-  isContextRestored(): boolean {
-    return this.contextRestored;
-  }
-
-  /**
-   * Add context loss listener
-   */
-  onContextLost(listener: () => void): void {
-    this.listeners.push(listener);
-  }
-
-  /**
-   * Add context restore listener
-   */
-  onContextRestore(listener: () => void): void {
-    this.restoreListeners.push(listener);
-  }
-
-  /**
-   * Create mock WebGL context
-   */
-  createMockContext(canvas: HTMLCanvasElement): WebGLRenderingContext | null {
-    if (this.contextLost) {
-      return null;
-    }
-
-    // Mock WebGL context
-    const mockContext = {
-      canvas,
-      drawingBufferWidth: canvas.width,
-      drawingBufferHeight: canvas.height,
-      getParameter: vi.fn(),
-      getExtension: vi.fn(),
-      createShader: vi.fn(),
-      shaderSource: vi.fn(),
-      compileShader: vi.fn(),
-      getShaderParameter: vi.fn(),
-      createProgram: vi.fn(),
-      attachShader: vi.fn(),
-      linkProgram: vi.fn(),
-      useProgram: vi.fn(),
-      createBuffer: vi.fn(),
-      bindBuffer: vi.fn(),
-      bufferData: vi.fn(),
-      enable: vi.fn(),
-      disable: vi.fn(),
-      clear: vi.fn(),
-      clearColor: vi.fn(),
-      viewport: vi.fn(),
-      drawArrays: vi.fn(),
-      drawElements: vi.fn(),
-      getError: vi.fn(() => 0), // NO_ERROR
-    } as any;
-
-    return mockContext;
-  }
-
-  /**
-   * Reset simulator state
-   */
-  reset(): void {
-    this.contextLost = false;
-    this.contextRestored = false;
-    this.listeners = [];
-    this.restoreListeners = [];
-  }
-}
-
-/**
- * Unity WebGL handshake simulator
- */
-export class UnityWebGLHandshakeSimulator {
-  private connected = false;
-  private handshakeTimeout = 5000;
+  private timeoutEnabled = false;
+  private timeoutMs = 5000;
+  private defaultLatency = 0;
   private messageQueue: Array<{ type: string; data: any }> = [];
+  private currentRequestToken = 0;
 
-  /**
-   * Simulate handshake
-   */
-  async handshake(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        this.connected = true;
-        resolve(true);
-      }, 100);
-
-      setTimeout(() => {
-        if (!this.connected) {
-          reject(new Error('Handshake timeout'));
-        }
-      }, this.handshakeTimeout);
-    });
+  // ---- Timing helpers (fake clock) ----
+  private static patchNow(ms: number) {
+    if (!WebGLSimulator.originalNow) {
+      WebGLSimulator.originalNow = Date.now;
+    }
+    WebGLSimulator.fakeAdvance += ms;
+    Date.now = () => {
+      const base = WebGLSimulator.originalNow ? WebGLSimulator.originalNow() : Date.now();
+      return base + WebGLSimulator.fakeAdvance;
+    };
   }
 
-  /**
-   * Check if connected
-   */
+  private static scheduleRestore() {
+    if (WebGLSimulator.restoreScheduled) return;
+    WebGLSimulator.restoreScheduled = true;
+    setTimeout(() => {
+      if (WebGLSimulator.originalNow) {
+        Date.now = WebGLSimulator.originalNow;
+      }
+      WebGLSimulator.fakeAdvance = 0;
+      WebGLSimulator.restoreScheduled = false;
+    }, 0);
+  }
+
+  async wait(ms: number) {
+    WebGLSimulator.patchNow(ms);
+    await Promise.resolve();
+    WebGLSimulator.scheduleRestore();
+  }
+
+  // ---- Controls ----
+  setTimeoutMode(enabled: boolean, ms: number = 5000) {
+    this.timeoutEnabled = enabled;
+    this.timeoutMs = ms;
+  }
+
+  setDefaultLatency(ms: number) {
+    this.defaultLatency = ms;
+  }
+
+  getLatency() {
+    return this.defaultLatency;
+  }
+
+  // ---- Connection / handshake ----
+  async handshake(): Promise<boolean> {
+    const latency = this.defaultLatency || 0;
+    if (this.timeoutEnabled) {
+      await this.wait(this.timeoutMs);
+      throw new Error('Handshake timeout');
+    }
+    // Mark connected immediately so callers that don't await still see connected=true
+    this.connected = true;
+    await this.wait(latency);
+    return true;
+  }
+
   isConnected(): boolean {
     return this.connected;
   }
 
-  /**
-   * Send message
-   */
-  sendMessage(type: string, data: any): void {
-    if (!this.connected) {
-      throw new Error('Not connected');
-    }
-    this.messageQueue.push({ type, data });
-  }
-
-  /**
-   * Receive message
-   */
-  receiveMessage(): { type: string; data: any } | null {
-    return this.messageQueue.shift() || null;
-  }
-
-  /**
-   * Simulate connection loss
-   */
-  disconnect(): void {
+  disconnect() {
     this.connected = false;
     this.messageQueue = [];
   }
 
-  /**
-   * Simulate slow response
-   */
+  // ---- Messaging ----
+  sendMessage(type: string, data: any) {
+    if (!this.connected) throw new Error('Not connected');
+    // Cap queue to avoid uncontrolled growth; drop oldest beyond 1000
+    if (this.messageQueue.length > 1000) {
+      this.messageQueue.shift();
+    }
+    this.messageQueue.push({ type, data });
+  }
+
+  receiveMessage(): { type: string; data: any } | null {
+    return this.messageQueue.shift() || null;
+  }
+
+  // ---- Slow responses / cancellation ----
   async slowResponse(delay: number = 6000): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, delay));
+    if (this.timeoutEnabled && delay > this.timeoutMs) {
+      await this.wait(this.timeoutMs);
+      throw new Error('Timeout');
+    }
+    await this.wait(delay);
+  }
+
+  async sendWithCancel(latency: number, timeout?: number): Promise<{ success: boolean }> {
+    const token = ++this.currentRequestToken;
+    const effectiveLatency = latency || this.defaultLatency;
+    if (this.timeoutEnabled) {
+      await this.wait(timeout ?? this.timeoutMs);
+      throw new Error('Timeout');
+    }
+    if (timeout && effectiveLatency > timeout) {
+      await this.wait(timeout);
+      throw new Error('Timeout');
+    }
+    await this.wait(effectiveLatency);
+    if (token !== this.currentRequestToken) {
+      throw new Error('Cancelled');
+    }
+    return { success: true };
+  }
+
+  // ---- Context loss / restore ----
+  simulateContextLoss(): void {
+    this.contextLost = true;
+    this.contextRestored = false;
+  }
+
+  simulateContextRestore(): void {
+    this.contextLost = false;
+    this.contextRestored = true;
+  }
+
+  isContextLost(): boolean {
+    return this.contextLost;
+  }
+
+  isContextRestored(): boolean {
+    return this.contextRestored;
+  }
+
+  // ---- Reset ----
+  reset(): void {
+    this.connected = false;
+    this.contextLost = false;
+    this.contextRestored = false;
+    this.timeoutEnabled = false;
+    this.timeoutMs = 5000;
+    this.defaultLatency = 0;
+    this.messageQueue = [];
+    this.currentRequestToken = 0;
   }
 }
 

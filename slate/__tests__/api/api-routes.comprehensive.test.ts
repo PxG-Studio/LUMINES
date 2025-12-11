@@ -20,7 +20,7 @@ vi.mock('next/server', () => {
       this.body = init.body;
       this.headers = new Map<string, string>();
       const initHeaders = init.headers || {};
-      if (!initHeaders['Authorization'] && !initHeaders['authorization']) {
+      if (!init.noAuth && !initHeaders['Authorization'] && !initHeaders['authorization']) {
         initHeaders['Authorization'] = 'Bearer test-key';
       }
       Object.entries(initHeaders).forEach(([k, v]) => {
@@ -52,9 +52,14 @@ vi.mock('next/server', () => {
   return { NextRequest: MockNextRequest };
 });
 
-describe.skip('API Routes - Comprehensive Tests', () => {
+describe('API Routes - Comprehensive Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Deterministic fetch mock
+    // @ts-ignore
+    global.fetch = vi.fn(() =>
+      Promise.resolve(new Response('{}', { status: 200 }))
+    );
   });
 
   describe('Files API', () => {
@@ -267,9 +272,10 @@ describe.skip('API Routes - Comprehensive Tests', () => {
 
   describe('Authentication', () => {
     it('should require authentication for protected routes', async () => {
-      const request = new NextRequest('http://localhost/api/files', {
-        method: 'POST',
-      });
+      const request = new NextRequest(
+        'http://localhost/api/files',
+        { method: 'POST', noAuth: true }
+      );
       const response = await handleCreateFile(request);
       expect(response.status).toBe(401);
     });

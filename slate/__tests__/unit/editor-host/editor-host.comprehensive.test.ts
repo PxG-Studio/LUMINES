@@ -7,8 +7,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { WebGLSimulator } from '../../utils/webgl-simulator';
 
-describe.skip('EditorHost + Bridge Layer - Comprehensive Tests', () => {
-  let webglSimulator: WebGLSimulator;
+let webglSimulator: WebGLSimulator;
+
+describe('EditorHost + Bridge Layer - Comprehensive Tests', () => {
 
   beforeEach(() => {
     webglSimulator = new WebGLSimulator();
@@ -251,14 +252,14 @@ describe.skip('EditorHost + Bridge Layer - Comprehensive Tests', () => {
 // Mock implementations
 async function reloadScene(options?: { timeout?: number }): Promise<void> {
   if (options?.timeout) {
-    await new Promise(resolve => setTimeout(resolve, options.timeout + 100));
+    await webglSimulator.wait(options.timeout);
     throw new Error('Timeout');
   }
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await webglSimulator.wait(10);
 }
 
 async function queueUpdateUntilSceneLoaded(update: any): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await webglSimulator.wait(10);
 }
 
 async function sendEditorCommand(
@@ -268,6 +269,7 @@ async function sendEditorCommand(
   if (!webglSimulator.isConnected()) {
     throw new Error('Not connected');
   }
+  await webglSimulator.wait(webglSimulator.getLatency());
   return { success: true };
 }
 
@@ -275,12 +277,8 @@ async function sendToUnity(
   message: any,
   options?: { timeout?: number }
 ): Promise<{ success: boolean }> {
-  if (options?.timeout) {
-    await new Promise(resolve => setTimeout(resolve, options.timeout + 100));
-    throw new Error('Timeout');
-  }
-  await webglSimulator.slowResponse(100);
-  return { success: true };
+  const latency = webglSimulator.getLatency() || 100;
+  return webglSimulator.sendWithCancel(latency, options?.timeout);
 }
 
 function enterFallbackMode(): { active: boolean; mode: string } {

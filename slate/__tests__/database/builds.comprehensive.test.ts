@@ -17,11 +17,22 @@ vi.mock('@/lib/cache/strategies', () => ({
   setCached: vi.fn(),
 }));
 
-vi.mock('@/lib/messaging/events', () => ({
-  publishBuildEvent: vi.fn(),
+vi.mock('@/lib/cache/keys', () => ({
+  CacheKeys: {
+    buildJob: (id: string) => `build:${id}`,
+    buildJobList: (projectId: string) => `buildlist:${projectId}`,
+  },
+  CacheTTL: {
+    buildJob: 60,
+    buildJobList: 60,
+  },
 }));
 
-describe.skip('Builds Database Operations - Comprehensive Tests', () => {
+vi.mock('@/lib/messaging/events', () => ({
+  publishBuildEvent: vi.fn(() => Promise.resolve()),
+}));
+
+describe('Builds Database Operations - Comprehensive Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
