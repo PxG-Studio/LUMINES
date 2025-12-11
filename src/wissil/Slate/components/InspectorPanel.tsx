@@ -26,7 +26,8 @@ const formatFileSize = (bytes?: number): string => {
 
 const formatDate = (date?: Date): string => {
   if (!date) return 'Unknown';
-  return date.toLocaleDateString('en-US', {
+  // Use toLocaleString() instead of toLocaleDateString() to support time options
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -159,8 +160,12 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedItem }) 
     ? (() => {
         const parts = selectedItem.name.split('.');
         // Only return extension if there's actually a dot in the filename
+        // AND the filename doesn't start with a dot (hidden files like .hidden)
         // (i.e., don't return the entire filename as the extension)
-        return parts.length > 1 ? parts.pop()?.toLowerCase() || '' : '';
+        if (parts.length > 1 && !selectedItem.name.startsWith('.')) {
+          return parts.pop()?.toLowerCase() || '';
+        }
+        return '';
       })()
     : '';
 
