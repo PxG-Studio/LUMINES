@@ -72,7 +72,7 @@ export function Documentation404() {
           className="text-xl text-white/70 mb-12 max-w-2xl mx-auto"
           style={{ lineHeight: 1.8 }}
         >
-          We're crafting comprehensive guides, API references, and tutorials to help you master LumenForge.io.
+          We&apos;re crafting comprehensive guides, API references, and tutorials to help you master LumenForge.io.
           Check back soon!
         </motion.p>
 

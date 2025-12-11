@@ -58,7 +58,7 @@ export default function Error({
             lineHeight: 1.6
           }}
         >
-          We're sorry, but something unexpected happened. Please try again or return to the home page.
+        We&apos;re sorry, but something unexpected happened. Please try again or return to the home page.
         </p>
 
         {process.env.NODE_ENV === 'development' && error && (

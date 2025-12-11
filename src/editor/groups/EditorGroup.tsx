@@ -9,7 +9,7 @@
 import React, { useState } from 'react';
 import { MonacoEditor } from '../monaco/MonacoEditor';
 import { SplitPane } from '../shell/SplitPane';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import { TabManager } from '../tabs/TabManager';
 import { useEditorStore } from '../monaco/editorStore';
 

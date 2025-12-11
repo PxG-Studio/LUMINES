@@ -33,7 +33,7 @@ const CRITICAL_PATHS = [
 
 // High priority paths
 const HIGH_PRIORITY_PATHS = [
-  'src/wissil',
+  'packages/wis2l',
   'src/components',
 ];
 
@@ -77,7 +77,7 @@ function findComponentFiles(): string[] {
 }
 
 function findStoryFiles(): string[] {
-  return glob.sync('src/**/*.stories.tsx', {
+  return glob.sync('{src,packages/wis2l}/**/*.stories.tsx', {
     cwd: PROJECT_ROOT,
   });
 }

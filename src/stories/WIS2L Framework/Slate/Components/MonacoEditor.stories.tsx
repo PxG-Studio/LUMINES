@@ -8,7 +8,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { within, userEvent, expect, waitFor } from '@storybook/test';
-import { MonacoEditor } from '@/wissil/Slate/editor/MonacoEditor';
+import { MonacoEditor } from '@/wis2l/Slate/editor/MonacoEditor';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
 import React from 'react';
 

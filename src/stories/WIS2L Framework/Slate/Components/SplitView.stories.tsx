@@ -7,6 +7,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { within, userEvent, expect } from '@storybook/test';
 import { SplitView } from '@/design-system/primitives/SplitView';
 import { ThemeProvider } from '@/design-system/themes/ThemeProvider';
+import { InspectorPanel } from '@/wis2l/Slate/components/InspectorPanel';
+import { FileTree } from '@/wis2l/Slate/components/FileTree';
 
 const meta = {
   title: 'WIS2L Framework/Slate/Components/SplitView',

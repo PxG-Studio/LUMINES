@@ -22,6 +22,7 @@ export interface ErrorLogEntry {
   requestId?: string;
   userAgent?: string;
   ipAddress?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface ErrorAggregation {
@@ -244,6 +245,17 @@ class ErrorLogger {
     }
 
     return 'UnknownError';
+  }
+
+  /**
+   * Get severity for error entry
+   */
+  private getSeverity(entry: ErrorLogEntry): 'low' | 'medium' | 'high' | 'critical' {
+    const metadataSeverity = (entry.metadata as any)?.severity;
+    if (metadataSeverity === 'low' || metadataSeverity === 'medium' || metadataSeverity === 'high' || metadataSeverity === 'critical') {
+      return metadataSeverity;
+    }
+    return 'medium';
   }
 
   /**

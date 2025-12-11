@@ -14,7 +14,7 @@ import { Terminal } from './Terminal';
 import { BuildStatus, BuildStatusType } from './BuildStatus';
 import { ErrorOverlay } from './ErrorOverlay';
 import { SplitPane } from '../shell/SplitPane';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import type { WebContainer } from '@webcontainer/api';
 
 export interface RuntimeContainerProps {

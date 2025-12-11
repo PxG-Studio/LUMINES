@@ -139,8 +139,8 @@ export function About404() {
             className="text-white/70 mb-3"
             style={{ lineHeight: 1.8 }}
           >
-            Born from the fusion of <span className="text-[#F5B914] font-medium">Studio PxG's</span> creative vision and 
-            the <span className="text-[#A64DFF] font-medium">Nocturna Ecosystem's</span> technical prowess...
+            Born from the fusion of <span className="text-[#F5B914] font-medium">Studio PxG&apos;s</span> creative vision and 
+            the <span className="text-[#A64DFF] font-medium">Nocturna Ecosystem&apos;s</span> technical prowess...
           </motion.p>
           <motion.p
             initial={{ opacity: 0, x: -20 }}

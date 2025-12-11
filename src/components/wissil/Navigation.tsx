@@ -2,45 +2,34 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { Home, Code, Network, Play, Rocket, BookOpen } from 'lucide-react';
 
 interface NavItem {
   name: string;
   label: string; // Display label with descriptor
-  path: string;
+  path: Route;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   group: 'workspace' | 'system' | 'home';
 }
 
 const navItems: NavItem[] = [
   // Workspace Tools (Primary)
-  { name: 'Spark', label: 'Spark (IDE)', path: '/spark', icon: Code, group: 'workspace' },
-  { name: 'Slate', label: 'Slate (Nodes)', path: '/slate', icon: Network, group: 'workspace' },
-  { name: 'Ignis', label: 'Ignis (Runtime)', path: '/ignis', icon: Play, group: 'workspace' },
+  { name: 'Spark', label: 'Spark (IDE)', path: '/spark' as Route, icon: Code, group: 'workspace' },
+  { name: 'Slate', label: 'Slate (Nodes)', path: '/slate' as Route, icon: Network, group: 'workspace' },
+  { name: 'Ignis', label: 'Ignis (Runtime)', path: '/ignis' as Route, icon: Play, group: 'workspace' },
   
   // System Tools (Secondary)
-  { name: 'Waypoint', label: 'Waypoint (Docs)', path: '/waypoint', icon: BookOpen, group: 'system' },
-  { name: 'Projects', label: 'Projects (Deploy)', path: '/projects', icon: Rocket, group: 'system' },
+  { name: 'Waypoint', label: 'Waypoint (Docs)', path: '/waypoint' as Route, icon: BookOpen, group: 'system' },
+  { name: 'Projects', label: 'Projects (Deploy)', path: '/projects' as Route, icon: Rocket, group: 'system' },
   
   // Home
-  { name: 'LUMEN', label: 'LUMEN', path: '/lumen', icon: Home, group: 'home' },
+  { name: 'LUMEN', label: 'LUMEN', path: '/lumen' as Route, icon: Home, group: 'home' },
 ];
 
 export function Navigation() {
-  // Check if we're in Next.js context (not Storybook)
-  const isNextJs = typeof window !== 'undefined' && (window as any).__NEXT_DATA__;
-  let pathname: string | null = null;
-  
-  try {
-    if (isNextJs) {
-      pathname = usePathname();
-    }
-  } catch (e) {
-    // Not in Next.js context (Storybook)
-    pathname = null;
-  }
-
+  const pathname = usePathname();
   const currentPath = pathname || '';
 
   const workspaceItems = navItems.filter(item => item.group === 'workspace');
@@ -74,7 +63,7 @@ export function Navigation() {
       >
         {/* Logo */}
         <Link 
-          href="/lumen" 
+          href={"/lumen" as Route} 
           style={{
             display: 'flex',
             alignItems: 'center',

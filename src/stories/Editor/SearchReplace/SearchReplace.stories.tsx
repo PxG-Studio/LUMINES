@@ -64,33 +64,35 @@ export const Default: Story = {
   render: () => <EditorWithSearch />,
 };
 
-export const WithReplace: Story = {
-  render: () => {
-    const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-    const [replaceMode, setReplaceMode] = React.useState(true);
+const WithReplaceComponent: React.FC = () => {
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const [replaceMode, setReplaceMode] = React.useState(true);
 
-    return (
-      <div style={{ height: '100vh', position: 'relative', background: '#0A0A0A' }}>
-        <Editor
-          height="100%"
-          language="typescript"
-          theme="vs-dark"
-          value={`function example() {
+  return (
+    <div style={{ height: '100vh', position: 'relative', background: '#0A0A0A' }}>
+      <Editor
+        height="100%"
+        language="typescript"
+        theme="vs-dark"
+        value={`function example() {
   const oldName = "test";
   const anotherOldName = "test2";
   return oldName + anotherOldName;
 }`}
-          onMount={(editor) => {
-            editorRef.current = editor;
-          }}
-        />
-        <SearchReplace
-          editor={editorRef.current}
-          visible={true}
-          onClose={() => {}}
-        />
-      </div>
-    );
-  },
+        onMount={(editor) => {
+          editorRef.current = editor;
+        }}
+      />
+      <SearchReplace
+        editor={editorRef.current}
+        visible={true}
+        onClose={() => {}}
+      />
+    </div>
+  );
+};
+
+export const WithReplace: Story = {
+  render: () => <WithReplaceComponent />,
 };
 

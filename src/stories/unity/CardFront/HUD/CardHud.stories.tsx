@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { TextureInspector } from "@/wissil/UnityBrowser/inspectors/TextureInspector";
+import { TextureInspector } from "@/wis2l/UnityBrowser/inspectors/TextureInspector";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 
 const meta: Meta = {

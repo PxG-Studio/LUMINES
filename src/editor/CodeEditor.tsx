@@ -47,8 +47,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       smoothScrolling: true,
     });
 
-    // Define Nocturna theme if not already defined
-    if (!monaco.editor.getTheme('nocturna-dark')) {
+    // Define Nocturna theme (defineTheme is idempotent)
+    try {
       monaco.editor.defineTheme('nocturna-dark', {
         base: 'vs-dark',
         inherit: true,
@@ -71,6 +71,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           'editorIndentGuide.activeBackground': '#2a2e42',
         },
       });
+    } catch (e) {
+      // Theme already defined, ignore
     }
 
     // Set theme

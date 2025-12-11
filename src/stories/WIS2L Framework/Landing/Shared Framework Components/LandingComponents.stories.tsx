@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { expect, within, userEvent, waitFor, fn } from "@storybook/test";
-import { LandingLayout } from "@/wissil/Landing/LandingLayout";
+import { LandingLayout } from "@/wis2l/Landing/LandingLayout";
 import { ThemeProvider } from "@/design-system/themes/ThemeProvider";
 
 const meta: Meta<typeof LandingLayout> = {

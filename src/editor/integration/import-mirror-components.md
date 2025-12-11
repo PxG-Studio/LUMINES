@@ -77,7 +77,7 @@ Create file: `src/editor/[category]/[Component].tsx`
 'use client';
 
 import React from 'react';
-import { useWissilFS } from '@/wissil/runtime/fs/wissilFs';
+import { useWissilFS } from '@/wis2l/runtime/fs/wissilFs';
 import { slateTokens } from '@/tokens/slate.tokens';
 
 // [Paste original component code here]

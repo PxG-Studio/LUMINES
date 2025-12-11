@@ -39,9 +39,6 @@ export const Feedback: React.FC<FeedbackProps> = ({
 }) => {
   const { toasts, dismissToast } = useToast();
 
-  // EC-LAND-841: Show feedback
-  if (!show || toasts.length === 0) return null;
-
   // EC-LAND-842: Immediate feedback (handled by Toast component)
   // EC-LAND-843: Clear feedback (handled by Toast component)
   // EC-LAND-844: Accessible feedback (handled by Toast component)
@@ -62,6 +59,9 @@ export const Feedback: React.FC<FeedbackProps> = ({
     // Limit to 5 toasts at a time
     return prioritizedToasts.slice(0, 5);
   }, [prioritizedToasts, optimized]);
+
+  // EC-LAND-841: Show feedback
+  if (!show || toasts.length === 0) return null;
 
   return (
     <ToastContainer
