@@ -78,6 +78,8 @@ Proprietary / UNLICENSED. See `package.json` for details.
 - Troubleshooting: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 - Enable SSH on SBX04: [docs/ENABLE_SSH_SBX04.md](docs/ENABLE_SSH_SBX04.md)
 - SBX04 final steps: [docs/SBX04_FINAL_STEPS.md](docs/SBX04_FINAL_STEPS.md)
+- **Set up LUMINES on GitLab**: [docs/GITLAB_FIRST_REPO_LUMINES.md](docs/GITLAB_FIRST_REPO_LUMINES.md)
+- **GitLab CLI (glab)**: [docs/GITLAB_CLI_SETUP.md](docs/GITLAB_CLI_SETUP.md)
 
 ---
 
