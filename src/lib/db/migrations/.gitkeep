@@ -1,7 +1,0 @@
-# Database Migrations Directory
-# 
-# TODO: Set up migration system based on chosen ORM
-# - Prisma: migrations/ directory (created by Prisma)
-# - Drizzle: drizzle/migrations/ (created by Drizzle Kit)
-# - Custom: migrations/*.sql files
-

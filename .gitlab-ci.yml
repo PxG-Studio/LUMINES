@@ -1,0 +1,173 @@
+# GitLab CI/CD Pipeline for PXG.STUDIO Game Development
+# Production-optimized for Raspberry Pi 4
+
+stages:
+  - lint
+  - test
+  - build
+  - package
+  - deploy
+
+variables:
+  NODE_VERSION: "18"
+  # Cache configuration for faster builds
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.cache/npm"
+
+# Lint stage
+lint:
+  stage: lint
+  image: node:${NODE_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/npm
+      - node_modules
+  script:
+    - npm ci --cache .cache/npm
+    - npm run lint
+  only:
+    - merge_requests
+    - main
+    - develop
+  tags:
+    - docker
+
+# Test stage
+test:
+  stage: test
+  image: node:${NODE_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/npm
+      - node_modules
+  script:
+    - npm ci --cache .cache/npm
+    - npm run test
+  coverage: '/Coverage: \d+\.\d+%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+    - develop
+  tags:
+    - docker
+
+# Build stage
+build:
+  stage: build
+  image: node:${NODE_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/npm
+      - node_modules
+  script:
+    - npm ci --cache .cache/npm
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+      - build/
+    expire_in: 1 week
+  only:
+    - main
+    - develop
+    - tags
+  tags:
+    - docker
+  # Resource limits for Raspberry Pi
+  resource_group: build-job
+
+# Package stage (for game builds)
+package:
+  stage: package
+  image: node:${NODE_VERSION}
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache/npm
+      - node_modules
+  script:
+    - npm ci --cache .cache/npm
+    - npm run build
+    - mkdir -p out
+    - if [ -d dist ]; then cp -r dist out/; fi
+    - if [ -d build ]; then cp -r build out/; fi
+    - tar -czf game-build-${CI_COMMIT_SHORT_SHA}.tar.gz -C out .
+  artifacts:
+    paths:
+      - "*.tar.gz"
+    expire_in: 30 days
+  only:
+    - main
+    - tags
+  tags:
+    - docker
+
+# Deploy stage — live production environment
+# Set CI/CD variables: SSH_PRIVATE_KEY (required), and optionally PRODUCTION_SERVER, PRODUCTION_USER, PRODUCTION_PATH
+.deploy_template: &deploy_template
+  stage: deploy
+  image: alpine:3.19
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+    - chmod 600 ~/.ssh/deploy_key
+    - ssh-keyscan -H "${PRODUCTION_SERVER}" >> ~/.ssh/known_hosts 2>/dev/null || true
+  script:
+    - PRODUCTION_SERVER="${PRODUCTION_SERVER:-192.168.86.29}"
+    - PRODUCTION_USER="${PRODUCTION_USER:-ncadmin}"
+    - PRODUCTION_PATH="${PRODUCTION_PATH:-/var/www/game}"
+    - DEPLOY_TARGET="${PRODUCTION_USER}@${PRODUCTION_SERVER}:${PRODUCTION_PATH}/"
+    - |
+      if [ -d dist ]; then
+        rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" dist/ "$DEPLOY_TARGET"
+      fi
+      if [ -d build ]; then
+        rsync -avz --delete -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" build/ "$DEPLOY_TARGET"
+      fi
+      if [ ! -d dist ] && [ ! -d build ]; then
+        echo "No dist/ or build/ found; creating placeholder and syncing."
+        mkdir -p deploy_placeholder && echo "Deploy ${CI_COMMIT_SHORT_SHA}" > deploy_placeholder/index.html
+        rsync -avz -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new" deploy_placeholder/ "$DEPLOY_TARGET"
+      fi
+  tags:
+    - docker
+
+deploy:staging:
+  <<: *deploy_template
+  variables:
+    PRODUCTION_PATH: "/var/www/staging"
+  environment:
+    name: staging
+    url: https://staging.pxg.studio
+  only:
+    - develop
+  when: manual
+  needs:
+    - job: build
+      artifacts: true
+  allow_failure: true
+
+deploy:production:
+  <<: *deploy_template
+  environment:
+    name: production
+    url: https://pxg.studio
+  only:
+    - main
+    - tags
+  when: manual
+  needs:
+    - job: build
+      artifacts: true

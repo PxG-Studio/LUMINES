@@ -12,54 +12,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/tokens/*": ["./src/tokens/*"],
-      "@/styles/*": ["./src/styles/*"],
-      "@/wissil/*": ["./packages/wis2l/*"],
-      "@/wis2l/*": ["./packages/wis2l/*"],
-      "@/story-components/*": ["./src/story-components/*"],
-      "@/design-system/*": ["./src/design-system/*"],
-      "@/theme/*": ["./src/theme/*"],
-      "@/editor/*": ["./src/editor/*"],
-      "@/ignis/*": ["./src/ignis/*"],
-      "@/ignition/*": ["./src/ignition/*"],
-      "@/spark/*": ["./src/spark/*"],
-      "@/waypoint/*": ["./src/waypoint/*"],
-      "@/slate/*": ["./src/slate/*"],
-      "@/state/*": ["./src/state/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/utils/*": ["./src/utils/*"]
-    }
+    "incremental": true
   },
-  "include": [
-    "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    ".next/types/**/*.ts",
-    ".storybook/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.d.ts",
-    "packages/wis2l/**/*.d.ts",
-    "packages/wis2l/SparkUnity/**",
-    "packages/wis2l/Unity/**",
-    "packages/wis2l/UnityBrowser/**",
-    "packages/wis2l/UnityIO/**"
-  ],
-  // Project references disabled - apps use their own tsconfig files
-  // "references": [
-  //   { "path": "./tsconfig.app.json" },
-  //   { "path": "./tsconfig.node.json" }
-  // ]
+  "include": [],
+  "exclude": ["node_modules"]
 }
