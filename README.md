@@ -79,6 +79,7 @@ Proprietary / UNLICENSED. See `package.json` for details.
 - **Troubleshooting**: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 - Enable SSH on SBX04: [docs/ENABLE_SSH_SBX04.md](docs/ENABLE_SSH_SBX04.md)
 - SBX04 final steps: [docs/SBX04_FINAL_STEPS.md](docs/SBX04_FINAL_STEPS.md)
+- **Bring LUMINES to live production** (one command when SBX04 is up): [docs/LUMINES_LIVE_PRODUCTION.md](docs/LUMINES_LIVE_PRODUCTION.md) — run `./scripts/bring-lumines-to-production.sh`
 - **Complete all outstanding tasks** (when SBX04 is up): [docs/COMPLETE_OUTSTANDING_TASKS.md](docs/COMPLETE_OUTSTANDING_TASKS.md)
 - **Set up LUMINES on GitLab**: [docs/GITLAB_FIRST_REPO_LUMINES.md](docs/GITLAB_FIRST_REPO_LUMINES.md)
 - **GitLab CLI (glab)**: [docs/GITLAB_CLI_SETUP.md](docs/GITLAB_CLI_SETUP.md)

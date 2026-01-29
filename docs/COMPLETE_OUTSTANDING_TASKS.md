@@ -4,6 +4,27 @@ This runbook finishes all remaining LUMINES/GitLab tasks when SBX04 (192.168.86.
 
 ---
 
+## One-command production bring-up (recommended)
+
+When the server is reachable, run from repo root:
+
+```bash
+cd /Users/hiroyasu/Documents/GitHub/LUMINES
+./scripts/bring-lumines-to-production.sh
+```
+
+This script runs: server completion (storage + GitLab) → wait for GitLab → ensure group/project → push main/develop/prototype → add SSH_PRIVATE_KEY (or print instructions) → verify URLs.
+
+**Optional (full automation):** Create a GitLab Personal Access Token (root → Settings → Access Tokens, scopes: `api`, `write_repository`), then:
+
+```bash
+GITLAB_TOKEN=your-token ./scripts/bring-lumines-to-production.sh
+```
+
+With `GITLAB_TOKEN` set, the script creates the group and project via API (if missing), pushes using the token, and adds `SSH_PRIVATE_KEY` via API.
+
+---
+
 ## Prerequisites
 
 - SBX04 is on the same network and reachable: `ssh ncadmin@192.168.86.29` works
